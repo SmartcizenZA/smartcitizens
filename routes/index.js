@@ -6,9 +6,9 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 
-/* GET Test Page. */
-router.get('/test', function(req, res) {
-  res.render('test.html', { title: 'Testing' });
+/* GET the Form. */
+router.get('/form', function(req, res) {
+  res.render('form', { title: 'Meter Reading Form' });
 });
 
 /* GET Hello World page. */
@@ -27,10 +27,80 @@ router.get('/userlist', function(req, res) {
     });
 });
 
+/*GET meter readings page*/
+
+router.get('/newmeterreading', function(req,res) {
+  res.render('newmeterreading', { title:'Add new meter reading'});
+});
+
+
+/*POST Meter reading*/
+router.post('/readmeters', function(req, res) {
+
+// Set our internal DB variable
+  var db = req.db;
+
+  console.log("AccNo:", req.body.accountNumber);
+
+  // Get our form values. These rely on the "name" attributes
+  var accNo = req.body.accountNumber;
+  var bpNo = req.body.BPNumber;
+  var rDate = req.body.readingDate;
+  var portionNo= req.body.portionNo;
+  var waterMeter= req.body.waterMeter;
+  var electMeter= req.body.electMeter;
+  var waterResource =req.body.waterResource;
+  var electResource = req.body.electResource;
+  var jsonData ={
+
+  };
+
+  // var portion = req.body.portion;
+  // var readingDate  =req.body.readingDate;
+  // var waterMeter =req.body.waterMeter;
+  // var electricityMeter  = req.body.electricityMeter;
+  // var waterMeterReadingResource  =req.body.waterMeterReadingResource;
+  // var electricityMeterReadingResource = req.body.electricityMeterReadingResource;
+  // // set colleciton to write the date to
+  var collection = db.get('meterreadings');
+
+
+  //submit data to database
+  // binding
+  collection.insert({
+    "accountNumber" : accNo,
+    "BPNo" : bpNo,
+    "readingDate" : rDate,
+    "portionNo" : portionNo,
+    "electMeter" : electMeter,
+    "waterMeter" : waterMeter,
+    "electResource": electResource,
+    "waterResource": waterResource
+    // "bp" : bp,
+    // "portion" : portion,
+    // "readingdate" : readingDate,
+    // "waterMeter" : waterMeter,
+    // "electricityMeter" : electricityMeter,
+    // "waterMeterReadingResource" : waterMeterReadingResource,
+    // "electricityMeterReadingResource" : electricityMeterReadingResource
+
+  }, function (err, doc) {
+      if(err){
+        res.send("failed to save meter reading");
+      }
+      else {
+          //if successful route to the captured meter reading
+          res.location("/");
+          res.redirect("/");
+        }
+      });
+});
+
 /* GET New User page. */
 router.get('/newuser', function(req, res) {
     res.render('newuser', { title: 'Add New User' });
 });
+
 
 /* POST to Add User Service */
 router.post('/adduser', function(req, res) {
@@ -45,7 +115,7 @@ router.post('/adduser', function(req, res) {
     // Set our collection
     var collection = db.get('usercollection');
 
-    // Submit to the DB
+    // Submit to the DBaccountNumber
     collection.insert({
         "username" : userName,
         "email" : userEmail

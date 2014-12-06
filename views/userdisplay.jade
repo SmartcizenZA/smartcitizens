@@ -1,0 +1,9 @@
+extends layout
+
+block content
+    h1.
+        User List
+    ul
+        each user, i in userdisplay
+            li
+                a(href="mailto:#{user.portion}")= user.section

@@ -1,0 +1,14 @@
+extends layout
+
+block content
+    h1= title
+    form#formRegUser(name="reguser",method="post",action="/reguser")				
+        input#inputPortion(type="text", placeholder="Portion", name="portion")
+        input#inputAccountNumber(type="text", placeholder="Account Number", name="accountnumber")
+        input#inputBP(type="text", placeholder="BP", name="BP")
+        input#inputContactTel(type="text", placeholder="Contact Number", name="contacttel")
+        input#inputEmail(type="text", placeholder="Email Address", name="email")
+        input#inputInitials(type="text", placeholder="Initials", name="initials")
+        input#inputSurname(type="text", placeholder="Surname", name="surname")
+        input#inputPhysicalAddress(type="text", placeholder="Physical Address", name="physicaladdress")
+        button#btnSubmit(type="submit") submit

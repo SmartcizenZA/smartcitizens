@@ -1,4 +1,11 @@
-//do npm install nodemailer
+/*
+This script is used to generate an email to be sent to the City - the email contains the readings in the attachment.
+
+@author Ishmael Makitla, GDG-Pretoria, RHoK-Pretoria
+
+*/
+
+//required for emailing
 var mailer = require("nodemailer");
 //for generating PDF files
 var fs = require('fs');
@@ -37,14 +44,14 @@ exports.sendMailToCity = function(to, subject, text, callback, sysGeneratedReadi
 			mail.subject = subject;
 			mail.html = text;
 			//now send the message
-			smtpTransport.sendMail(mail, function(error, response){
+			/*smtpTransport.sendMail(mail, function(error, response){
 				console.log("Email-Send Error ", error);
 				console.log("Email-Send Response ", response);
 				if(error){ callback(false); }
 				else { callback(true); }	  
 				//finally close the SMTP connection
 				smtpTransport.close();	  
-			});
+			}); */
 		 }
 		 else{
 			console.log("No Data File Created...");

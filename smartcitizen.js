@@ -53,7 +53,7 @@ var server = http.createServer(app);
 var port = 2014;
 server.listen(port, function() {
   console.log("Smart Citizen Server Running at ", port);
-  mailer.sendMailToCity("mtswenij@gmail.com","Meter Readings", "Please find the attached meter readings from my house", function (successful){
+  mailer.sendMailToCity("ishmael.makitla@gmail.com","Meter Readings", "Please find the attached meter readings from my house", function (successful){
    console.log("The Email was send successfully? "+successful);
   }, "20141206_ERF33033");
 });

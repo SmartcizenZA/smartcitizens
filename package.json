@@ -17,6 +17,8 @@
     "monk": "*",
 	"nodemailer": "^0.7.1",
     "fs": "0.0.2",
-    "pdfkit": "^0.7.0"
+    "pdfkit": "^0.7.0",
+	"method-override": "~2.0.2",
+	"async": "^0.2.10"
   }
 }

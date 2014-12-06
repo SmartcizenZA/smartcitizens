@@ -1,0 +1,125 @@
+4 <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+    <title>SMART CITIZEN SENSORS</title>
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="196x196" href="images/touch/chrome-touch-icon-196x196.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Web Starter Kit">
+
+    <!-- Tile icon for Win8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+    <meta name="msapplication-TileColor" content="#3372DF">
+
+    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
+    <!--
+    <link rel="canonical" href="http://www.example.com/">
+    -->
+
+    <!-- build:css styles/components/main.min.css -->
+    <link rel="stylesheet" href="styles/h5bp.css">
+    <link rel="stylesheet" href="styles/components/components.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+	
+	<link rel='stylesheet' href="bootstrap/css/bootstrap.css">
+	<link rel='stylesheet' href="bootstrap/css/bootstrap-theme.css">
+  
+  </head>
+  <body>
+    <header class="app-bar promote-layer">
+      <div class="app-bar-container">
+        <button class="menu"><img src="images/hamburger.svg" alt="Menu"></button>
+         
+		<h1><h1 class="logo"><img src="images/smartcitilogo.png" Width="90px" Height="90x" />Smart Citizen Sensors</h1></h1>
+        <section class="app-bar-actions">
+        <!-- Put App Bar Buttons Here -->
+        </section>
+		
+      </div>
+    </header>
+
+    <nav class="navdrawer-container promote-layer">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href=about.html>About</a></li>
+        <li><a href=#>Notifications</a></li>
+        <li><a href=contacts.html>Contact Details</a></li>
+	  </ul>
+    </nav>
+    <main>
+	<h1></h1>
+	<div class="clear demo">
+      <div class="code-sample">
+        <div class="">
+		<table class="table-2">
+        <thead>
+          <tr>
+            <th colspan='4'>LAST READING</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-th="LAST"><code>Water</code></td>
+            <td data-th="READING"><code>{{serve.data}}</code></td>
+			 <td data-th="LAST"><code>Electricity</code></td>
+            <td data-th="READING"><code>{{server.data}}</code></td>
+          </tr>
+        </tbody>
+      </table>
+	  </div></div>
+      </div>
+    </div>
+	<div class="clear demo">
+      <div class="code-sample">
+        <div class="">
+		<table class="table-4">
+        <colgroup>
+           <col span="1">
+           <col span="1">
+		   <col span="1">
+           <col span="1">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>MONTH</th>
+            <th>WATER READING</th>
+			<th>ELECTRICITY READING</th> 
+            <th>COST</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-th="DATE"><code>11/05/14</code></td>
+            <td data-th="WATER READING">100</td>
+			<td data-th="ELECTRICTY READING">65</td>
+            <td data-th="COST">R743.23</td>
+          </tr>
+          <tr>
+            <td data-th="DATE"><code>11/06/14</code></td>
+            <td data-th="WATER READING">105</td>
+			<td data-th="ELECTRICTY READING">71</td>
+            <td data-th="COST">R843.23</td>
+          </tr>
+        </tbody>
+      </table>
+	  </div>
+      </div>
+    </div>
+	
+	</main>
+
+    <!-- build:js scripts/main.min.js -->
+    <script src="scripts/main.js"></script>
+    <!-- endbuild -->
+  </body>
+</html>

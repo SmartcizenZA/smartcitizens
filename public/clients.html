@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+        <title>Smart CitizenS Dashboard | Clients</title>
+
+        <!-- Add to homescreen for Chrome on Android -->
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <!-- iOS icons -->
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/touch/apple-touch-icon-144x144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/touch/apple-touch-icon-114x114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/touch/apple-touch-icon-72x72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="images/touch/apple-touch-icon-57x57-precomposed.png">
+	<script type="text/javascript" charset="utf8" src="DataTables-1.10.0/media/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" charset="utf8" src="DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+	<link rel="stylesheet" type="text/css" href="DataTables-1.10.0/media/css/jquery.dataTables.css">
+	
+        <!-- Tile icon for Win8 (144x144 + tile color) -->
+        <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+        <meta name="msapplication-TileColor" content="#3372DF">
+
+        <!-- Generic Icon -->
+        <link rel="shortcut icon" href="images/touch/touch-icon-57x57.png">
+
+        <!-- SEO: If mobile URL is different from desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
+        <!--
+        <link rel="canonical" href="http://www.example.com/">
+        -->
+        
+        <!-- Chrome Add to Homescreen -->
+        <link rel="shortcut icon" sizes="196x196" href="images/touch/touch-icon-196x196.png">
+
+        <!-- For iOS web apps. Delete if not needed. https://github.com/h5bp/mobile-boilerplate/issues/94 -->
+        <!--
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="">
+        -->
+
+        <!-- build:css styles/components/main.min.css -->
+        <link rel="stylesheet" href="styles/h5bp.css">
+        <link rel="stylesheet" href="styles/components/components.css">
+        <link rel="stylesheet" href="styles/main.css">
+        <!-- endbuild -->
+    </head>
+    <body>
+        <header class="app-bar promote-layer">
+            <div class="app-bar-container">
+                <button class="menu"><img src="images/hamburger.svg"></button>
+                <h1 class="logo">Smart CitizenS - Dashboard</h1>
+                <section class="app-bar-actions">
+                <!-- Put App Bar Buttons Here -->
+                </section>
+		<div><div class=code-sample><a href="index.html" class=button--secondary style="position: absolute; right: -200px;">Logout</a></div></div>
+            </div>
+        </header>
+
+        <nav class="navdrawer-container promote-layer">
+            <h4>Navigation</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="clients.html">Clients</a></li>
+		<li><a href="electricity_reading.html">Electricity Reading</a></li>
+		<li><a href="water_reading.html">Water Reading</a></li>
+		<li><a href="graphical_reading.html">Graphical Reading</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <center><p><strong>Registered Clients</strong></p></center>
+	    <table id="clients_table">
+		<tr>
+		    <th><strong>No.</strong></th>
+		    <th><strong>Date</strong></th>
+		    <th><strong>Initial</strong></th>
+		    <th><strong>Surname</strong></th>
+		    <th><strong>Account</strong></th>
+                    <th><strong>Action</strong></th>
+		</tr>
+
+		<script>
+			for (var i = 0; i < 15; i++)
+				document.write("<tr>" +
+					       	  "<td style=\"text-align: center;\">" + (i + 1) + "</td>" +
+						  "<td style=\"text-align: center;\">28 Jun 2014</td>" +
+						  "<td style=\"text-align: center;\">N</td>" +
+						  "<td style=\"text-align: center;\">Madlopha</td>" +
+						  "<td style=\"text-align: center;\">987654321</td>" +
+						  "<td style=\"text-align: center;\"><a href=\"single_client.html\">View</a> | <a href=\"#\">Edit</a> | <a href=\"#\">Delete</a> </td>" +
+						"</tr>")
+		</script>
+
+		
+	
+	    </table>
+	
+
+        </main>
+
+	<footer style="posistion: relative; width: 100%; height: 90px; background-color: #5B5B5B;">
+	    <div style="Position: relative; top: 30px; width: inherit; height: 50px; text-align: center; color: #fff;">
+			Smart Citizen Sensor @ 2014 Copyright, All right reserved
+		</div>
+	</footer>
+
+        <!-- build:js scripts/main.min.js -->
+        <script src="scripts/main.js"></script>
+        <!-- endbuild -->
+<script>
+		$(document).ready( function () {$('#clients_table').dataTable();});
+	</script>
+
+        <!-- Built with love using Web Starter Kit -->
+    </body>
+</html>

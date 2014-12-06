@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+    <title>SMART CITIZEN SENSORS</title>
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="196x196" href="images/touch/chrome-touch-icon-196x196.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Web Starter Kit">
+
+    <!-- Tile icon for Win8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+    <meta name="msapplication-TileColor" content="#3372DF">
+
+    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
+    <!--
+    <link rel="canonical" href="http://www.example.com/">
+    -->
+
+    <!-- build:css styles/components/main.min.css -->
+    <link rel="stylesheet" href="styles/h5bp.css">
+    <link rel="stylesheet" href="styles/components/components.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+	
+	<link rel='stylesheet' href="bootstrap-3.2.0-dist/css/bootstrap.css">
+	<link rel='stylesheet' href="bootstrap-3.2.0-dist/css/bootstrap-theme.css">
+	
+	<script src="RGraph/libraries/RGraph.common.core.js" ></script>
+    <script src="RGraph/libraries/RGraph.common.key.js" ></script>
+    <script src="RGraph/libraries/RGraph.line.js" ></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="../excanvas/excanvas.js"></script><![endif]-->
+  
+  </head>
+  <body>
+    <header class="app-bar promote-layer">
+      <div class="app-bar-container">
+        <button class="menu"><img src="images/hamburger.svg" alt="Menu"></button>
+         
+		<h1><h1 class="logo"><img src="images/smartcitilogo.png" Width="90px" Height="90x" />Smart Citizen Sensors</h1></h1>
+        <section class="app-bar-actions">
+        <!-- Put App Bar Buttons Here -->
+        </section>
+		
+      </div>
+    </header>
+
+    <nav class="navdrawer-container promote-layer">
+      <ul>
+        <li><a href=index.html>Home</a></li>
+        <li><a href=about.html>About</a></li>
+        <li><a href=#>Notifications</a></li>
+        <li><a href=contacts.html>Contact Details</a></li>
+	  </ul>
+    </nav>
+    <main>
+	<h1>Consumption Overview</h1>
+
+	</main>
+
+<center><canvas id="cvs" width="600" height="250">[No canvas support]</canvas><center>
+    
+    <script>
+        $(document).ready(function ()
+        {
+            var mline = new RGraph.Line('cvs', [4,6,12,16,8,4,2,8,18,16,14,16], [2,4,8,4,2,6,6,12,8,10,6,8])
+                .set('labels', ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'])
+                .set('gutter.left', 40)
+                .set('gutter.top', 35)
+                .set('gutter.right', 15)
+                .set('gutter.bottom', 20)
+                .set('colors', ['black', 'black', 'black'])
+                .set('filled', true)
+                .set('filled.accumulative', true)
+                .set('fillstyle', ['Gradient(white:red)', 'Gradient(white:blue)', 'Gradient(white:green)'])
+                .set('units.post', '%')
+                .set('linewidth', 0.25)
+                .set('spline', !RGraph.ISOLD)
+                .set('title', 'Electricity and Water')
+                .set('title.vpos', 0.5)
+                .set('text.color', '#333')
+                .set('text.font', 'Arial')
+                .set('key', ['Water', 'Electricity'])
+                .set('key.colors', ['red', 'blue', '#0a0'])
+                .set('key.background', 'white')
+                .set('key.position.x', 50)
+                .set('shadow.offsety', 2)
+                .set('shadow.blur', 5)
+                .set('tickmarks', null)
+                .set('background.grid.autofit.numvlines', 11)
+                .set('numxticks', 11)
+                .on('beforedraw', function (obj)
+                {
+                    RGraph.clear(obj.canvas, 'white');
+                })
+                .draw()
+                .trace({frames: 60})
+        })
+    </script>
+
+    <!-- build:js scripts/main.min.js -->
+    <script src="scripts/main.js"></script>
+    <!-- endbuild -->
+
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-XXXXX-X');
+      ga('send', 'pageview');
+    </script>
+    <!-- Built with love using Web Starter Kit -->
+  </body>
+</html>

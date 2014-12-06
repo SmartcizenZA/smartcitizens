@@ -11,6 +11,8 @@ var mailer = require("nodemailer");
 var fs = require('fs');
 var FileCreator = require('./filecreator');
 
+var CITY_OF_TSHWANE = "meterrecords@tshwane.gov.za";
+
 
 // Use Smtp Protocol to send Email
 var smtpTransport = mailer.createTransport("SMTP",{
@@ -30,28 +32,28 @@ var mail = {
 }
 
 //helper method for sending out an Email to City Offices with Meter Readings attached
-exports.sendMailToCity = function(to, subject, text, callback, sysGeneratedReadingsId){
+exports.sendMailToCity = function(meterDataObject, subject, text, callback, sysGeneratedReadingsId){
     
     if(text){
 	 console.log("Data provided, can generate file");
 	 //now use file generator 
 	 var readingFileName = sysGeneratedReadingsId+".pdf";
-	  FileCreator.generateFile(readingFileName, function (error, data){
+	  FileCreator.generateFile(readingFileName,meterDataObject, function (error, data){
 	     if(data){		 		 
 		 //add as attachments
 			mail.attachments = [{"filePath": "./"+readingFileName}]; 
-			mail.to = to;
+			mail.to = CITY_OF_TSHWANE;
 			mail.subject = subject;
 			mail.html = text;
 			//now send the message
-			/*smtpTransport.sendMail(mail, function(error, response){
+			smtpTransport.sendMail(mail, function(error, response){
 				console.log("Email-Send Error ", error);
 				console.log("Email-Send Response ", response);
 				if(error){ callback(false); }
 				else { callback(true); }	  
 				//finally close the SMTP connection
 				smtpTransport.close();	  
-			}); */
+			}); 
 		 }
 		 else{
 			console.log("No Data File Created...");

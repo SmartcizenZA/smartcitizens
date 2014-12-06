@@ -10,17 +10,17 @@ var async = require('async');
 var textString = 'Next Time, you will have your Meter and other information here...This should be in the attachment if all goes well';
 
 exports.generateFile = function (filename, dataObject,callback){
- 
+
  async.series([
 		function(cbDone){
 			console.log("Just piped the generated PDF Document...");
 			doc = new PDFDocument();
 			doc.pipe (fs.createWriteStream(filename));
-			
-			doc.fontSize(12);		
+
+			doc.fontSize(12);
 			doc.y = 320;
 			doc.fillColor('black')
-			
+
 			 //title: MONTHLY METER READING TEMPLATE
 			 doc.text('MONTHLY METER READING TEMPLATE ', 100, 15, {fit: [20, 100]});
 			 //the X-value of the second column
@@ -29,7 +29,7 @@ exports.generateFile = function (filename, dataObject,callback){
 			doc.text('PORTION ', 53, 36, {fit: [20, 100]}).rect(50, 30, 150, 35).stroke();
 			//value column                 x (value), y(value)             x   y      w  h
 			doc.text(dataObject.portion, secondColX, 36, {fit: [20, 120]}).rect(200, 30, 200, 35).stroke();
-			
+
 			doc.text('ACCOUNT NUMBER ', 53, 75, {fit: [20, 50]}).rect(50, 65, 150, 35).stroke();
 			doc.text(dataObject.accNum, secondColX, 75, {fit: [20, 50]}).rect(200, 65, 200, 35).stroke();
 			//BP = Marked as  3  on account example
@@ -45,54 +45,53 @@ exports.generateFile = function (filename, dataObject,callback){
 			doc.text(dataObject.date, secondColX, readingDateValueY+6, {fit: [20, 50]}).rect(200, readingDateValueY, 200, 35).stroke();
 			var electricityReadingY = readingDateY+35;
 			doc.text('ELECTRICITY READING ', 53, electricityReadingY+6, {fit: [20, 50]}).rect(50, electricityReadingY, 150, 35).stroke();
-			//add electricity reading value		
-			var electricityReadingValuesY = electricityReadingY;			
+			//add electricity reading value
+			var electricityReadingValuesY = electricityReadingY;
 			doc.text(dataObject.electricity, secondColX, electricityReadingValuesY+6, {fit: [20, 50]}).rect(200, electricityReadingValuesY, 200, 35).stroke();
 			var waterReadingY = electricityReadingValuesY+35;
 			doc.text('WATER READING ', 53, waterReadingY+6, {fit: [20, 50]}).rect(50, waterReadingY, 150, 35).stroke();
-			//add electricity reading value		
-			var waterReadingValuesY = waterReadingY;			
+			//add electricity reading value
+			var waterReadingValuesY = waterReadingY;
 			doc.text(dataObject.water, secondColX, waterReadingValuesY+6, {fit: [20, 50]}).rect(200, waterReadingValuesY, 200, 35).stroke();
 			//contact TEL
 			var telY = waterReadingValuesY + 35;
 			doc.text('Contact Tel. ', 53, telY+6, {fit: [20, 50]}).rect(50, telY, 150, 35).stroke();
-			//add tel number value		
-			var telValuesY = telY;			
+			//add tel number value
+			var telValuesY = telY;
 			doc.text(dataObject.contactTel, secondColX, telValuesY+6, {fit: [20, 50]}).rect(200, telValuesY, 200, 35).stroke();
 			//email
 			//contact TEL
 			var emailY = telValuesY + 35;
 			var emailValuesY = emailY;
-			doc.text('Email. ', 53, emailY+6, {fit: [20, 50]}).rect(50, emailY, 150, 35).stroke();						
+			doc.text('Email. ', 53, emailY+6, {fit: [20, 50]}).rect(50, emailY, 150, 35).stroke();
 			doc.text(dataObject.email, secondColX, emailValuesY+6, {fit: [20, 50]}).rect(200, emailValuesY, 200, 35).stroke();
 			//INITIALS AND SURNAME
 			var initialsY = emailValuesY +35;
 			var initialsValuesY = initialsY;
-			doc.text('Initials & Surname. ', 53, initialsY+6, {fit: [20, 50]}).rect(50, initialsY, 150, 35).stroke();						
-			doc.text(dataObject.tel, secondColX, initialsValuesY+6, {fit: [20, 50]}).rect(200, initialsValuesY, 200, 35).stroke();
+			doc.text('Initials & Surname. ', 53, initialsY+6, {fit: [20, 50]}).rect(50, initialsY, 150, 35).stroke();
+			doc.text(dataObject.names, secondColX, initialsValuesY+6, {fit: [20, 50]}).rect(200, initialsValuesY, 200, 35).stroke();
 			//Physical Address
 			var addressY = initialsValuesY +35;
 			var addressValuesY = addressY;
-			doc.text('Physical Address. ', 53, addressY+6, {fit: [20, 50]}).rect(50, addressY, 150, 65).stroke();						
+			doc.text('Physical Address. ', 53, addressY+6, {fit: [20, 50]}).rect(50, addressY, 150, 65).stroke();
 			doc.text(dataObject.address, secondColX, addressValuesY+6, {fit: [20, 50]}).rect(200, addressValuesY, 200, 65).stroke();
-								
-			doc.end(); 
-			
+
+			doc.end();
+
 			cbDone(null,"");
 		},
 		function(cbDone){
 			console.log("Now got the file handle...");
-			fs.readFile("./"+filename, function (err, fileData){			
-			cbDone(null,fileData);	
+			fs.readFile("./"+filename, function (err, fileData){
+			cbDone(null,fileData);
 			});
 		}
-	], 
+	],
 	function(error, result){
 	console.log("Done. Result is ", result);
 		if(result && result.length ===2){
-			var data = result[1];			
+			var data = result[1];
 			callback(error, data);
 		}
 	});
 }
-

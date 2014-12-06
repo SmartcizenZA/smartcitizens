@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var emailer=require('../emailer.js');
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -51,9 +52,23 @@ router.post('/readmeters', function(req, res) {
   var electMeter= req.body.electMeter;
   var waterResource =req.body.waterResource;
   var electResource = req.body.electResource;
-  var jsonData ={
 
+  var email = "mtswenij@gmail.com";
+  var subject =accNo + " : Tshwane Meter Reading " + Date.now();
+
+  var jsonData ={ "accNum" : accNo,
+                  "bp":bpNo,
+                  "date":rDate,
+                  "electricity":electMeter,
+                  "water": waterMeter,
+                  "contactTel": "0123464870",
+                  "email": email,
+                  "names": "Jabu Mtsweni",
+                  "address": "128 Draaibos, Annlin",
+                  "image": waterResource
   };
+
+  emailer.sendMailToCity(jsonData, subject,"Please find attached", function(success) {console.log("Email sent: ",success);}, "mtsweniPDF");
 
   // var portion = req.body.portion;
   // var readingDate  =req.body.readingDate;

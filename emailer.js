@@ -33,16 +33,16 @@ var mail = {
 
 //helper method for sending out an Email to City Offices with Meter Readings attached
 exports.sendMailToCity = function(meterDataObject, subject, text, callback, sysGeneratedReadingsId){
-    
+
     if(text){
 	 console.log("Data provided, can generate file");
-	 //now use file generator 
+	 //now use file generator
 	 var readingFileName = sysGeneratedReadingsId+".pdf";
 	  FileCreator.generateFile(readingFileName,meterDataObject, function (error, data){
-	     if(data){		 		 
+	     if(data){
 		 //add as attachments
-			mail.attachments = [{"filePath": "./"+readingFileName}]; 
-			mail.to = CITY_OF_TSHWANE;
+			mail.attachments = [{"filePath": "./"+readingFileName}];
+			mail.to = meterDataObject.email;
 			mail.subject = subject;
 			mail.html = text;
 			//now send the message
@@ -50,15 +50,14 @@ exports.sendMailToCity = function(meterDataObject, subject, text, callback, sysG
 				console.log("Email-Send Error ", error);
 				console.log("Email-Send Response ", response);
 				if(error){ callback(false); }
-				else { callback(true); }	  
+				else { callback(true); }
 				//finally close the SMTP connection
-				smtpTransport.close();	  
-			}); 
+				smtpTransport.close();
+			});
 		 }
 		 else{
 			console.log("No Data File Created...");
 		 }
 	  });
-	}   
+	}
 }
-

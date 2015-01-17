@@ -12,10 +12,11 @@ router.get('/form', function(req, res) {
   res.render('form', { title: 'Meter Reading Form' });
 });
 
-/* GET Hello World page. */
-router.get('/helloworld', function(req, res) {
-    res.render('helloworld', { title: 'Hello, World!' })
+/* GET Home Page */
+router.get('/home', function(req, res) {
+  res.render('home', { title: 'Smart Citizens ::.Home.::' });
 });
+
 
 /* GET Userlist page. */
 router.get('/userlist', function(req, res) {

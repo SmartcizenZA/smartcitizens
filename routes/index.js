@@ -58,6 +58,7 @@ router.post('/readmeters', function(req, res) {
 
   var jsonData ={ "accNum" : accNo,
                   "bp":bpNo,
+                  "portion":portionNo,
                   "date":rDate,
                   "electricity":electMeter,
                   "water": waterMeter,
@@ -109,6 +110,7 @@ router.post('/readmeters', function(req, res) {
           res.redirect("/");
         }
       });
+    });
 /* GET userdisplay page. */
 router.get('/userdisplay', function(req, res) {
     var db = req.db;
@@ -194,7 +196,7 @@ router.post('/reguser', function(req, res) {
     collection.insert({
         "portion" : Portion,
         "accountnumber" : AccountNumber,
-		"BP" : BP,
+		     "BP" : BP,
         "contacttel" : ContactTel,
         "email" : Email,
         "initials" : Initials,
@@ -213,5 +215,6 @@ router.post('/reguser', function(req, res) {
         }
     });
 });
+
 
 module.exports = router;

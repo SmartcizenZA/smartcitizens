@@ -166,14 +166,16 @@ router.post('/reguser', function(req, res) {
     var db = req.db;
 
     // Get our form values. These rely on the "name" attributes
-	var Portion = 		req.body.portion;
-	var AccountNumber = req.body.accountnumber;
-	var BP = 			req.body.BP;
-	var ContactTel = 	req.body.contacttel;
-	var Email = 		req.body.email;
-	var Initials = 		req.body.initials;
-	var Surname = 		req.body.surname;
-	var PhysicalAddress = req.body.physicaladdress;
+	var Portion          = 	req.body.portion;
+	var AccountNumber    =  req.body.accountnumber;
+	var BP               =  req.body.BP;
+	var ContactTel       = 	req.body.contacttel;
+	var Email            = 	req.body.email;
+	var Initials         =  req.body.initials;
+	var Surname          = 	req.body.surname;
+	var PhysicalAddress  =  req.body.physicaladdress;
+  var username         =  req.body.username;
+  var password         =  req.body.password;
 
     // Set our collection
     var collection = db.get('userdetails');
@@ -182,12 +184,14 @@ router.post('/reguser', function(req, res) {
     collection.insert({
         "portion" : Portion,
         "accountnumber" : AccountNumber,
-		     "BP" : BP,
+		    "BP" : BP,
         "contacttel" : ContactTel,
         "email" : Email,
         "initials" : Initials,
-	    "surname" : Portion,
-        "physicaladdress" : PhysicalAddress
+	      "surname" : Portion,
+        "physicaladdress" : PhysicalAddress,
+        "username" : username,
+        "password" : password
        }, function (err, doc) {
         if (err) {
             // If it failed, return error

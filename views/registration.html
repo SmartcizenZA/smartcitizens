@@ -1,0 +1,121 @@
+
+	<link rel='stylesheet' href="css/semantic.css">
+	<link rel='stylesheet' href="css/semantic.min.css">
+  
+    <script src="js/semantic.js"></script>
+    <script src="js/semantic.min.js"></script>
+
+
+<div class="main container">
+
+	<div class="ui active tab" data-tab="usage">
+
+		<form class="ui form segment">
+		<h4 class="ui dividing header">Meter Reading</h4>
+			
+			<div class="field">
+			  <label>Portion</label>
+			  <input id="portion" placeholder="Portion" name="portion" type="text">
+			</div>
+
+			<div class="field">
+			  <label>Account Number</label>
+			  <input id="accountnumber" placeholder="Account Number" name="accountnumber" type="text">
+			</div>
+
+			<div class="field">
+			  <label>BP</label>
+			  <input id="bp" placeholder="BP" name="bp" type="text">
+			</div>
+			<div class="field">
+			  <label>Contact Tel</label>
+			  <input id="contacttel" placeholder="Contact Tel" name="contacttel" type="text">
+			</div>
+
+			<div class="field">
+				<label>Email Address</label>
+				<input id="email" placeholder="Email Address" name="email" type="text">
+			</div>
+
+
+			<div class="field">
+				<label>Initials</label>
+				<input id="initials" placeholder="Intials" name="initials" type="text">
+			</div>
+
+			<div class="field">
+				<label>Surname</label>
+				<input id="surname" placeholder="Surname" name="surname" type="text">
+			</div>
+
+			<div class="ui blue submit button">Submit</div>
+			
+ 
+		</form>
+    </div>
+
+    
+	<script type="text/javascript">
+		
+	$('.ui.form')
+	  .form({
+	    name: {
+	      identifier  : 'portion',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Please select your portion'
+	        }
+	      ]
+	    },
+	    name: {
+	      identifier  : 'surname',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Surname is a required field'
+	        }
+	      ]
+	    },
+	      name: {
+	      identifier  : 'accountnumber',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Account number is a required field'
+	        }
+	      ]
+	    },
+	      name: {
+	      identifier  : 'portion',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Please select your portion'
+	        }
+	      ]
+	    },
+	      name: {
+	      identifier  : 'portion',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Please select your portion'
+	        }
+	      ]
+	    },  name: {
+	      identifier  : 'portion',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Please select your portion'
+	        }
+	      ]
+	    }
+    });
+	</script>
+
+
+</div>
+
+

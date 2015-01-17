@@ -19,7 +19,7 @@ exports.generateFile = function (filename, dataObject,callback){
 
 			doc.fontSize(12);
 			doc.y = 320;
-			doc.fillColor('black')
+			doc.fillColor('black');
 
 			 //title: MONTHLY METER READING TEMPLATE
 			 doc.text('MONTHLY METER READING TEMPLATE ', 100, 15, {fit: [20, 100]});
@@ -64,7 +64,8 @@ exports.generateFile = function (filename, dataObject,callback){
 			var emailY = telValuesY + 35;
 			var emailValuesY = emailY;
 			doc.text('Email. ', 53, emailY+6, {fit: [20, 50]}).rect(50, emailY, 150, 35).stroke();
-			doc.text(dataObject.email, secondColX, emailValuesY+6, {fit: [20, 50]}).rect(200, emailValuesY, 200, 35).stroke();
+			var emailSeparator = new RegExp(",", 'g');
+			doc.text(dataObject.email.replace(emailSeparator,"\n"), secondColX, emailValuesY+6, {fit: [20, 50]}).rect(200, emailValuesY, 200, 35).stroke();
 			//INITIALS AND SURNAME
 			var initialsY = emailValuesY +35;
 			var initialsValuesY = initialsY;
@@ -77,9 +78,9 @@ exports.generateFile = function (filename, dataObject,callback){
 			doc.text(dataObject.address, secondColX, addressValuesY+6, {fit: [20, 50]}).rect(200, addressValuesY, 200, 65).stroke();
 			//put the in the next page
 			doc.addPage();
-			doc.image(dataObject.image, 320, 15, fit: [120, 120])
+			doc.image(dataObject.image, 100, 60, {fit: [120, 120]})
 				.stroke()
-				.text('My Meter Reading Image ', 320, 0);
+				.text('My Meter Reading Image. Location X, Y', 100, 50);
    
 			doc.end();
 

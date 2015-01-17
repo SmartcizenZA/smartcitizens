@@ -1,6 +1,5 @@
 /*
 This script is used to generate an email to be sent to the City - the email contains the readings in the attachment.
-
 @author Ishmael Makitla, GDG-Pretoria, RHoK-Pretoria
 
 */
@@ -13,13 +12,12 @@ var FileCreator = require('./filecreator');
 
 var CITY_OF_TSHWANE = "meterrecords@tshwane.gov.za";
 
-
 // Use Smtp Protocol to send Email
 var smtpTransport = mailer.createTransport("SMTP",{
     service: "Gmail",
     auth: {
-        user: "smartcitizen-email-address",
-        pass: "password"
+        user: "smartcitizen.cot@gmail.com",
+        pass: "RH0k2014"
     }
 });
 

@@ -66,6 +66,7 @@ var mailer = require('./emailer');
 
 var app = express();
 
+<<<<<<< HEAD
 var allowAllCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:2014');
   res.header('Access-Control-Allow-Credentials', true);
@@ -82,6 +83,14 @@ app.use(logger('tiny'));
 app.use(methodOverride());
 //app.use(cookieParser(config.get('express.cookieParser.secret')));
 
+=======
+//view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+
+//uncomment after placing your favicon in /public
+//app.use(favicon(__dirname + '/public/favicon.ico'));
+>>>>>>> d5a8793db0603d4ec8baad1195c7b2dba75a2807
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());

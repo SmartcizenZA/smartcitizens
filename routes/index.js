@@ -12,10 +12,11 @@ router.get('/form', function(req, res) {
   res.render('form', { title: 'Meter Reading Form' });
 });
 
-/* GET Hello World page. */
-router.get('/helloworld', function(req, res) {
-    res.render('helloworld', { title: 'Hello, World!' })
+/* GET Home Page */
+router.get('/home', function(req, res) {
+  res.render('home', { title: 'Smart Citizens ::.Home.::' });
 });
+
 
 /* GET Userlist page. */
 router.get('/userlist', function(req, res) {
@@ -58,6 +59,7 @@ router.post('/readmeters', function(req, res) {
 
   var jsonData ={ "accNum" : accNo,
                   "bp":bpNo,
+                  "portion":portionNo,
                   "date":rDate,
                   "electricity":electMeter,
                   "water": waterMeter,
@@ -70,13 +72,6 @@ router.post('/readmeters', function(req, res) {
 
   emailer.sendMailToCity(jsonData, subject,"Please find attached", function(success) {console.log("Email sent: ",success);}, "mtsweniPDF");
 
-  // var portion = req.body.portion;
-  // var readingDate  =req.body.readingDate;
-  // var waterMeter =req.body.waterMeter;
-  // var electricityMeter  = req.body.electricityMeter;
-  // var waterMeterReadingResource  =req.body.waterMeterReadingResource;
-  // var electricityMeterReadingResource = req.body.electricityMeterReadingResource;
-  // // set colleciton to write the date to
   var collection = db.get('meterreadings');
 
 
@@ -91,13 +86,6 @@ router.post('/readmeters', function(req, res) {
     "waterMeter" : waterMeter,
     "electResource": electResource,
     "waterResource": waterResource
-    // "bp" : bp,
-    // "portion" : portion,
-    // "readingdate" : readingDate,
-    // "waterMeter" : waterMeter,
-    // "electricityMeter" : electricityMeter,
-    // "waterMeterReadingResource" : waterMeterReadingResource,
-    // "electricityMeterReadingResource" : electricityMeterReadingResource
 
   }, function (err, doc) {
       if(err){
@@ -109,6 +97,7 @@ router.post('/readmeters', function(req, res) {
           res.redirect("/");
         }
       });
+    });
 /* GET userdisplay page. */
 router.get('/userdisplay', function(req, res) {
     var db = req.db;
@@ -194,7 +183,7 @@ router.post('/reguser', function(req, res) {
     collection.insert({
         "portion" : Portion,
         "accountnumber" : AccountNumber,
-		"BP" : BP,
+		     "BP" : BP,
         "contacttel" : ContactTel,
         "email" : Email,
         "initials" : Initials,
@@ -213,5 +202,6 @@ router.post('/reguser', function(req, res) {
         }
     });
 });
+
 
 module.exports = router;

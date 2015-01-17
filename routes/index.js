@@ -4,12 +4,12 @@ var emailer=require('../emailer.js');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Smart Citizens' });
 });
 
 /* GET the Form. */
 router.get('/form', function(req, res) {
-  res.render('form', { title: 'Meter Reading Form' });
+  res.render('form', { title: 'Submit Reading Form' });
 });
 
 /* GET Home Page */

@@ -1,147 +1,16 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
-    <title>Smart CitizenS</title>
+  <link rel='stylesheet' href="css/semantic.css">
+  <link rel='stylesheet' href="css/semantic.min.css">
+  
+    <script src="js/jquery.min.js"></script>
+    <script src="js/semantic.js"></script>
+    <script src="js/semantic.min.js"></script>
 
-    <!-- Add to homescreen for Chrome on Android -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <link rel="icon" sizes="196x196" href="images/touch/chrome-touch-icon-196x196.png">
+<div class="main container">
 
-    <!-- Add to homescreen for Safari on iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Web Starter Kit">
+  <div class="ui active tab" data-tab="usage">
 
-    <!-- Tile icon for Win8 (144x144 + tile color) -->
-    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
-    <meta name="msapplication-TileColor" content="#3372DF">
-
-    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
-    <!--
-    <link rel="canonical" href="http://www.example.com/">
-    -->
-
-    <!-- build:css styles/components/main.min.css -->
-    <link rel="stylesheet" href="styles/h5bp.css">
-    <link rel="stylesheet" href="styles/components/components.css">
-    <link rel="stylesheet" href="styles/main.css">
-    <!-- endbuild -->
-
-	<link rel='stylesheet' href="bootstrap/css/bootstrap.css">
-	<link rel='stylesheet' href="bootstrap/css/bootstrap-theme.css">
-<style>
-      body {
-font: 300 14px"Open Sans", Arial, sans-serif;
-color: #000;
-background-color: #F7F7F7;
-/* Add your own image here - background-image: url(images/yourimage.jpg);*/
-margin-top: 50px;}
-
-#newform {
-width: 470px;
-height: auto;
-/* Add your own image here - background-image: url(images/yourimage.jpg); */
-margin: 0 auto;
-padding: 0px 1%;
-box-shadow: 5px 5px 0px #AAA;
-border-radius: 5px;}
-
-h2 {
-font-size: 50px;
-color: #FFFFFF;
-text-shadow: 2px 2px #222;
-font-family: "Oleo Script";
-border-bottom: 2px solid #FFF;
-text-align: center;
-margin: 0px 0px 5px 0px;}
-
-label {
-font-size: 18px;
-color: #FFFFFF;
-font-weight: 600;
-text-shadow: 1px 1px #333;}
-
-input {
-width: 99%;
-height: 40px;
-margin: 5px 0px 10px 0px;
-font: 300 24px "Open Sans", Arial, sans-serif;
-color: #CCC;}
-
-input[type=submit] {
-background-color: #C13A40;
-height: 50px;
-width: 100%;
-border: none;
-font-weight: 400;
-color: #FFFFFF;
-font-style: italic;
-background-color: #FF9900;
-letter-spacing: 2px;}
-
-#submit {
-          background-color: #4285f4;
-          padding: 1em;
-        }
-
-#submit label {
-          font-size: 1.2em;
-          padding-top: 12px;
-          display: block;
-        }
-#submit input {
-          width: 100%;
-          font-size: 18px;
-          padding: 10px;
-          box-sizing: border-box;
-        }
-#submit input[type=submit] {
-          background-color: blue;
-          color: white;
-          margin-top: 20px;
-          padding: 10px;
-          border: none;
-          box-sizing: border-box;
-          font-size: 18px;
-        }
- footer {
-          font-family: Roboto, sans-serif;
-          font-weight: 300;
-          text-align: center;
-          background-color: gray;
-          color: white;
-          padding-bottom: 20px;
-          padding-top: 20px;
-        }
-</style>
-  </head>
-  <body>
-    <header class="app-bar promote-layer">
-      <div class="app-bar-container">
-        <button class="menu"><img src="images/hamburger.svg" alt="Menu"></button>
-		<h1 class="logo"><img src="images/smartcitilogo.png" Width="90px" Height="90x" />Smart Citizen Sensors</h1>
-        <section class="app-bar-actions">
-        <!-- Put App Bar Buttons Here -->
-        </section>
-
-      </div>
-    </header>
-
-    <nav class="navdrawer-container promote-layer">
-      <ul>
-      <li><a href="/">Home</a></li>
-        <li><a href=about.html>About</a></li>
-        <li><a href=updates.html>Updates</a></li>
-        <li><a href=contacts.html>Contact Details</a></li>
-	  </ul>
-    </nav>
-    <main>
-    <form method="post" name="newform" action="/readmeters">
-        <h2>Smart CitizenS Readings</h2>
+    <form class="ui form segment" action="/readmeters" method="POST">
+      <h4 class="ui dividing header">Capture Water/Electricity Readings</h4>
         <label for="accountNumber">Account Holder</label>
         <input type="text" name="accountNumber" value="1234567890" readonly />
         <label for="bp" >BP:</label>
@@ -159,14 +28,13 @@ letter-spacing: 2px;}
          <label>Meter Readings Evidence (Electricity)</label>
         <input type="file" value="" name="electResource">
         <input type="submit" value="Submit Readings">
-      </form>
-	</main>
+    </form>
+	</div>
+</div>
+  <center>
   <footer>
-     <b>Smart Citizen Sensors &copy 2014, All rights reserved</b>
+     <b>Smart Citizen Sensors &copy 2015, All rights reserved</b>
     </footer>
-
-    <!-- build:js scripts/main.min.js -->
-    <script src="scripts/main.js"></script>
-    <!-- endbuild -->
+  </center>
   </body>
 </html>

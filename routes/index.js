@@ -71,13 +71,6 @@ router.post('/readmeters', function(req, res) {
 
   emailer.sendMailToCity(jsonData, subject,"Please find attached", function(success) {console.log("Email sent: ",success);}, "mtsweniPDF");
 
-  // var portion = req.body.portion;
-  // var readingDate  =req.body.readingDate;
-  // var waterMeter =req.body.waterMeter;
-  // var electricityMeter  = req.body.electricityMeter;
-  // var waterMeterReadingResource  =req.body.waterMeterReadingResource;
-  // var electricityMeterReadingResource = req.body.electricityMeterReadingResource;
-  // // set colleciton to write the date to
   var collection = db.get('meterreadings');
 
 
@@ -92,13 +85,6 @@ router.post('/readmeters', function(req, res) {
     "waterMeter" : waterMeter,
     "electResource": electResource,
     "waterResource": waterResource
-    // "bp" : bp,
-    // "portion" : portion,
-    // "readingdate" : readingDate,
-    // "waterMeter" : waterMeter,
-    // "electricityMeter" : electricityMeter,
-    // "waterMeterReadingResource" : waterMeterReadingResource,
-    // "electricityMeterReadingResource" : electricityMeterReadingResource
 
   }, function (err, doc) {
       if(err){

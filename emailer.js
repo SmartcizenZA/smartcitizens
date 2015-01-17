@@ -18,8 +18,8 @@ var CITY_OF_TSHWANE = "meterrecords@tshwane.gov.za";
 var smtpTransport = mailer.createTransport("SMTP",{
     service: "Gmail",
     auth: {
-        user: "smartcitizen.cot@gmail.com",
-        pass: "RH0k2014"
+        user: "smartcitizen-email-address",
+        pass: "password"
     }
 });
 

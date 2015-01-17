@@ -7,7 +7,7 @@ The file-generator populates the generated file with the values.
 var PDFDocument = require('pdfkit');
 var fs=require('fs');
 var async = require('async');
-var textString = 'Next Time, you will have your Meter and other information here...This should be in the attachment if all goes well';
+var textString = '';
 
 exports.generateFile = function (filename, dataObject,callback){
 
@@ -27,7 +27,7 @@ exports.generateFile = function (filename, dataObject,callback){
 			 var secondColX = 205;
 			//First Row, First Column							x   y    w    h
 			doc.text('PORTION ', 53, 36, {fit: [20, 100]}).rect(50, 30, 150, 35).stroke();
-			//value column                 x (value), y(value)             x   y      w  h
+			//value column                 x (value), y(value)                   x   y   w    h
 			doc.text(dataObject.portion, secondColX, 36, {fit: [20, 120]}).rect(200, 30, 200, 35).stroke();
 
 			doc.text('ACCOUNT NUMBER ', 53, 75, {fit: [20, 50]}).rect(50, 65, 150, 35).stroke();
@@ -75,7 +75,12 @@ exports.generateFile = function (filename, dataObject,callback){
 			var addressValuesY = addressY;
 			doc.text('Physical Address. ', 53, addressY+6, {fit: [20, 50]}).rect(50, addressY, 150, 65).stroke();
 			doc.text(dataObject.address, secondColX, addressValuesY+6, {fit: [20, 50]}).rect(200, addressValuesY, 200, 65).stroke();
-
+			//put the in the next page
+			doc.addPage();
+			doc.image(dataObject.image, 320, 15, fit: [120, 120])
+				.stroke()
+				.text('My Meter Reading Image ', 320, 0);
+   
 			doc.end();
 
 			cbDone(null,"");

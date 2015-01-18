@@ -24,8 +24,8 @@ exports.DEFAULT_EMAIL_BODY = defaultEmailBody;
 var smtpTransport = mailer.createTransport("SMTP",{
     service: "Gmail",
     auth: {
-        user: "smartcitizen.cot@gmail.com",
-        pass: "RH0k2014"
+        user: "smartcitizen-email",
+        pass: "smartcitizen-email-password"
     }
 });
 

@@ -8,7 +8,9 @@ var mongoose = require('mongoose'),
 
 var Account = new Schema({
     username: String,
-    password: String
+    password: String,
+	email: String,
+	updated: { type: Date, default: Date.now }
 });
 
 Account.plugin(passportLocalMongoose);

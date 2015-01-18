@@ -30,7 +30,8 @@ var PropertySchema = new Schema({
 	initials: String,
 	surname: String,
 	physicaladdress: String,
-	owner: String
+	owner: String,
+	updated: { type: Date, default: Date.now }
 });
 //compile the Property model against a Schema
 var Property = mongoose.model('Property', PropertySchema);
@@ -46,7 +47,9 @@ var MeterReadingSchema = new Schema({
 	electricity: String,
 	waterimage: String,
 	electricityimage: String,
-	date : String
+	date : String,
+	emailed: Boolean,
+	updated: { type: Date, default: Date.now }
 });
 
 var MeterReading = mongoose.model('MeterReading',MeterReadingSchema);

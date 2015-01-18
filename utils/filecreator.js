@@ -87,6 +87,7 @@ exports.generateFile = function (filename, dataObject,callback){
 			if(dataObject.electricityimage ){
 				doc.addPage();
 				//put this image right below the Water image if available, otherwise put it where we'd otherwise have water image
+				//this is so that we do not have the unnecessary empty space when the water meter image is not included
 				var imageYlocation = (!dataObject.waterimage? 60: 200);
 				doc.image(dataObject.electricityimage, 100, imageYlocation, {fit: [120, 120]})
 					.stroke()

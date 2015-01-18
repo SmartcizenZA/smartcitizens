@@ -8,7 +8,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <html>
 	
 <head>
-	<title>Smart Citizens</title>
+	<title>Smart Citizens ::.Login Page.::</title>
 		<meta charset="utf-8">
 		<link href="css/formstyle.css" rel='stylesheet' type='text/css' />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,28 +16,41 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		<!--webfonts-->
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:600italic,400,300,600,700' rel='stylesheet' type='text/css'>
 		<!--//webfonts-->
+		<script type="text/javascript">
+
+		function mySignIn(){
+
+
+			//perfom client-side validation
+			document.indexform.submit();
+
+		}
+
+		</script>
 </head>
 <body>
 				 <!-----start-main---->
-
+                 
 				<div class="login-form">
-				<form>
-					<H1><center>Smart Citizens</center></H1>
-					<li>
-						<input type="text" class="text" value="USERNAME" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'USERNAME';}" ><a href="#" class=" icon user"></a>
+				<h1><center><b>S</b>mart <b>C</b>itizens</center></h1><br>	
+				<form name="indexform" id="signin_form" action="/home">
+					
+					<li> 
+						<input type="text" class="text" placeholder="username" required><a href="#" class=" icon user"></a>
 					</li>
 					<li>
-						<input type="password" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"><a href="#" class=" icon lock"></a>
+						<input type="password" placeholder="password" required><a href="#" class=" icon lock"></a>
 					</li>
 					<div class="p-container">
-								<label class="checkbox"><input type="checkbox" name="checkbox" checked><i></i>Remember Me</label>
-								<input type="submit" onclick="myFunction()" value="SIGN IN" >
-								<input type="submit" onclick="myFunction()" value="REGISTER" >
-							<div class="clear"> </div>
+						<a href="/registration">Register</a>
+						 <input type="submit" value="Login" >
+								
+					<div class="clear"> </div>
+					<label class="checkbox"><input type="checkbox" name="checkbox" checked><i></i>Remember Me</label>
 					</div>
 				</form>
 			</div>
-			<!--//End-login-form-->fo
+			<!--//End-login-form-->
 		  <!-----start-copyright---->
 		  <p align=center>Disclaimer: Service not provided or endorsed by the City of Tshwane Municipality</p>
    					<div class="copy-right">

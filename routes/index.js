@@ -5,9 +5,6 @@
   handler-scripts in the routes directory (e.g. users.js, meterreadings.js, etc).
 */
 
-var express = require('express');
-var router = express.Router();
-
 var passport = require('passport');
 
 var UsersManager = require('../routes/users.js');
@@ -296,49 +293,8 @@ module.exports = function (app, entities) {
       req.logout();
       res.redirect('/');
   });
-  
-//  app.post('/reguser', users.register);
-
-/*
-app.get('/form', function(req, res) {
-  res.render('form', { title: 'Meter Reading Form' });
-});
-
-
-app.get('/home', function(req, res) {
-  res.render('home', { title: 'Smart Citizens ::.Home.::' });
-});
-
-
-
-app.get('/userlist', function(req, res) {
-    var db = req.db;
-    var collection = db.get('usercollection');
-    collection.find({},{},function(e,docs){
-        res.render('userlist', {
-            "userlist" : docs
-        });
-    });
-});
-
-
-
-app.get('/newmeterreading', function(req,res) {
-  res.render('newmeterreading', { title:'Add new meter reading'});
-});
-
-
-
-app.get('/userdisplay', function(req, res) {
-    var db = req.db;
-    var collection = db.get('meterportions');
-    collection.find({},{},function(e,docs){
-        res.render('userdisplay', {
-            "userdisplay" : docs
-        });
-    });
-});
-
-*/
-
-}
+  /* GET home page. */
+  app.get('/', function(req, res) {
+	res.render('index', { title: 'Smart Citizens' });
+ });
+};

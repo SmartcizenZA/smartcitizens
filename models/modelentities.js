@@ -8,19 +8,7 @@ var Schema = mongoose.Schema;
  This is the Property model - it represents the Smart Citizen's municipality account.
  For the purposes of Smart Citizen, we tie all municipality accounts under a single user account.
 */
-/*
-	// Get our form values. These rely on the "name" attributes
-	var data = {
-		"portion" : req.body.portion,
-		"accountnumber" : req.body.accountnumber,
-		 "bp" : req.body.bp,
-		"contacttel" : req.body.contacttel,
-		"email" : req.body.email,
-		"initials" : req.body.initials,
-		"surname" : req.body.surname,
-		"physicaladdress" : req.body.physicaladdress
-	   };	
-	*/
+
 var PropertySchema = new Schema({
     accountnumber: String,
     portion: String,

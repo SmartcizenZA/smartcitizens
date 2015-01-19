@@ -17,14 +17,14 @@ var MeterReadings = require('../routes/meterreadings.js');
 */
 
 module.exports = function (app, entities) {
+ /* GET home page. */
   app.get('/', function (req, res) {
 	console.log("First Visit to Home");
 	res.render('index', { user : req.user, title: "Smart Citizens" });
   });
 
   app.get('/register', function(req, res) {
-      console.log("Request for Registration Form");
-      //res.render('registration', { });
+      console.log("Request for Registration Form");      
 	  res.render('registration', { title: 'Register New User' });
   });
 
@@ -43,8 +43,7 @@ module.exports = function (app, entities) {
 		"physicaladdress" : req.body.physicaladdress
 	   };
 	//add a new property
-	Properties.add(data, function(error, property){ console.log("Back!"); res.send(property); });
-  
+	Properties.add(data, function(error, property){ console.log("Back from adding Property!"); res.send(property); });  
   });
   //list All
   app.get('/properties', function (req, res){
@@ -124,6 +123,7 @@ module.exports = function (app, entities) {
 	UsersManager.getUserById(userId, function(err, userModel){
 		if(!err && userModel){
 		//render the user-details view
+		//res.render('userdisplay', {'user':userModel, title:'User Details'});
 			res.send(userModel);
 		}
 		else{
@@ -135,8 +135,9 @@ module.exports = function (app, entities) {
   app.get('/users', function(req, res){
 	UsersManager.list(function(err, users){
 		if(!err && users){
-		//render the user-details view
-			res.send(users);
+		//render the user-details view 
+		res.render('userdisplay', {'user':users[0], title:'List of Users - Test'});
+		//res.send(users[0]);
 		}
 		else{
 			res.send("There was a problem retrieving Users. Could be there are no users? "+err);
@@ -149,7 +150,7 @@ module.exports = function (app, entities) {
 	var values = req.body;
 	UsersManager.updateAccount(userId, values, function(err, updatedAccount){
 		if(!err && updatedAccount){
-			res.send(updatedAccount);
+			res.send(updatedAccount);			
 		}
 		else{
 			res.send("There was a problem updating Users. "+err);
@@ -279,22 +280,24 @@ module.exports = function (app, entities) {
 	});	
   });
 
-  /*   Region:: Page Serving/Rendering         */
+  /*   Region:: Page Serving/Rendering        
   
   app.get('/login', function(req, res) {
       res.render('login', { user : req.user });
   });
-
+ */
   app.post('/login', passport.authenticate('local'), function(req, res) {
-      res.redirect('/');
+      res.redirect('/home');
   });
 
   app.get('/logout', function(req, res) {
       req.logout();
       res.redirect('/');
+  }); 
+  
+  app.get('/home',function(req, res){
+  
+	res.render('home');
   });
-  /* GET home page. */
-  app.get('/', function(req, res) {
-	res.render('index', { title: 'Smart Citizens' });
- });
+  
 };

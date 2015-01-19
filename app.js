@@ -12,6 +12,10 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var errorHandler = require('errorhandler');
 
+var routes = require('./routes/index');
+var users = require('./routes/users');
+var entities = require('./models/modelentities');
+
 // main config
 var app = express();
 app.set('port', process.env.PORT || 2015);
@@ -25,7 +29,7 @@ app.use(cookieParser(config.get('express.cookieParser.secret')));
 app.use(session());
 app.use(passport.initialize());
 app.use(passport.session());
-//app.use(app.router);
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 if (config.get('env') == 'development') {
@@ -45,96 +49,9 @@ passport.deserializeUser(Account.deserializeUser());
 // mongoose
 mongoose.connect('mongodb://localhost/passport_local_mongoose');
 
-// routes
-require('./routes')(app);
+// routes, pass in the entities object so that it is available to the routes
+require('./routes/index')(app, entities);
 
 app.listen(app.get('port'), function(){
   console.log(("Express server listening on port " + app.get('port')))
 });
-
-
-
-
-/*
-//var favicon = require('serve-favicon');
-var logger = require('morgan');
-var methodOverride = require('method-override');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-//for sending emails
-var mailer = require('./emailer');
-
-var app = express();
-
-<<<<<<< HEAD
-var allowAllCrossDomain = function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:2014');
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  if ('OPTIONS' == req.method) {
-    res.send(200);
-  } else {
-    next();
-  }
-}
-
-//middleware
-app.use(logger('tiny'));
-app.use(methodOverride());
-//app.use(cookieParser(config.get('express.cookieParser.secret')));
-
-=======
-//view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-//uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
->>>>>>> d5a8793db0603d4ec8baad1195c7b2dba75a2807
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '/public')));
-app.use(bodyParser());
-app.use(allowAllCrossDomain);
-
-//will move to Metering.js
-app.get("/", function(req, res){});
-app.get("readings/:meter", function(req, res){
-   mailer.sendMailToCity("mtswenijs@gmail.com","Your Test Meter Readings", "", function (successful){
-   console.log("The Email was send successfully? "+successful);
-  });
-});
-
-app.post("/readings/:meter", function (req, res){
-  
-});
-
-
-
-var server = http.createServer(app);
-var port = 2014;
-server.listen(port, function() {
-  console.log("Smart Citizen Server Running at ", port);
-  var meteringSubmissionDataObject = {
-    portion: "0011",
-	bp: "BP0011",
-	accNum: "0123456",
-	date: Date.now(),
-	electricity: "00",
-	water:"1200",
-	contactTel: "012 1234567",
-	email: "ishmael.makitla@gmail.com,mtswenij@gmail.com,kgundula@gmail.com",
-	names: "Ishmael Makitla",
-	address: "ERF X102015",
-	image: "meterJune302014.jpeg"
-  }
-  //function(meteringSubmissionDataObject, subject, text, callback, sysGeneratedReadingsId)
-  mailer.sendMailToCity(meteringSubmissionDataObject,"Meter Readings: 2015-Email-Separator (JS, MI, KG)", "Please find the attached meter readings from my house", function (successful){
-   console.log("The Email was send successfully? "+successful);
-  }, "20141206_ERF33033");
-});
-
-module.exports = app;
-*/

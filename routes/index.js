@@ -6,7 +6,9 @@
 */
 
 var passport = require('passport');
-
+//used to handle the upload of evidence files (images)
+var multer  = require('multer');
+var uploadDone = false;
 var UsersManager = require('../routes/users.js');
 var Properties = require('../routes/properties.js');
 var MeterReadings = require('../routes/meterreadings.js');
@@ -174,16 +176,46 @@ module.exports = function (app, entities) {
   
   /*   Meter Readings API */
   
+  //configuring the multer middleware
+	var evidenceImagesDir = app.get('evidence_dir');
+	app.use(multer({dest: evidenceImagesDir,
+		rename: function (fieldname, filename) {
+		return filename+Date.now();
+		},
+		onFileUploadStart: function (file) {
+			console.log(file.originalname + ' is starting ...')
+		},
+		onFileUploadComplete: function (file) {
+			console.log(file.fieldname + ' uploaded to  ' + file.path)
+			uploadDone=true;
+		}
+	}));
   //create new 
   app.post('/readings', function(req, res){	
-	MeterReadings.add(req, function(err, meterReadingsId){
-		if(meterReadingsId){
-			res.send("Meter Readings Saved. Reference number is "+meterReadingsId);
+  console.log("Uploading Meter Readings. Files = ", req.file);
+  if(uploadDone ==true){
+   //the upload middleware returned
+    var uploadedFiles = req.files;
+	console.log(uploadedFiles);
+	//now we can add the file path to the request.body...
+		if(uploadedFiles.waterimage)
+			req.body.waterimg=uploadedFiles.waterimage.name;
+		if(uploadedFiles.electricityimage)
+			req.body.waterimg=uploadedFiles.electricityimage.name;
+		MeterReadings.add(req, function(err, meterReadingObject){
+		if(meterReadingObject){
+			//render the readings list (updated with this new reading) - redirect 
+			//res.render('readingslist', {'readings':[meterReadingObject]});
+			res.send("Meter Readings Saved. Reference number is "+meterReadingObject._id);
 		}
 		else if(err){
 			res.send("There was a problem saving your readings - so we should stay on the same form/page and try again");
 		}
-	});	   
+		});
+		
+	}
+	else{ console.log("Upload not done");}	
+
   });
   //read [one, some]
   app.get('/readings/:id', function(req, res){
@@ -298,6 +330,14 @@ module.exports = function (app, entities) {
   app.get('/home',function(req, res){
   
 	res.render('home');
+  });
+  //user is requesting to view the submit form
+  //must be authenticated
+  app.get('/form',function(req, res){
+  var loggedInUser = req.user;
+	console.log("user is ",loggedInUser); 
+   //this form must be pre-populated with the logged in user  
+	res.render('form');
   });
   
 };

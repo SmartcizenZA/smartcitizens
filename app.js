@@ -12,6 +12,7 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var errorHandler = require('errorhandler');
 
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var entities = require('./models/modelentities');
@@ -20,6 +21,7 @@ var entities = require('./models/modelentities');
 var app = express();
 app.set('port', process.env.PORT || 2015);
 app.set('views', __dirname + '/views');
+app.set('evidence_dir',__dirname + '/readings_evidence');
 app.set('view engine', 'jade');
 app.set('view options', { layout: false });
 app.use(morgan('tiny'));

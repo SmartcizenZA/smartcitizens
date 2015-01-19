@@ -10,13 +10,13 @@ exports.add = function(req, meterReadingsCallback) {
   // Get our form values. These rely on the "name" attributes   
   var meterreadingsData = {
     "account" : req.body.accountNumber,
-    "bp" : req.body.BPNumber,
+    "bp" : req.body.bp,
     "date" : req.body.readingDate,
-    "portion" : req.body.portionNo,
-    "electricity" : req.body.electMeter,
-    "water" : req.body.waterMeter,
-    "electricityimage": req.body.waterResource,
-    "waterimage": req.body.electResource
+    "portion" : req.body.portion,
+    "electricity" : req.body.electricity,
+    "water" : req.body.water,
+    "electricityimage": req.body.electricityimg,
+    "waterimage": req.body.waterimg
   };
   
   var meterReadings = new MeterReading(meterreadingsData);
@@ -24,7 +24,7 @@ exports.add = function(req, meterReadingsCallback) {
   meterReadings.save(function (err) {
 		if(!err){
 			console.log("All went well. Property Successfully saved meter readings for Smart Citizen. ", meterReadings); 
-			meterReadingsCallback (null, meterReadings._id);
+			meterReadingsCallback (null, meterReadings);
 		}
 		else{
 			meterReadingsCallback (err);

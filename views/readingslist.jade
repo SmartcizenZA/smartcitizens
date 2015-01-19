@@ -1,0 +1,9 @@
+extends layout
+
+block content
+    h1.
+        Your Meter Readings List
+    ul
+        each reading in readings
+            li
+                a(href="readings/#{reading._id}")= reading.date

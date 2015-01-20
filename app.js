@@ -19,7 +19,6 @@ var entities = require('./models/modelentities');
 
 // main config
 var app = express();
-app.set('port', process.env.PORT || 2015);
 app.set('views', __dirname + '/views');
 app.set('evidence_dir',__dirname + '/readings_evidence');
 app.set('view engine', 'jade');
@@ -59,3 +58,4 @@ require('./routes/index')(app, entities);
 //});
 
 module.exports = app;
+

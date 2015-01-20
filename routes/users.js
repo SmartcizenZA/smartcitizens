@@ -3,6 +3,7 @@
 */
 var properties = require('./properties');
 var Account = require('../models/account');
+var passport = require('passport');
 
 exports.add = function (req, res){
 	console.log("Registration Request "+JSON.stringify(req.body));

@@ -329,7 +329,7 @@ module.exports = function (app, entities) {
   
   app.get('/home',function(req, res){
   
-	res.render('home');
+	res.render('home',{status:'ok'});
   });
   //user is requesting to view the submit form
   //must be authenticated

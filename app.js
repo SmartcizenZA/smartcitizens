@@ -48,7 +48,7 @@ passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 
 // mongoose
-mongoose.connect('mongodb://localhost/passport_local_mongoose');
+mongoose.connect('mongodb://localhost/smartcitizens');
 
 // routes, pass in the entities object so that it is available to the routes
 require('./routes/index')(app, entities);

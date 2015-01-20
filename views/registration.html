@@ -11,56 +11,37 @@
 	<div class="ui active tab" data-tab="usage">
 
 		<form class="ui form segment" action="/users" method="POST">
-		<h4 class="ui dividing header">User Registration</h4>
+		<h4 class="ui dividing header">Citizen Sign-Up Form</h4>
+			<div class="ui error message">
+        		<div class="header">There are errors in your form</div>
+      		</div>
+			<div class="required field">
+				<label>Email</label>
+				<input placeholder="email@email.com" name="email" type="text">
+			</div>
 			
-			<div class="field">
-			  <label>Portion</label>
-			  <input id="portion" placeholder="Portion" name="portion" type="text">
-			</div>
-
-			<div class="field">
-			  <label>Account Number</label>
-			  <input id="accountnumber" placeholder="Account Number" name="accountnumber" type="text">
-			</div>
-
-			<div class="field">
-			  <label>BP</label>
-			  <input id="bp" placeholder="BP" name="bp" type="text">
-			</div>
-			<div class="field">
-			  <label>Contact Tel</label>
-			  <input id="contacttel" placeholder="Contact Tel" name="contacttel" type="text">
-			</div>
-
-			<div class="field">
-				<label>Email Address</label>
-				<input id="email" placeholder="Email Address" name="email" type="text">
-			</div>
-
-
-			<div class="field">
-				<label>Initials</label>
-				<input id="initials" placeholder="Intials" name="initials" type="text">
-			</div>
-
-			<div class="field">
-				<label>Surname</label>
-				<input id="surname" placeholder="Surname" name="surname" type="text">
-			</div>
-
-
-			<div class="field">
-				<label>Username</label>
+			<div class="required field">
+				<label>Preferred Username</label>
 				<input placeholder="username" name="username" type="text">
 			</div>
 
-			<div class="field">
+			<div class=" required field">
 				<label>Password</label>
-				<input placeholder="password" name="password" type="text">
+				<input placeholder="password" name="password" type="password">
 			</div>
+			<div class="required field">
+				<label>Confirm Password</label>
+				<input placeholder="confirm password" name="password2" type="password">
+			</div>
+
+			<div class="field">
+        		<div class="ui checkbox">
+          			<input type="checkbox" name="terms">
+          				<label>I agree to the <a href="#">Terms of Service</a>.</label>
+        		</div>
+      		</div><br>
 			<div class="ui blue submit button" type="submit">Submit</div>
 			
- 
 		</form>
     </div>
 
@@ -69,69 +50,69 @@
 		
 	$('.ui.form')
 	  .form({
-	    portion: {
-	      identifier  : 'portion',
+	    username: {
+	      identifier  : 'username',
 	      rules: [
 	        {
-	          type   : 'empty',
-	          prompt : 'Please supply your portion'
+	          	type   : 'empty',
+	          	prompt : 'Please supply your username (at least must be 6 characters long)'
+	        },
+	        {
+	        	type   : 'length[6]',
+          		prompt : 'Your username must be at least 6 characters'
+
 	        }
 	      ]
 	    },
-	    surname: {
-	      identifier  : 'surname',
+	    password: {
+	      identifier  : 'password',
 	      rules: [
 	        {
-	          type   : 'empty',
-	          prompt : 'Surname is a required field'
+	          	type   : 'empty',
+	          	prompt : 'Password is a required field'
+	        },
+	        {
+	        	type   : 'length[6]',
+          		prompt : 'Your password must be at least 6 characters'
 	        }
 	      ]
 	    },
-	      accountnumber: {
-	      identifier  : 'accountnumber',
+	     password2: {
+	      identifier  : 'password2',
 	      rules: [
 	        {
-	          type   : 'empty',
-	          prompt : 'Account number is a required field'
+	          	type   : 'empty',
+	          	prompt : 'Please confirm password'
+	        },
+	        {
+	          	type   : 'match[password]',
+               	prompt : 'Password doesn\'t match'
 	        }
 	      ]
 	    },
-	    contacttel: {
-	      identifier  : 'contacttel',
-	      rules: [
-	        {
-	          type   : 'empty',
-	          prompt : 'Contact Tel is a required field'
-	        }
-	      ]
-	    },
-	      bp: {
-	      identifier  : 'bp',
-	      rules: [
-	        {
-	          type   : 'empty',
-	          prompt : 'Please enter BP'
-	        }
-	      ]
-	    },
-	      initials: {
-	      identifier  : 'initials',
-	      rules: [
-	        {
-	          type   : 'empty',
-	          prompt : 'Please supply your Initial(s)'
-	        }
-	      ]
-	    },  email: {
+	    email: {
 	      identifier  : 'email',
 	      rules: [
 	        {
 	          type   : 'empty',
-	          prompt : 'Please supply your Email'
+	          prompt : 'Email address is a required field'
+	        },
+	        {
+	          type	 : 'email[email]',
+	          prompt : 'Email address must be valid'
 	        }
 	      ]
-	    }
-    });
+	    },
+	    /*terms: {
+      	   identifier : 'terms',
+      	   rules: [
+        {
+          type   : 'checked',
+          prompt : 'You must agree to the terms and conditions'
+        }
+      		]
+    	}*/
+	});
 	</script>
 
 

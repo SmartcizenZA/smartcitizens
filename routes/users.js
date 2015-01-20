@@ -4,6 +4,8 @@
 var properties = require('./properties');
 var Account = require('../models/account');
 var passport = require('passport');
+//for creating user-specific images(readings evidence) 
+var mkdirp = require('mkdirp');
 
 exports.add = function (req, res){
 	console.log("Registration Request "+JSON.stringify(req.body));
@@ -12,11 +14,18 @@ exports.add = function (req, res){
 			console.log("Chosen Name Already Exists, forgot password?");
 			res.send("That username already exists, you might have forgotten your password. Otherwise choose a different name");
 		}
-		else{
-			Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
+		else{			
+			Account.register(new Account({ username : req.body.username, email: req.body.email }), req.body.password, function(err, account) {
 				if (err) {
 					return res.render('registration', { account : account });
 				}
+				//at this point we created the user -
+				var userSpecificFolder = req.body.baseFolder+'/'+account.username;
+				console.log("Folder will be at:: "+userSpecificFolder);
+				mkdirp(userSpecificFolder, function(err) { 
+				  if(err){ console.log("PROBLEM: User Created but his/her images folder not created. ", err);}
+				  else{ console.log("Folder Created At:: "+userSpecificFolder);}
+				});
 				passport.authenticate('local')(req, res, function () {
 				  res.redirect('/');
 				});

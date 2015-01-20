@@ -119,7 +119,7 @@ module.exports = function (app, entities) {
   /*    User Accounts Management API    */
   
   //create new
-  app.post('/users', UsersManager.add);
+  app.post('/users', function(req, res, next){ req.body.baseFolder = app.get('evidence_dir'); next(); }, UsersManager.add);
   //read [one, some]
   app.get('/users/:id', Authorizer.isAuthenticated, function(req, res){
   var userId = req.params.id;
@@ -177,14 +177,14 @@ module.exports = function (app, entities) {
   
   /*   Meter Readings API */
   
-  //configuring the multer middleware
-	var evidenceImagesDir = app.get('evidence_dir');
+   //configuring the multer middleware
+	var evidenceImagesDir = app.get('evidence_dir'); //this path has to depend on the user who is logged in...
 	app.use(multer({dest: evidenceImagesDir,
 		rename: function (fieldname, filename) {
 		return filename+Date.now();
 		},
 		onFileUploadStart: function (file) {
-			console.log(file.originalname + ' is starting ...')
+			console.log(file.originalname + ' is starting ...');
 		},
 		onFileUploadComplete: function (file) {
 			console.log(file.fieldname + ' uploaded to  ' + file.path)

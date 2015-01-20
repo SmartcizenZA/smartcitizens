@@ -19,7 +19,6 @@ var entities = require('./models/modelentities');
 
 // main config
 var app = express();
-app.set('port', process.env.PORT || 2015);
 app.set('views', __dirname + '/views');
 app.set('evidence_dir',__dirname + '/readings_evidence');
 app.set('view engine', 'jade');
@@ -54,6 +53,10 @@ mongoose.connect('mongodb://localhost/passport_local_mongoose');
 // routes, pass in the entities object so that it is available to the routes
 require('./routes/index')(app, entities);
 
-app.listen(app.get('port'), function(){
-  console.log(("Express server listening on port " + app.get('port')))
-});
+//app.listen(app.get('port'), function(){
+//  console.log(("Express server listening on port " + app.get('port')))
+//});
+
+//module export
+module.exports = app;
+

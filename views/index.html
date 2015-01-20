@@ -32,13 +32,13 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                  
 				<div class="login-form">
 				<h1><center><b>S</b>mart <b>C</b>itizens</center></h1><br>	
-				<form name="indexform" id="signin_form" action="/home">
+				<form name="indexform" id="signin_form" action="/login" method="post">
 					
 					<li> 
-						<input type="text" class="text" placeholder="username" required><a href="#" class=" icon user"></a>
+						<input type="text" name="username" class="text" placeholder="username" required><a href="#" class=" icon user"></a>
 					</li>
 					<li>
-						<input type="password" placeholder="password" required><a href="#" class=" icon lock"></a>
+						<input type="password" name="password" placeholder="password" required><a href="#" class=" icon lock"></a>
 					</li>
 					<div class="p-container">
 						<a href="/registration">Register</a>
@@ -52,9 +52,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 			<!--//End-login-form-->
 		  <!-----start-copyright---->
 		  <p align=center>Disclaimer: Service not provided or endorsed by the City of Tshwane Municipality</p>
-   					<div class="copy-right">
 						<p>Template by <a href="http://w3layouts.com">w3layouts</a></p> 
-					</div>
 				<!-----//end-copyright---->	
 </body>
 </html>

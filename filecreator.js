@@ -77,7 +77,7 @@ exports.generateFile = function (filename, dataObject,callback){
 			doc.text(dataObject.address, secondColX, addressValuesY+6, {fit: [20, 50]}).rect(200, addressValuesY, 200, 65).stroke();
 			//put the in the next page
 			doc.addPage();
-			doc.image(dataObject.image, 320, 15, fit: [120, 120])
+			doc.image(dataObject.image, 320, 15, {fit: [120, 120]})
 				.stroke()
 				.text('My Meter Reading Image ', 320, 0);
    

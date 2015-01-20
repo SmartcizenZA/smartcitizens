@@ -33,19 +33,17 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                  
 				<div class="login-form">
 				<h1><center><b>S</b>mart <b>C</b>itizens</center></h1><br>	
-				<form name="indexform" id="signin_form" action="/home">
+				<form name="indexform" id="signin_form" action="/login" method="post">
 					
 					<li> 
-						<input type="text" class="text" placeholder="username" required><a href="#" class=" icon user"></a>
+						<input type="text" class="text" placeholder="username" name ="username" required><a href="#" class=" icon user"></a>
 					</li>
 					<li>
-						<input type="password" placeholder="password" required><a href="#" class=" icon lock"></a>
+						<input type="password" placeholder="password" name ="password" required><a href="#" class=" icon lock"></a>
 					</li>
 					<div class="p-container">
-						<a href="/registration">Register</a>
+						<a href="/register">Register</a>
 						 <input type="submit" value="Login" >
-								
-					<div class="clear"> </div>
 					<label class="checkbox"><input type="checkbox" name="checkbox" checked><i></i>Remember Me</label>
 					</div>
 				</form>

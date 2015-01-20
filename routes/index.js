@@ -20,20 +20,125 @@ var MeterReadings = require('../routes/meterreadings.js');
 */
 
 module.exports = function (app, entities) {
- /* GET home page. */
+
+ /* Service Entry Point */
+ 
   app.get('/', function (req, res) {
 	console.log("First Visit to Home");
-	res.render('index', { user : req.user, title: "Smart Citizens" });
+	res.render('index', { user : req.user, title: "Smart CitizenS" });
   });
-
-  app.get('/register', function(req, res) {
-      console.log("Request for Registration Form");      
-	  res.render('registration', { title: 'Register New User' });
-  });
-
-  /*   Property Management API       */
   
-  //create new
+ /* GET home page. */
+  app.get('/home', Authorizer.isAuthenticated, function(req, res){
+  
+  	var loggedInUser = req.userId;
+	res.render('home',{user:loggedInUser});
+
+	});
+/*    User Accounts Management API    */
+
+/* GET SignUp form */
+  app.get('/signup', function(req, res) {
+      console.log("Request for SignIn Form");      
+	  res.render('signup', { title: 'Register New Citizen' });
+  });
+
+  //this route is for testing purposes [will probably go at some point]
+  app.post('/register', function(req, res){
+	res.send("Your Request is noted...");
+  });
+
+  //create new user (signup)
+  app.post('/users', function(req, res, next){ req.body.baseFolder = app.get('evidence_dir'); next(); }, UsersManager.add);
+  
+  //read [one, some]
+  app.get('/users/:id', Authorizer.isAuthenticated, function(req, res){
+  var userId = req.params.id;
+	UsersManager.getUserById(userId, function(err, userModel){
+		if(!err && userModel){
+		//render the user-details view
+		//res.render('userdisplay', {'user':userModel, title:'User Details'});
+			res.send(userModel);
+		}
+		else{
+			res.send("There was a problem retrieving User. Could be the User was not found.");
+		}
+	});
+  });
+  
+  //list all users
+  app.get('/users', Authorizer.isAuthenticated, function(req, res){
+	UsersManager.list(function(err, users){
+		if(!err && users){
+		//render the user-details view 
+		res.render('userdisplay', {'user':users[0], title:'List of Users - Test'});
+		//res.send(users[0]);
+		}
+		else{
+			res.send("There was a problem retrieving Users. Could be there are no users? "+err);
+		}
+	});
+  });
+  //update
+  app.put('/users/:id', Authorizer.isAuthenticated, function(req, res){
+	var userId = req.params.id;
+	var values = req.body;
+	UsersManager.updateAccount(userId, values, function(err, updatedAccount){
+		if(!err && updatedAccount){
+			res.send(updatedAccount);			
+		}
+		else{
+			res.send("There was a problem updating Users. "+err);
+		}
+	});
+  
+  });
+  //delete
+  app.delete('/users/:id', Authorizer.isAuthenticated, function(req, res){
+	UsersManager.deleteAccount(userId, function(errorDeleting){
+		if(!errorDeleting){
+			//Everything went well, we might want to move the user to some other screen or simply refresh the ui
+			res.send("Everything went well, we might want to move the user to some other screen or simply refresh the ui");
+		}
+		else{
+			//There was a problem deleting - so we should stay on the same form/page - perhaps an Alert
+			res.send("There was a problem deleting - so we should stay on the same form/page");
+		}	
+	});  
+  });
+  
+  /*   Region:: Page Serving/Rendering */
+  app.get('/login', function(req, res) {
+      res.render('login', { user : req.user });
+  });
+
+  app.post('/login', passport.authenticate('local'), function(req, res) {
+      res.redirect('home');
+  });
+
+  app.get('/logout', function(req, res) {
+      req.logout();
+      res.redirect('/');
+  }); 
+
+  //});
+  //user is requesting to view the submit form
+  //must be authenticated
+  app.get('/readingsform',Authorizer.isAuthenticated, function(req, res){
+  var loggedInUser = req.user;
+	console.log("user is ",loggedInUser); 
+   //this form must be pre-populated with the logged in user  
+	res.render('readingsform');
+  });
+  
+  /*   Property Management API       */
+  //This route renders the form for adding new property
+  app.get('/addpropertyform',Authorizer.isAuthenticated,function(req, res){
+  var userId = req.params.id;
+  res.render('addpropertyform', {user:userId})
+  });
+  
+  //create new property
   app.post('/properties', function(req, res){
   var data = {
 		"portion" : req.body.portion,
@@ -48,7 +153,8 @@ module.exports = function (app, entities) {
 	//add a new property
 	Properties.add(data, function(error, property){ console.log("Back from adding Property!"); res.send(property); });  
   });
-  //list All
+  
+  //list All properties
   app.get('/properties', function (req, res){
     Properties.list(function (err, properties){
 		if(!err){
@@ -115,68 +221,8 @@ module.exports = function (app, entities) {
 		}	
 	});  
   });
-  
-  /*    User Accounts Management API    */
-  
-  //create new
-  app.post('/users', function(req, res, next){ req.body.baseFolder = app.get('evidence_dir'); next(); }, UsersManager.add);
-  //read [one, some]
-  app.get('/users/:id', Authorizer.isAuthenticated, function(req, res){
-  var userId = req.params.id;
-	UsersManager.getUserById(userId, function(err, userModel){
-		if(!err && userModel){
-		//render the user-details view
-		//res.render('userdisplay', {'user':userModel, title:'User Details'});
-			res.send(userModel);
-		}
-		else{
-			res.send("There was a problem retrieving User. Could be the User was not found.");
-		}
-	});
-  });
-  //list
-  app.get('/users', Authorizer.isAuthenticated, function(req, res){
-	UsersManager.list(function(err, users){
-		if(!err && users){
-		//render the user-details view 
-		res.render('userdisplay', {'user':users[0], title:'List of Users - Test'});
-		//res.send(users[0]);
-		}
-		else{
-			res.send("There was a problem retrieving Users. Could be there are no users? "+err);
-		}
-	});
-  });
-  //update
-  app.put('/users/:id', Authorizer.isAuthenticated, function(req, res){
-	var userId = req.params.id;
-	var values = req.body;
-	UsersManager.updateAccount(userId, values, function(err, updatedAccount){
-		if(!err && updatedAccount){
-			res.send(updatedAccount);			
-		}
-		else{
-			res.send("There was a problem updating Users. "+err);
-		}
-	});
-  
-  });
-  //delete
-  app.delete('/users/:id', Authorizer.isAuthenticated, function(req, res){
-	UsersManager.deleteAccount(userId, function(errorDeleting){
-		if(!errorDeleting){
-			//Everything went well, we might want to move the user to some other screen or simply refresh the ui
-			res.send("Everything went well, we might want to move the user to some other screen or simply refresh the ui");
-		}
-		else{
-			//There was a problem deleting - so we should stay on the same form/page - perhaps an Alert
-			res.send("There was a problem deleting - so we should stay on the same form/page");
-		}	
-	});  
-  });
-  
+
   /*   Meter Readings API */
-  
    //configuring the multer middleware
 	var evidenceImagesDir = app.get('evidence_dir'); //this path has to depend on the user who is logged in...
 	app.use(multer({dest: evidenceImagesDir,
@@ -191,7 +237,8 @@ module.exports = function (app, entities) {
 			uploadDone=true;
 		}
 	}));
-  //create new 
+	
+  //create new readings
   app.post('/readings', Authorizer.isAuthenticated ,function(req, res){	
   console.log("Uploading Meter Readings. Files = ", req.file);
   if(uploadDone ==true){
@@ -233,7 +280,6 @@ module.exports = function (app, entities) {
   });
   
   //get [list of ] meter-readings for an Account.
-  
   app.get('/readings/:accountNumber', Authorizer.isAuthenticated, function(req, res){
 	var accountNumber = req.params.accountNumber;
 	MeterReadings.getMeterReadingById(accountNumber, function(err, meterReadingsForAccount){
@@ -248,7 +294,6 @@ module.exports = function (app, entities) {
   });
   
   //list 
-  
   app.get('/readings', Authorizer.isAuthenticated, function(req, res){
 	MeterReadings.list(function(err, listOfMeterReadings){
 		if(listOfMeterReadings){
@@ -262,7 +307,6 @@ module.exports = function (app, entities) {
   });
   
   //update
-  
   app.put('/readings/:id', Authorizer.isAuthenticated, function(req, res){
 	var id = req.params.id;
 	var values = req.body;	
@@ -278,7 +322,6 @@ module.exports = function (app, entities) {
   });
   
   //delete
-  
   app.delete('/readings/:id', Authorizer.isAuthenticated, function(req, res){
 	var id = req.params.id;
 	MeterReadings.deleteMeterReading(id,function(err){
@@ -291,11 +334,6 @@ module.exports = function (app, entities) {
 		}
 	});  
   });
-  
-  app.post('/register', function(req, res){
-	res.send("Your Request is noted...");
-  });
-  
   //utility handle to email the readings.
   //Ideally the emailing should happen immediately after saving the readings - but I think such a utility is nice to expose here
   app.post('/readings/:readingsId/email', Authorizer.isAuthenticated, function(req, res){
@@ -311,34 +349,5 @@ module.exports = function (app, entities) {
 			res.send("Problems sending your Readings...you will try this again later. Go to Home, My Pending Readings and then Click on POST.");
 		}
 	});	
-  });
-
-  /*   Region:: Page Serving/Rendering        
-  
-  app.get('/login', function(req, res) {
-      res.render('login', { user : req.user });
-  });
- */
-  app.post('/login', passport.authenticate('local'), function(req, res) {
-      res.redirect('/home');
-  });
-
-  app.get('/logout', function(req, res) {
-      req.logout();
-      res.redirect('/');
-  }); 
-  
-  app.get('/home', Authorizer.isAuthenticated, function(req, res){
-  
-	res.render('home',{status:'ok'});
-  });
-  //user is requesting to view the submit form
-  //must be authenticated
-  app.get('/form',Authorizer.isAuthenticated, function(req, res){
-  var loggedInUser = req.user;
-	console.log("user is ",loggedInUser); 
-   //this form must be pre-populated with the logged in user  
-	res.render('form');
-  });
-  
+  });  
 };

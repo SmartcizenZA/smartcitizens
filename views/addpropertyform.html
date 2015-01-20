@@ -10,9 +10,11 @@
 
 	<div class="ui active tab" data-tab="usage">
 
-		<form class="ui form segment" action="/users" method="POST">
-		<h4 class="ui dividing header">User Registration</h4>
-			
+		<form class="ui form segment" action="/properties" method="POST">
+		<h4 class="ui dividing header">Add Property</h4>
+			<div class="ui error message">
+        		<div class="header">There are errors in your form</div>
+      		</div>
 			<div class="field">
 			  <label>Portion</label>
 			  <input id="portion" placeholder="Portion" name="portion" type="text">
@@ -21,6 +23,11 @@
 			<div class="field">
 			  <label>Account Number</label>
 			  <input id="accountnumber" placeholder="Account Number" name="accountnumber" type="text">
+			</div>
+
+			<div class="field">
+				<label>Physical Address</label>
+				<input id="physicaladdress" placeholder="physicaladdress" name="physicaladdress" type="text">
 			</div>
 
 			<div class="field">
@@ -33,12 +40,6 @@
 			</div>
 
 			<div class="field">
-				<label>Email Address</label>
-				<input id="email" placeholder="Email Address" name="email" type="text">
-			</div>
-
-
-			<div class="field">
 				<label>Initials</label>
 				<input id="initials" placeholder="Intials" name="initials" type="text">
 			</div>
@@ -48,19 +49,7 @@
 				<input id="surname" placeholder="Surname" name="surname" type="text">
 			</div>
 
-
-			<div class="field">
-				<label>Username</label>
-				<input placeholder="username" name="username" type="text">
-			</div>
-
-			<div class="field">
-				<label>Password</label>
-				<input placeholder="password" name="password" type="text">
-			</div>
 			<div class="ui blue submit button" type="submit">Submit</div>
-			
- 
 		</form>
     </div>
 
@@ -111,6 +100,9 @@
 	        {
 	          type   : 'empty',
 	          prompt : 'Please enter BP'
+	        },
+	        {
+	        	type :
 	        }
 	      ]
 	    },
@@ -122,15 +114,17 @@
 	          prompt : 'Please supply your Initial(s)'
 	        }
 	      ]
-	    },  email: {
-	      identifier  : 'email',
+	    },
+	     physicaladdress: {
+	      identifier  : 'physicaladdress',
 	      rules: [
 	        {
 	          type   : 'empty',
-	          prompt : 'Please supply your Email'
+	          prompt : 'Please supply your Physical Address'
 	        }
 	      ]
 	    }
+
     });
 	</script>
 

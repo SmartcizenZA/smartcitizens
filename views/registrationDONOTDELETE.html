@@ -1,0 +1,140 @@
+	<link rel='stylesheet' href="css/semantic.css">
+	<link rel='stylesheet' href="css/semantic.min.css">
+  
+  	<script src="js/jquery.min.js"></script>
+    <script src="js/semantic.js"></script>
+    <script src="js/semantic.min.js"></script>
+
+
+   <div class="main container">
+
+	<div class="ui active tab" data-tab="usage">
+
+		<form class="ui form segment" action="/users" method="POST">
+		<h4 class="ui dividing header">User Registration</h4>
+			
+			<div class="field">
+			  <label>Portion</label>
+			  <input id="portion" placeholder="Portion" name="portion" type="text">
+			</div>
+
+			<div class="field">
+			  <label>Account Number</label>
+			  <input id="accountnumber" placeholder="Account Number" name="accountnumber" type="text">
+			</div>
+
+			<div class="field">
+			  <label>BP</label>
+			  <input id="bp" placeholder="BP" name="bp" type="text">
+			</div>
+			<div class="field">
+			  <label>Contact Tel</label>
+			  <input id="contacttel" placeholder="Contact Tel" name="contacttel" type="text">
+			</div>
+
+			<div class="field">
+				<label>Email Address</label>
+				<input id="email" placeholder="Email Address" name="email" type="text">
+			</div>
+
+
+			<div class="field">
+				<label>Initials</label>
+				<input id="initials" placeholder="Intials" name="initials" type="text">
+			</div>
+
+			<div class="field">
+				<label>Surname</label>
+				<input id="surname" placeholder="Surname" name="surname" type="text">
+			</div>
+
+
+			<div class="field">
+				<label>Username</label>
+				<input placeholder="username" name="username" type="text">
+			</div>
+
+			<div class="field">
+				<label>Password</label>
+				<input placeholder="password" name="password" type="text">
+			</div>
+			<div class="ui blue submit button" type="submit">Submit</div>
+			
+ 
+		</form>
+    </div>
+
+
+	<script type="text/javascript">
+		
+	$('.ui.form')
+	  .form({
+	    portion: {
+	      identifier  : 'portion',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Please supply your portion'
+	        }
+	      ]
+	    },
+	    surname: {
+	      identifier  : 'surname',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Surname is a required field'
+	        }
+	      ]
+	    },
+	      accountnumber: {
+	      identifier  : 'accountnumber',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Account number is a required field'
+	        }
+	      ]
+	    },
+	    contacttel: {
+	      identifier  : 'contacttel',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Contact Tel is a required field'
+	        }
+	      ]
+	    },
+	      bp: {
+	      identifier  : 'bp',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Please enter BP'
+	        }
+	      ]
+	    },
+	      initials: {
+	      identifier  : 'initials',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Please supply your Initial(s)'
+	        }
+	      ]
+	    },  email: {
+	      identifier  : 'email',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Please supply your Email'
+	        }
+	      ]
+	    }
+    });
+	</script>
+
+
+   </div>
+
+

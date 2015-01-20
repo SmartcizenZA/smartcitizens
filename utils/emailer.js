@@ -1,6 +1,5 @@
 /*
 This script is used to generate an email to be sent to the City - the email contains the readings in the attachment.
-
 @author Ishmael Makitla, GDG-Pretoria, RHoK-Pretoria
 
 */
@@ -11,24 +10,31 @@ var mailer = require("nodemailer");
 var fs = require('fs');
 var FileCreator = require('./filecreator');
 
+//Some useful literals
 var CITY_OF_TSHWANE = "meterrecords@tshwane.gov.za";
+exports.CITY_OF_TSHWANE_EMAIL = CITY_OF_TSHWANE;
 
+var defaultSubject = "Meter Readings For Account ";
+exports.DEFAULT_SUBJECT_PREFIX = defaultSubject;
+
+var defaultEmailBody = "Please find the attached meter readings. \n\n\n Thank You.";
+exports.DEFAULT_EMAIL_BODY = defaultEmailBody;
 
 // Use Smtp Protocol to send Email
 var smtpTransport = mailer.createTransport("SMTP",{
     service: "Gmail",
     auth: {
-        user: "smartcitizen-email-address",
-        pass: "password"
+        user: "smartcitizen-email",
+        pass: "smartcitizen-email-password"
     }
 });
 
 var mail = {
     from: "Smart Citizen <smartcitizen.cot@gmail.com>",
-    to: "to@gmail.com",
-    subject: "Send Email Using Node.js",
-    text: "Node.js New world for me",
-    html: "<b>Node.js New world for me</b>"
+    to: "",
+    subject: "",
+    text: "",
+    html: ""
 }
 
 //helper method for sending out an Email to City Offices with Meter Readings attached
@@ -42,6 +48,7 @@ exports.sendMailToCity = function(meterDataObject, subject, text, callback, sysG
 	     if(data){
 		 //add as attachments
 			mail.attachments = [{"filePath": "./"+readingFileName}];
+			//TODO: change this to CITY_OF_TSHWANE_EMAIL
 			mail.to = meterDataObject.email;
 			mail.subject = subject;
 			mail.html = text;
@@ -57,6 +64,7 @@ exports.sendMailToCity = function(meterDataObject, subject, text, callback, sysG
 		 }
 		 else{
 			console.log("No Data File Created...");
+			callback(false);
 		 }
 	  });
 	}

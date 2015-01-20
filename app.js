@@ -1,72 +1,61 @@
-var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+var express = require('express');
+var http = require('http');
+var mongoose = require('mongoose');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var config = require('./config/config');
+var morgan = require('morgan');
 var bodyParser = require('body-parser');
-
-//Database Connection
-var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost:27017/nodetest1');
+var methodOverride = require('method-override');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var errorHandler = require('errorhandler');
 
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var entities = require('./models/modelentities');
 
+// main config
 var app = express();
-
-//view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', __dirname + '/views');
+app.set('evidence_dir',__dirname + '/readings_evidence');
 app.set('view engine', 'jade');
+app.set('view options', { layout: false });
+app.use(morgan('tiny'));
+app.use(bodyParser());
+app.use(methodOverride());
+app.use(cookieParser(config.get('express.cookieParser.secret')));
+app.use(session({'secret':'c1TiZ3n'}));
+app.use(passport.initialize());
+app.use(passport.session());
 
-//uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Make our db accessible to our router
-app.use(function(req,res,next){
-    req.db = db;
-    next();
-});
-
-app.use('/', routes);
-app.use('/users', users);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
+if (config.get('env') == 'development') {
+  app.use(errorHandler({ dumpExceptions: true, showStack: true }));
+}
+else{
+//live/production or demo mode
+  app.use(express.errorHandler());
 }
 
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-});
+// passport config
+var Account = require('./models/account');
+passport.use(new LocalStrategy(Account.authenticate()));
+passport.serializeUser(Account.serializeUser());
+passport.deserializeUser(Account.deserializeUser());
 
+// mongoose
+mongoose.connect('mongodb://localhost/smartcitizens');
+
+// routes, pass in the entities object so that it is available to the routes
+require('./routes/index')(app, entities);
+
+//app.listen(app.get('port'), function(){
+//  console.log(("Express server listening on port " + app.get('port')))
+//});
 
 module.exports = app;
+

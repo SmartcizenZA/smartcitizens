@@ -7,14 +7,22 @@ var passport = require('passport');
 
 exports.add = function (req, res){
 	console.log("Registration Request "+JSON.stringify(req.body));
-    Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
-        if (err) {
-            return res.render('registration', { account : account });
-        }
-        passport.authenticate('local')(req, res, function () {
-          res.redirect('/');
-        });
-    });
+    alreadyExisits(req.body.username, function(err, exists){
+		if(exists){
+			console.log("Chosen Name Already Exists, forgot password?");
+			res.send("That username already exists, you might have forgotten your password. Otherwise choose a different name");
+		}
+		else{
+			Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
+				if (err) {
+					return res.render('registration', { account : account });
+				}
+				passport.authenticate('local')(req, res, function () {
+				  res.redirect('/');
+				});
+			});
+		}
+	});
   };
  /*
 	Get a User Account by ID - this is done by admin or the user whose account is looked up.
@@ -75,4 +83,16 @@ exports.deleteAccount = function (id, callback){
 		 callback (new Error ("Could Not Find Account to Delete"));
 		}
     });
+}
+/*
+Helper method to check if the chosen user name does not exist
+*/
+function alreadyExisits(username, callback){
+   Account.findOne({'username':username}, function (err, existingUserAccount){
+    if(err){callback(err);}
+	else{
+		if(existingUserAccount){callback(null, true);}
+		else{callback(null, false);}
+	}
+   });;
 }

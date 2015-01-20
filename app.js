@@ -27,7 +27,7 @@ app.use(morgan('tiny'));
 app.use(bodyParser());
 app.use(methodOverride());
 app.use(cookieParser(config.get('express.cookieParser.secret')));
-app.use(session());
+app.use(session({'secret':'c1TiZ3n'}));
 app.use(passport.initialize());
 app.use(passport.session());
 

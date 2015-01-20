@@ -6,6 +6,7 @@
 */
 
 var passport = require('passport');
+var Authorizer = require('../utils/authorizer.js');
 //used to handle the upload of evidence files (images)
 var multer  = require('multer');
 var uploadDone = false;
@@ -120,7 +121,7 @@ module.exports = function (app, entities) {
   //create new
   app.post('/users', UsersManager.add);
   //read [one, some]
-  app.get('/users/:id', function(req, res){
+  app.get('/users/:id', Authorizer.isAuthenticated, function(req, res){
   var userId = req.params.id;
 	UsersManager.getUserById(userId, function(err, userModel){
 		if(!err && userModel){
@@ -134,7 +135,7 @@ module.exports = function (app, entities) {
 	});
   });
   //list
-  app.get('/users', function(req, res){
+  app.get('/users', Authorizer.isAuthenticated, function(req, res){
 	UsersManager.list(function(err, users){
 		if(!err && users){
 		//render the user-details view 
@@ -147,7 +148,7 @@ module.exports = function (app, entities) {
 	});
   });
   //update
-  app.put('/users/:id', function(req, res){
+  app.put('/users/:id', Authorizer.isAuthenticated, function(req, res){
 	var userId = req.params.id;
 	var values = req.body;
 	UsersManager.updateAccount(userId, values, function(err, updatedAccount){
@@ -161,7 +162,7 @@ module.exports = function (app, entities) {
   
   });
   //delete
-  app.delete('/users/:id', function(req, res){
+  app.delete('/users/:id', Authorizer.isAuthenticated, function(req, res){
 	UsersManager.deleteAccount(userId, function(errorDeleting){
 		if(!errorDeleting){
 			//Everything went well, we might want to move the user to some other screen or simply refresh the ui
@@ -191,7 +192,7 @@ module.exports = function (app, entities) {
 		}
 	}));
   //create new 
-  app.post('/readings', function(req, res){	
+  app.post('/readings', Authorizer.isAuthenticated ,function(req, res){	
   console.log("Uploading Meter Readings. Files = ", req.file);
   if(uploadDone ==true){
    //the upload middleware returned
@@ -218,7 +219,7 @@ module.exports = function (app, entities) {
 
   });
   //read [one, some]
-  app.get('/readings/:id', function(req, res){
+  app.get('/readings/:id', Authorizer.isAuthenticated, function(req, res){
 	var id = req.params.id;
 	MeterReadings.getMeterReadingById(id, function(err, meterReading){
 		if(meterReading){
@@ -233,7 +234,7 @@ module.exports = function (app, entities) {
   
   //get [list of ] meter-readings for an Account.
   
-  app.get('/readings/:accountNumber', function(req, res){
+  app.get('/readings/:accountNumber', Authorizer.isAuthenticated, function(req, res){
 	var accountNumber = req.params.accountNumber;
 	MeterReadings.getMeterReadingById(accountNumber, function(err, meterReadingsForAccount){
 		if(meterReadingsForAccount){
@@ -248,7 +249,7 @@ module.exports = function (app, entities) {
   
   //list 
   
-  app.get('/readings', function(req, res){
+  app.get('/readings', Authorizer.isAuthenticated, function(req, res){
 	MeterReadings.list(function(err, listOfMeterReadings){
 		if(listOfMeterReadings){
 			res.send(listOfMeterReadings);
@@ -262,7 +263,7 @@ module.exports = function (app, entities) {
   
   //update
   
-  app.put('/readings/:id', function(req, res){
+  app.put('/readings/:id', Authorizer.isAuthenticated, function(req, res){
 	var id = req.params.id;
 	var values = req.body;	
 	MeterReadings.updateMeterReading(id, values, function(err, updatedReading){
@@ -278,7 +279,7 @@ module.exports = function (app, entities) {
   
   //delete
   
-  app.delete('/readings/:id', function(req, res){
+  app.delete('/readings/:id', Authorizer.isAuthenticated, function(req, res){
 	var id = req.params.id;
 	MeterReadings.deleteMeterReading(id,function(err){
 		if(!err){
@@ -297,7 +298,7 @@ module.exports = function (app, entities) {
   
   //utility handle to email the readings.
   //Ideally the emailing should happen immediately after saving the readings - but I think such a utility is nice to expose here
-  app.post('/readings/:readingsId/email', function(req, res){
+  app.post('/readings/:readingsId/email', Authorizer.isAuthenticated, function(req, res){
 	console.log("Your Request to Email Readings is noted...");
 	var readingsId = req.params.readingsId;
 	var readingsData = req.body;
@@ -327,13 +328,13 @@ module.exports = function (app, entities) {
       res.redirect('/');
   }); 
   
-  app.get('/home',function(req, res){
+  app.get('/home', Authorizer.isAuthenticated, function(req, res){
   
 	res.render('home',{status:'ok'});
   });
   //user is requesting to view the submit form
   //must be authenticated
-  app.get('/form',function(req, res){
+  app.get('/form',Authorizer.isAuthenticated, function(req, res){
   var loggedInUser = req.user;
 	console.log("user is ",loggedInUser); 
    //this form must be pre-populated with the logged in user  

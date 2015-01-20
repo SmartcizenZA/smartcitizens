@@ -57,6 +57,5 @@ require('./routes/index')(app, entities);
 //  console.log(("Express server listening on port " + app.get('port')))
 //});
 
-//module export
 module.exports = app;
 

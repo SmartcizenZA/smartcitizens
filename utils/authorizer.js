@@ -8,5 +8,5 @@ exports.isAuthenticated = function (req, res, next) {
  //at this point I should be able to add things like accountNumber, etc.
   if (req.isAuthenticated())
     return next();
-  res.redirect('/');
+  res.render('index', {error: "Unauthorized: please login first"});
 }

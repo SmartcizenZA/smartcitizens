@@ -31,7 +31,8 @@ module.exports = function (app, entities) {
  /* GET home page. */
   app.get('/home', Authorizer.isAuthenticated, function(req, res){
   
-  	var loggedInUser = req.userId;
+  	var loggedInUser = req.user;
+  	
 	res.render('home',{user:loggedInUser});
 
 	});

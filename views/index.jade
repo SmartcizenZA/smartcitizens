@@ -1,1 +1,71 @@
-include index.html
+doctype html
+
+html
+  head
+    title Smart CitizenS ::.SIGNIN.::
+    | &#x9;&#x9;
+    meta(charset='utf-8')
+    | &#x9;&#x9;
+    link(href='css/formstyle.css', rel='stylesheet', type='text/css')
+    | &#x9;&#x9;
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    | &#x9;&#x9;
+    script(type='application/x-javascript').
+      addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); }
+    // webfonts
+    link(href='http://fonts.googleapis.com/css?family=Open+Sans:600italic,400,300,600,700', rel='stylesheet', type='text/css')
+    // //webfonts
+    // Home Screens
+    // Add to homescreen for Chrome on Android
+    meta(name='mobile-web-app-capable', content='yes')
+    |     &#x9;
+    link(rel='icon', sizes='196x196', href='images/touch/chrome-touch-icon-196x196.png')
+    // Add to homescreen for Safari on iOS
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    | &#x9;&#x9;
+    meta(name='apple-mobile-web-app-status-bar-style', content='black')
+    |     &#x9;
+    meta(name='apple-mobile-web-app-title', content='Web Starter Kit')
+    // Tile icon for Win8 (144x144 + tile color)
+    meta(name='msapplication-TileImage', content='images/touch/ms-touch-icon-144x144-precomposed.png')
+    |     &#x9;
+    meta(name='msapplication-TileColor', content='#3372DF')
+  body
+   p(align='center') #{error}
+   h1
+    center
+          b S
+          | mart 
+          b C
+          | itizen
+          b S
+      br
+    .login-form
+      | &#x9;
+      | &#x9;&#x9;&#x9;&#x9;
+      form#signin_form(name='indexform', action='/login', method='post')
+        li
+          input.text(type='text', name='username', placeholder='username', required='')
+          a.icon.user(href='#')
+        | &#x9;&#x9;&#x9;&#x9;&#x9;
+        li
+          input(type='password', name='password', placeholder='password', required='')
+          a.icon.lock(href='#')
+        | &#x9;&#x9;&#x9;&#x9;&#x9;
+        .p-container
+          a(href='/signup') Register
+          | &#x9;&#x9;&#x9;&#x9;&#x9;&#x9; 
+          input(type='submit', value='Login')
+          | &#x9;&#x9;&#x9;&#x9;&#x9;
+          label.checkbox
+            input(type='checkbox', name='checkbox', checked='')
+            | Remember Me
+          | &#x9;&#x9;&#x9;
+          | &#x9;&#x9;&#x9;&#x9;&#x9;
+          .clear  
+    footer
+      p(align='center') Disclaimer: Service not provided or endorsed by the City of Tshwane Municipality
+      | &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;
+      p(align='center')
+        | Template by 
+        a(href='http://w3layouts.com') w3layouts

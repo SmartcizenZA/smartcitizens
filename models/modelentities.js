@@ -37,6 +37,7 @@ var MeterReadingSchema = new Schema({
 	electricityimage: String,
 	date : String,
 	emailed: Boolean,
+	creator: String,
 	updated: { type: Date, default: Date.now }
 });
 

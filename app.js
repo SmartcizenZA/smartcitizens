@@ -20,7 +20,7 @@ var entities = require('./models/modelentities');
 // main config
 var app = express();
 app.set('views', __dirname + '/views');
-app.set('evidence_dir',__dirname + '/readings_evidence');
+app.set('evidence_dir',path.join(__dirname, 'readings_evidence'));
 app.set('view engine', 'jade');
 app.set('view options', { layout: false });
 app.use(morgan('tiny'));

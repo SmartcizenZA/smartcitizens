@@ -9,6 +9,9 @@ var passport = require('passport');
 var Authorizer = require('../utils/authorizer.js');
 //used to handle the upload of evidence files (images)
 var multer  = require('multer');
+var path = require('path');
+var fs = require('fs');
+
 var uploadDone = false;
 var UsersManager = require('../routes/users.js');
 var Properties = require('../routes/properties.js');
@@ -129,7 +132,18 @@ module.exports = function (app, entities) {
   var loggedInUser = req.user;
 	console.log("user is ",loggedInUser); 
    //this form must be pre-populated with the logged in user  
-	res.render('readingsform');
+   if(loggedInUser){
+    //get list of user accounts - the user must select which account the readings are for
+	Properties.getPropertiesOfOwner(loggedInUser._id, function (err, userProperties){
+	if(userProperties)
+		res.render('readingsform', {'properties':userProperties});
+	else
+		res.redirect('/addpropertyform');
+	});
+   }
+   else{
+	res.send('No User Found...');
+	}
   });
   
   /*   Property Management API       */
@@ -140,7 +154,7 @@ module.exports = function (app, entities) {
   });
   
   //create new property
-  app.post('/properties', function(req, res){
+  app.post('/properties',Authorizer.isAuthenticated, function(req, res){
   var data = {
 		"portion" : req.body.portion,
 		"accountnumber" : req.body.accountnumber,
@@ -149,14 +163,15 @@ module.exports = function (app, entities) {
 		"email" : req.body.email,
 		"initials" : req.body.initials,
 		"surname" : req.body.surname,
-		"physicaladdress" : req.body.physicaladdress
+		"physicaladdress" : req.body.physicaladdress,
+		'owner': req.user._id
 	   };
 	//add a new property
 	Properties.add(data, function(error, property){ console.log("Back from adding Property!"); res.send(property); });  
   });
   
   //list All properties
-  app.get('/properties', function (req, res){
+  app.get('/properties', Authorizer.isAuthenticated, function (req, res){
     Properties.list(function (err, properties){
 		if(!err){
 		  //render properties list page
@@ -169,7 +184,7 @@ module.exports = function (app, entities) {
   });
   
   //list specific
-  app.get('/properties/owner/:ownerId', function (req, res){
+  app.get('/properties/owner/:ownerId', Authorizer.isAuthenticated, function (req, res){
     Properties.getPropertiesOfOwner(req.params.ownerId, function (err, properties){
 		if(!err){
 		  //render properties list page
@@ -181,7 +196,7 @@ module.exports = function (app, entities) {
 	});
   });
   //read specific
-  app.get('/properties/:id', function (req, res){
+  app.get('/properties/:id', Authorizer.isAuthenticated, function (req, res){
     Properties.getPropertyById(req.params.id, function (err, property){
 		if(!err){
 		  //render properties display page
@@ -194,7 +209,7 @@ module.exports = function (app, entities) {
   });
   
   //update
-  app.put('/properties/:id', function(req, res){
+  app.put('/properties/:id', Authorizer.isAuthenticated, function(req, res){
   var propertyId = req.params.id;
   var values = req.body;
 	Properties.updateProperty(propertyId, values, function(errorUpdating){
@@ -209,7 +224,7 @@ module.exports = function (app, entities) {
 	});
   });
   //delete
-  app.delete('/properties/:id', function(req, res){
+  app.delete('/properties/:id', Authorizer.isAuthenticated, function(req, res){
 	var propertyId = req.params.id;
 	Properties.deteleProperty(propertyId, function(errorDeleting){
 		if(!errorDeleting){
@@ -225,12 +240,12 @@ module.exports = function (app, entities) {
 
   /*   Meter Readings API */
    //configuring the multer middleware
-	var evidenceImagesDir = app.get('evidence_dir'); //this path has to depend on the user who is logged in...
-	app.use(multer({dest: evidenceImagesDir,
+	
+	app.use(multer({dest: app.get('evidence_dir'),
 		rename: function (fieldname, filename) {
 		return filename+Date.now();
 		},
-		onFileUploadStart: function (file) {
+		onFileUploadStart: function (file) {			
 			console.log(file.originalname + ' is starting ...');
 		},
 		onFileUploadComplete: function (file) {
@@ -240,17 +255,37 @@ module.exports = function (app, entities) {
 	}));
 	
   //create new readings
-  app.post('/readings', Authorizer.isAuthenticated ,function(req, res){	
-  console.log("Uploading Meter Readings. Files = ", req.file);
-  if(uploadDone ==true){
-   //the upload middleware returned
+  app.post('/readings', Authorizer.isAuthenticated ,function(req, res){	  
+   //the upload middleware returned ? 
+  if(uploadDone ==true){   
     var uploadedFiles = req.files;
-	console.log(uploadedFiles);
+	console.log(uploadedFiles);	
+	
 	//now we can add the file path to the request.body...
-		if(uploadedFiles.waterimage)
+		if(uploadedFiles.waterimage){
 			req.body.waterimg=uploadedFiles.waterimage.name;
-		if(uploadedFiles.electricityimage)
-			req.body.waterimg=uploadedFiles.electricityimage.name;
+			//move the file to the user's specific directories
+			var newWaterImagePath = app.get('evidence_dir')+path.sep+req.user.username+path.sep+uploadedFiles.waterimage.name;
+			console.log("new path is"+newWaterImagePath);
+			fs.rename(uploadedFiles.waterimage.path.toString(),newWaterImagePath.toString() , function (err) {
+				if (err){ 
+				console.log("Error moving file", err);
+				throw err;}
+				console.log('Water Image File Move Complete');
+			});
+		}
+		if(uploadedFiles.electricityimage){
+			req.body.electricityimage=uploadedFiles.electricityimage.name;
+			//move the file to the user's specific directories
+			var newElectricityImagePath = app.get('evidence_dir')+path.sep+req.user.username+path.sep+uploadedFiles.electricityimage.name;
+			console.log("new path is"+newElectricityImagePath);
+			fs.rename(uploadedFiles.electricityimage.path.toString(),newElectricityImagePath.toString() , function (err) {
+				if (err){ 
+				console.log("Error moving file", err);
+				throw err;}
+				console.log('Water Image File Move Complete');
+			});
+		}
 		MeterReadings.add(req, function(err, meterReadingObject){
 		if(meterReadingObject){
 			//render the readings list (updated with this new reading) - redirect 

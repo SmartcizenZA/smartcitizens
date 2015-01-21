@@ -27,8 +27,7 @@ module.exports = function (app, entities) {
  /* Service Entry Point */
  
   app.get('/', function (req, res) {
-	console.log("First Visit to Home");
-	res.render('index', { user : req.user, title: "Smart CitizenS" });
+	res.render('index.ejs', { user : req.user, title: "Smart CitizenS" });
   });
   
  /* GET home page. */
@@ -36,15 +35,14 @@ module.exports = function (app, entities) {
   
   	var loggedInUser = req.user;
   	
-	res.render('home',{user:loggedInUser});
+	res.render('main.ejs',{title: "Smart CitizenS ::.Home.::",user:loggedInUser});
 
 	});
 /*    User Accounts Management API    */
 
 /* GET SignUp form */
-  app.get('/signup', function(req, res) {
-      console.log("Request for SignIn Form");      
-	  res.render('signup', { title: 'Register New Citizen' });
+  app.get('/signup', function(req, res) {   
+	  res.render('signup.ejs', { title: 'SignUp New Citizen' });
   });
 
   //this route is for testing purposes [will probably go at some point]
@@ -111,13 +109,22 @@ module.exports = function (app, entities) {
 	});  
   });
   
-  /*   Region:: Page Serving/Rendering */
+  /*   Region:: Page Serving/Rendering 
   app.get('/login', function(req, res) {
-      res.render('login', { user : req.user });
-  });
+      res.render('index.ejs', { user : req.user, title: "Log In" });
+  }); */
 
   app.post('/login', passport.authenticate('local'), function(req, res) {
-      res.redirect('home');
+  	  Properties.getPropertyById(req.params.id, function (err, property){
+		if(!err || property){
+		  //render main display page
+		  res.render('main.ejs', {title: "Smart CitizenS - Home",user:req.user, prop: property, message: ''});
+		}
+		else{
+		  res.render('addpropertyform.ejs', {title: "Smart CitizenS - Property",  user: req.user, message: "You do not have any property - please add one first before submitting readings"});
+		}	
+	});
+      
   });
 
   app.get('/logout', function(req, res) {
@@ -136,9 +143,9 @@ module.exports = function (app, entities) {
     //get list of user accounts - the user must select which account the readings are for
 	Properties.getPropertiesOfOwner(loggedInUser._id, function (err, userProperties){
 	if(userProperties)
-		res.render('readingsform', {'properties':userProperties});
+		res.render('readingsform.ejs', {'properties':userProperties, title: "Submit Readings", user:req.user});
 	else
-		res.redirect('/addpropertyform');
+		res.render('addpropertyform.ejs', {title: "Smart CitizenS - Property",  user: req.user, message: "You do not have any property - please add one first before submitting readings"});
 	});
    }
    else{
@@ -150,7 +157,7 @@ module.exports = function (app, entities) {
   //This route renders the form for adding new property
   app.get('/addpropertyform',Authorizer.isAuthenticated,function(req, res){
   var userId = req.params.id;
-  res.render('addpropertyform', {user:userId})
+  res.render('addpropertyform.ejs', {user:userId, title: "Add Property", message: ""})
   });
   
   //create new property
@@ -167,7 +174,11 @@ module.exports = function (app, entities) {
 		'owner': req.user._id
 	   };
 	//add a new property
-	Properties.add(data, function(error, property){ console.log("Back from adding Property!"); res.send(property); });  
+	Properties.add(data, function(error, property){ 
+
+		console.log("Back from adding Property!"); 
+		res.render('main.ejs', {user:req.user, title: "Smart CitizenS", message: "", prop:property }); 
+	});  
   });
   
   //list All properties
@@ -175,7 +186,7 @@ module.exports = function (app, entities) {
     Properties.list(function (err, properties){
 		if(!err){
 		  //render properties list page
-		  res.send(properties);
+		  res.render('main.ejs', {user:req.user, title: "Smart CitizenS", message: "", prop:properties })
 		}
 		else{
 		  res.send("An error occurred while looking up Properties. "+err);

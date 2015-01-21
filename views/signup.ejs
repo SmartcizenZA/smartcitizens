@@ -1,0 +1,116 @@
+<% include header %>
+
+<body>
+   <div class="main container">
+
+	<div class="ui active tab" data-tab="usage">
+
+		<form class="ui form segment" action="/users" method="POST">
+		<h4 class="ui dividing header">Smart CitizenS Sign-Up Form</h4>
+			<div class="ui error message">
+        		<div class="header">There are errors in your form</div>
+      		</div>
+			<div class="required field">
+				<label>Email</label>
+				<input placeholder="email@email.com" name="email" type="text">
+			</div>
+			
+			<div class="required field">
+				<label>Preferred Username</label>
+				<input placeholder="username" name="username" type="text">
+			</div>
+
+			<div class=" required field">
+				<label>Password</label>
+				<input placeholder="password" name="password" type="password">
+			</div>
+			<div class="required field">
+				<label>Confirm Password</label>
+				<input placeholder="confirm password" name="password2" type="password">
+			</div>
+
+			<div class="field">
+        		<div class="checkbox">
+        			<label>
+          			<input type="checkbox" name="terms" value>
+          				I agree to the <a href="#">Terms of Service</a>.
+          			</label>
+        		</div>
+      		</div><br>
+			<input type="submit" class="btn btn-primary btn-block" value="Login" >		
+		</form>
+    </div>
+
+    <%include footer %>
+	<script type="text/javascript">
+		
+	$('.ui.form')
+	  .form({
+	    username: {
+	      identifier  : 'username',
+	      rules: [
+	        {
+	          	type   : 'empty',
+	          	prompt : 'Please supply your username (at least must be 6 characters long)'
+	        },
+	        {
+	        	type   : 'length[6]',
+          		prompt : 'Your username must be at least 6 characters'
+
+	        }
+	      ]
+	    },
+	    password: {
+	      identifier  : 'password',
+	      rules: [
+	        {
+	          	type   : 'empty',
+	          	prompt : 'Password is a required field'
+	        },
+	        {
+	        	type   : 'length[6]',
+          		prompt : 'Your password must be at least 6 characters'
+	        }
+	      ]
+	    },
+	     password2: {
+	      identifier  : 'password2',
+	      rules: [
+	        {
+	          	type   : 'empty',
+	          	prompt : 'Please confirm password'
+	        },
+	        {
+	          	type   : 'match[password]',
+               	prompt : 'Password doesn\'t match'
+	        }
+	      ]
+	    },
+	    email: {
+	      identifier  : 'email',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Email address is a required field'
+	        },
+	        {
+	          type	 : 'email[email]',
+	          prompt : 'Email address must be valid'
+	        }
+	      ]
+	    },
+	    /*terms: {
+      	   identifier : 'terms',
+      	   rules: [
+        {
+          type   : 'checked',
+          prompt : 'You must agree to the terms and conditions'
+        }
+      		]
+    	}*/
+	});
+	</script>
+   </div>
+</body>
+</html>
+

@@ -21,7 +21,7 @@ var entities = require('./models/modelentities');
 var app = express();
 app.set('views', __dirname + '/views');
 app.set('evidence_dir',path.join(__dirname, 'readings_evidence'));
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 app.set('view options', { layout: false });
 app.use(morgan('tiny'));
 app.use(bodyParser());
@@ -31,6 +31,7 @@ app.use(session({'secret':'c1TiZ3n'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
+//set the static path to public (e.g. where images, css, javascripts are stored)
 app.use(express.static(path.join(__dirname, 'public')));
 
 if (config.get('env') == 'development') {

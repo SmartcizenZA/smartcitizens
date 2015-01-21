@@ -1,0 +1,37 @@
+<%include header %>
+
+<body>
+<%include loggedInHeader %>
+<div class="main container">
+
+  <div class="ui active tab" data-tab="usage">
+
+    <form class="ui form segment" action="/readings" method="POST" enctype="multipart/form-data">
+      <h4 class="ui dividing header">Submit Water/Electricity Readings</h4>
+        <label for="accountNumber">Account Holder</label>
+        <input type="text" name="accountNumber" value="1234567890" readonly />
+        <label for="bp" >BP:</label>
+        <input type="number" name="bp" value="928775" readonly />
+        <label for="portion" >Portion:</label>
+        <input type="number" name="portion" value="2" readonly />
+        <label for="readingDate">Date</label>
+        <input type="date" name="readingDate" placeholder="06/12/2014" >
+        <label for="water"> Water Meter</label>
+        <input type="number" name="water" placeholder="00" min=0351 step=1 required>
+        <label for="electricity">Electricity Meter</label>
+        <input type="number" name="electricity"  placeholder="00" min=134091 step=1>
+        <label for ="waterimage">Water Meter Readings Evidence </label>
+        <input type="file" value="Upload Evidence" name="waterimage">
+		<br>
+		<br>
+        <label for ="electricityimage">Electricity Meter Readings Evidence</label>
+        <input type="file" value="" name="electricityimage">
+		<br>
+		<br>
+        <input type="submit" class="btn btn-primary btn-block" value="Submit Readings">
+    </form>
+	</div>
+</div>
+<%include footer %>
+  </body>
+</html>

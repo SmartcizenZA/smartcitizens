@@ -1,28 +1,26 @@
 0 info it worked if it ends with ok
-1 verbose cli [ 'c:\\Program Files\\nodejs\\node.exe',
-1 verbose cli   'c:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
-1 verbose cli   'start' ]
-2 info using npm@1.4.3
-3 info using node@v0.10.26
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'start' ]
+2 info using npm@1.4.16
+3 info using node@v0.10.29
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
-5 info prestart nodetest1@0.0.0
-6 info start nodetest1@0.0.0
+5 info prestart smartcitizens@0.0.0
+6 info start smartcitizens@0.0.0
 7 verbose unsafe-perm in lifecycle true
-8 info nodetest1@0.0.0 Failed to exec start script
-9 error nodetest1@0.0.0 start: `node ./bin/www`
+8 info smartcitizens@0.0.0 Failed to exec start script
+9 error smartcitizens@0.0.0 start: `node ./bin/www`
 9 error Exit status 8
-10 error Failed at the nodetest1@0.0.0 start script.
-10 error This is most likely a problem with the nodetest1 package,
+10 error Failed at the smartcitizens@0.0.0 start script.
+10 error This is most likely a problem with the smartcitizens package,
 10 error not with npm itself.
 10 error Tell the author that this fails on your system:
 10 error     node ./bin/www
 10 error You can get their info via:
-10 error     npm owner ls nodetest1
+10 error     npm owner ls smartcitizens
 10 error There is likely additional logging output above.
-11 error System Windows_NT 6.1.7601
-12 error command "c:\\Program Files\\nodejs\\node.exe" "c:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "start"
-13 error cwd d:\RhoKPTA\smartcitizens
-14 error node -v v0.10.26
-15 error npm -v 1.4.3
+11 error System Darwin 13.4.0
+12 error command "node" "/usr/local/bin/npm" "start"
+13 error cwd /Users/mtswenij/RHoKPTAHack14/nodetest2
+14 error node -v v0.10.29
+15 error npm -v 1.4.16
 16 error code ELIFECYCLE
 17 verbose exit [ 1, true ]

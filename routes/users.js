@@ -74,6 +74,19 @@ exports.updateAccount = function(id, values, callback){
 	});
 }
 
+exports.resetPassword = function (passwordResetRequest, callback){
+	Account.findById(passwordResetRequest.userId, function(err, account){
+	 //did we find the user?
+	  if(account){
+	    //now update the password and save it.
+		Account.setPassword(passwordResetRequest.password, function(passwordResetError, newPasswordAccount){
+		  callback(passwordResetError,newPasswordAccount); 
+		});		
+	  }
+	});
+
+};
+
 /*
 	Delete an account -  this is an admin action
 */

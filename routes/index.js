@@ -146,8 +146,19 @@ module.exports = function (app, entities) {
       req.logout();
       res.redirect('/');
   }); 
-
-  //});
+  
+  /*  Password Reset Request */
+  app.post('/password/:userId', function(req, res){
+   var passwordResetRequest = {'userId': req.params.userId,'password': req.body.password};
+       UsersManager.resetPassword(passwordResetRequest, function (err, updatedAccount){
+		 res.send(updatedAccount);
+	   });
+  });
+  
+  
+  
+  
+ 
   //user is requesting to view the submit form
   //must be authenticated
   app.get('/readingsform',Authorizer.isAuthenticated, function(req, res){

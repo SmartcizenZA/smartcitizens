@@ -43,3 +43,11 @@ var MeterReadingSchema = new Schema({
 
 var MeterReading = mongoose.model('MeterReading',MeterReadingSchema);
 exports.MeterReading = MeterReading;
+
+var PasswordResetRequestSchema = new Schema({
+    username: String,
+	updated: { type: Date, default: Date.now }
+});
+
+var PasswordResetRequest = mongoose.model('PasswordResetRequest',PasswordResetRequestSchema);
+exports.PasswordResetRequest = PasswordResetRequest;

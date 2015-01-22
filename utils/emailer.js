@@ -69,3 +69,22 @@ exports.sendMailToCity = function(meterDataObject, subject, text, callback, sysG
 	  });
 	}
 }
+
+//Helper method to send an email
+exports.sendMail = function(recipient, subjectLine, body, callback){
+	var emailMessage = {
+		from: "Smart Citizen <smartcitizen.cot@gmail.com>",
+		to: recipient,
+		subject: subjectLine,
+		text: "",
+		html: body
+	};
+	smtpTransport.sendMail(emailMessage, function(emailError, response){
+		console.log("sendMail Error ", emailError);
+		console.log("sendMail Response ", response);
+		if(emailError){ callback(emailError, false); }
+		else { callback(null, true); }
+		//finally close the SMTP connection
+		smtpTransport.close();
+	});
+};

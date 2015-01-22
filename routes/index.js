@@ -16,10 +16,7 @@ var uploadDone = false;
 var UsersManager = require('../routes/users.js');
 var Properties = require('../routes/properties.js');
 var MeterReadings = require('../routes/meterreadings.js');
-
-function isEmpty(object) {
-    	return !Object.keys(properties).length;
-        }
+var PasswordResetRequestsHandler = require('./resets.js');
 
 /*
   The index.js plays the router role in this design. It gets passed the Application object from 
@@ -141,24 +138,43 @@ module.exports = function (app, entities) {
 	});
       
   });
-
   app.get('/logout', function(req, res) {
       req.logout();
       res.redirect('/');
   }); 
+
+   /*     PASSWORD MANAGEMENT REGION   */
   
-  /*  Password Reset Request */
-  app.post('/password/:userId', function(req, res){
+  //Here the user followed the Password Reset URL sent to his email - this returns the password reset form if the Password Reset URL is valid
+  app.get('/reset/:resetRequestId', function (req, res){
+	PasswordResetRequestsHandler.getById(req.params.resetRequestId, function(err, resetRequest){
+		if(!resetRequest){ res.send("Invalid Password Reset URL. Please make sure you typed the URL correctly"); return; }
+		//all is good - send back the username along to the reset form (username should not be editable)
+		res.send("Hello, "+resetRequest.username+", now you can reset your password. The Reset form will be pre-populated with your username. ");
+	});
+  });
+  
+  //Password Reset Request - This is called when the user clicks submit form on the password reset form  
+  app.post('/password/reset/:userId', function(req, res){
    var passwordResetRequest = {'userId': req.params.userId,'password': req.body.password};
        UsersManager.resetPassword(passwordResetRequest, function (err, updatedAccount){
 		 res.send(updatedAccount);
 	   });
   });
-  
-  
-  
-  
  
+  //This is called when the user clicks the forgotten password link on the login page
+  //because the user is asking for the password reset form - it should be a GET call.
+  app.get('/forgot', function(req, res){
+  //here we tell the user that we have sent an email
+	res.render('forgot.ejs');
+  });
+
+  //This is called when the user clicks reset password on the forgotten form  
+  //Here the user sends the email address - we then check if such a user exists and then we send a password reset link to that email address
+  app.post('/pwdchange', function(req, res){	
+	res.render('reset.ejs');
+  });
+
   //user is requesting to view the submit form
   //must be authenticated
   app.get('/readingsform',Authorizer.isAuthenticated, function(req, res){
@@ -168,7 +184,15 @@ module.exports = function (app, entities) {
    if(loggedInUser){
     //get list of user accounts - the user must select which account the readings are for
 	Properties.getPropertiesOfOwner(loggedInUser._id, function (err, userProperties){
-	if(userProperties)
+    
+    if (!Object.keys(userProperties).length){
+        	var empty = true;
+           
+         }else
+         {
+         	var empty = false;
+    }
+	if(userProperties && !empty)
 		res.render('readingsform.ejs', {'properties':userProperties, title: "Submit Readings", user:req.user});
 	else
 		res.render('addpropertyform.ejs', {title: "Smart CitizenS - Property",  user: req.user, message: "You do not have any property - please add one first before submitting readings"});

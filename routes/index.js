@@ -17,10 +17,6 @@ var UsersManager = require('../routes/users.js');
 var Properties = require('../routes/properties.js');
 var MeterReadings = require('../routes/meterreadings.js');
 
-function isEmpty(object) {
-    	return !Object.keys(properties).length;
-        }
-
 /*
   The index.js plays the router role in this design. It gets passed the Application object from 
   app.js. It then delegates handlers for the routes as needed.
@@ -168,7 +164,15 @@ module.exports = function (app, entities) {
    if(loggedInUser){
     //get list of user accounts - the user must select which account the readings are for
 	Properties.getPropertiesOfOwner(loggedInUser._id, function (err, userProperties){
-	if(userProperties)
+    
+    if (!Object.keys(userProperties).length){
+        	var empty = true;
+           
+         }else
+         {
+         	var empty = false;
+    }
+	if(userProperties && !empty)
 		res.render('readingsform.ejs', {'properties':userProperties, title: "Submit Readings", user:req.user});
 	else
 		res.render('addpropertyform.ejs', {title: "Smart CitizenS - Property",  user: req.user, message: "You do not have any property - please add one first before submitting readings"});

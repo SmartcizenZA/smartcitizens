@@ -8,9 +8,10 @@
     <form class="ui form segment" action="/readings" method="POST" enctype="multipart/form-data">
       <h4 class="ui dividing header">Submit Water/Electricity Readings</h4>
         <label for="accountNumber">Choose Account Number</label>
-        <select class="form-control">
-          <option>123</option>
-          <option>1234</option>
+        <select class="form-control" name="accountNumber">
+        <% properties.forEach(function(property) { %>
+        <option value<%= property.accountnumber%>><%= property.accountnumber %></option>
+    <% }); %>
         </select>
         <label for="bp" >BP:</label>
         <input type="number" name="bp" value="928775" readonly />
@@ -34,9 +35,5 @@
     </form>
 	</div>
 </div>
-<%include footer %>
-<script type="text/javascript">
-$('.datepicker').datepicker();
-</script>
-  </body>
+<%include footer %> </body>
 </html>

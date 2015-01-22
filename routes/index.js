@@ -141,13 +141,24 @@ module.exports = function (app, entities) {
 	});
       
   });
-
   app.get('/logout', function(req, res) {
       req.logout();
       res.redirect('/');
   }); 
 
-  //});
+  //This is called when the user clicks the forgetten password link on the login page
+  app.get('/forgot', function(req, res){
+
+  res.render('forgot.ejs');
+
+  });
+
+  //This is called when the user clicks reset password on the forgotten form
+  app.post('/pwdchange', function(req, res){
+
+  res.render('reset.ejs');
+
+  });
   //user is requesting to view the submit form
   //must be authenticated
   app.get('/readingsform',Authorizer.isAuthenticated, function(req, res){

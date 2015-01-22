@@ -1,5 +1,4 @@
 <%include header %>
-
 <body>
 <%include loggedInHeader %>
 <div class="main container">
@@ -8,30 +7,36 @@
 
     <form class="ui form segment" action="/readings" method="POST" enctype="multipart/form-data">
       <h4 class="ui dividing header">Submit Water/Electricity Readings</h4>
-        <label for="accountNumber">Account Holder</label>
-        <input type="text" name="accountNumber" value="1234567890" readonly />
+        <label for="accountNumber">Choose Account Number</label>
+        <select class="form-control">
+          <option>123</option>
+          <option>1234</option>
+        </select>
         <label for="bp" >BP:</label>
         <input type="number" name="bp" value="928775" readonly />
         <label for="portion" >Portion:</label>
         <input type="number" name="portion" value="2" readonly />
         <label for="readingDate">Date</label>
-        <input type="date" name="readingDate" placeholder="06/12/2014" >
-        <label for="water"> Water Meter</label>
-        <input type="number" name="water" placeholder="00" min=0351 step=1 required>
-        <label for="electricity">Electricity Meter</label>
-        <input type="number" name="electricity"  placeholder="00" min=134091 step=1>
+        <input type="date" name="readingDate">
+        <br/><hr/>
+        <label for="water"> Water Meter Readings</label>
+        <input type="number" name="water" placeholder="0351" min=0351 step=1 required>
+        <label for="electricity">Electricity Meter Readings</label>
+        <input type="number" name="electricity"  placeholder="134091" min=134091 step=1>
+        <hr/>
         <label for ="waterimage">Water Meter Readings Evidence </label>
         <input type="file" value="Upload Evidence" name="waterimage">
-		<br>
-		<br>
+        <br>
         <label for ="electricityimage">Electricity Meter Readings Evidence</label>
-        <input type="file" value="" name="electricityimage">
-		<br>
-		<br>
+        <input type="file" value="Upload Evidence" name="electricityimage">
+        <hr/>
         <input type="submit" class="btn btn-primary btn-block" value="Submit Readings">
     </form>
 	</div>
 </div>
 <%include footer %>
+<script type="text/javascript">
+$('.datepicker').datepicker();
+</script>
   </body>
 </html>

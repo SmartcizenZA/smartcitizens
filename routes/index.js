@@ -17,6 +17,10 @@ var UsersManager = require('../routes/users.js');
 var Properties = require('../routes/properties.js');
 var MeterReadings = require('../routes/meterreadings.js');
 
+function isEmpty(object) {
+    	return !Object.keys(properties).length;
+        }
+
 /*
   The index.js plays the router role in this design. It gets passed the Application object from 
   app.js. It then delegates handlers for the routes as needed.
@@ -109,16 +113,27 @@ module.exports = function (app, entities) {
 	});  
   });
   
-  /*   Region:: Page Serving/Rendering 
+  /* Region:: Page Serving/Rendering */
   app.get('/login', function(req, res) {
-      res.render('index.ejs', { user : req.user, title: "Log In" });
-  }); */
+      res.render('index.ejs', {title: "Please Log In" });
+  });
+
 
   app.post('/login', passport.authenticate('local'), function(req, res) {
-  	  Properties.getPropertyById(req.params.id, function (err, property){
-		if(!err || property){
+  	//get properties of loggedIn owner
+  	  Properties.getPropertiesOfOwner(req.user.id, function (err, property){
+        if (!Object.keys(property).length){
+        	var empty = true;
+           
+         }else
+         {
+         	var empty = false;
+         }
+
+		if(!err && !empty ){
 		  //render main display page
 		  res.render('main.ejs', {title: "Smart CitizenS - Home",user:req.user, prop: property, message: ''});
+		   //res.send(property+" isEmpty" + empty)
 		}
 		else{
 		  res.render('addpropertyform.ejs', {title: "Smart CitizenS - Property",  user: req.user, message: "You do not have any property - please add one first before submitting readings"});
@@ -184,7 +199,7 @@ module.exports = function (app, entities) {
   //list All properties
   app.get('/properties', Authorizer.isAuthenticated, function (req, res){
     Properties.list(function (err, properties){
-		if(!err){
+  		if(!err){
 		  //render properties list page
 		  res.render('main.ejs', {user:req.user, title: "Smart CitizenS", message: "", prop:properties })
 		}
@@ -198,8 +213,9 @@ module.exports = function (app, entities) {
   app.get('/properties/owner/:ownerId', Authorizer.isAuthenticated, function (req, res){
     Properties.getPropertiesOfOwner(req.params.ownerId, function (err, properties){
 		if(!err){
+
 		  //render properties list page
-		  res.send(properties);
+		  res.send(properties+" "+isEmpty);
 		}
 		else{
 		  res.send("An error occurred while looking up Properties. "+err);

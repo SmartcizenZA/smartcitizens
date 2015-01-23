@@ -1,9 +1,0 @@
-extends layout
-
-block content
-    h1.
-        User List
-    ul
-        each user in users
-            li
-                a(href="mailto:#{user.email}")= user.username

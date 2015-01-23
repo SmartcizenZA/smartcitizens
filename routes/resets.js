@@ -10,7 +10,7 @@ var PASSWORD_RESET_SUBJECT = "Smart Citizen Password Reset";
 var PASSWORD_RESET_BODY = "You have requested to reset your password for Smart Citizen Platform. To do that, please click on the Password Reset link. \n";
     PASSWORD_RESET_BODY += "Alternatively, you can copy the link to your Browser's address bar \n\n";
 
-exports.createNew = function(email, callback){
+exports.createNew = function(email, serverURL, callback){
    //async waterfall is a nice way to avoid heavy nesting...
    var userToken;
    async.waterfall([
@@ -46,7 +46,7 @@ exports.createNew = function(email, callback){
 	function(user, token, done){
 		console.log("Step 3. User ", user.username);	   
 		//generate the reset URL (need to get the server URL automatically)
-		var resetURL = "<a href='http://localhost:3000/reset/'"+token+"'>"+ "Password Reset Link: http://localhost:3000/reset/"+token+" </a>";			  
+		var resetURL = "<a href='http://'"+serverURL+"'/reset/'"+token+"'>"+ "Password Reset Link: http://localhost:3000/reset/"+token+" </a>";			  
 		PASSWORD_RESET_BODY += resetURL;
 		emailerUtility.sendMail(user.email,PASSWORD_RESET_SUBJECT,PASSWORD_RESET_BODY, function (emailError, sent){
 			if(emailError){

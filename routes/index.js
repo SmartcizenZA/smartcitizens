@@ -176,7 +176,7 @@ module.exports = function (app, entities) {
   app.post('/pwdchange', function(req, res){    
 	var userEmail = req.body.email;
 	console.log("pwdchange:// Email "+userEmail);
-	PasswordResetRequestsHandler.createNew(userEmail, function (err, userToken){
+	PasswordResetRequestsHandler.createNew(userEmail, req.headers.host, function (err, userToken){
 	  if(!err){
 	    res.send("Your Password Reset Instruction have been emailed to "+userEmail+". Your Token Number is "+userToken);
 	  }

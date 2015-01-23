@@ -25,7 +25,7 @@ var smtpTransport = mailer.createTransport("SMTP",{
     service: "Gmail",
     auth: {
         user: "smartcitizen-email",
-        pass: "smartcitizen-email-password"
+        pass: "smartcitizen-password"
     }
 });
 

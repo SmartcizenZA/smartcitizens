@@ -80,7 +80,17 @@ exports.resetPassword = function (passwordResetRequest, callback){
 	  if(account){
 	    //now update the password and save it.
 		Account.setPassword(passwordResetRequest.password, function(passwordResetError, newPasswordAccount){
+		//if this succeeded, reset the token
+		if(!passwordResetError){
+			account.passwordResetRequestToken = null;
+			account.tokenExpiry = null;
+			account.save(function(errorSaving){
+			  callback(errorSaving,newPasswordAccount);
+			});
+		}
+		else{
 		  callback(passwordResetError,newPasswordAccount); 
+		  }
 		});		
 	  }
 	});

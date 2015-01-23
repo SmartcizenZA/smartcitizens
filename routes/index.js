@@ -146,11 +146,13 @@ module.exports = function (app, entities) {
    /*     PASSWORD MANAGEMENT REGION   */
   
   //Here the user followed the Password Reset URL sent to his email - this returns the password reset form if the Password Reset URL is valid
-  app.get('/reset/:resetRequestId', function (req, res){
-	PasswordResetRequestsHandler.getById(req.params.resetRequestId, function(err, resetRequest){
-		if(!resetRequest){ res.send("Invalid Password Reset URL. Please make sure you typed the URL correctly"); return; }
+  app.get('/reset/:resetRequestToken', function (req, res){
+	PasswordResetRequestsHandler.verifyToken(req.params.resetRequestToken, function(err, tokenOwner){
+		if(!tokenOwner){ res.send("Invalid Password Reset Token. Please make sure you typed the URL correctly. "); return; }
 		//all is good - send back the username along to the reset form (username should not be editable)
-		res.send("Hello, "+resetRequest.username+", now you can reset your password. The Reset form will be pre-populated with your username. ");
+		console.log("Correct Token : "+req.params.resetRequestToken); 
+		//res.send("Hello, "+resetRequest.username+", now you can reset your password. The Reset form will be pre-populated with your username. ");
+		res.render('reset.ejs', {'userId': tokenOwner._id});
 	});
   });
   
@@ -171,8 +173,18 @@ module.exports = function (app, entities) {
 
   //This is called when the user clicks reset password on the forgotten form  
   //Here the user sends the email address - we then check if such a user exists and then we send a password reset link to that email address
-  app.post('/pwdchange', function(req, res){	
-	res.render('reset.ejs');
+  app.post('/pwdchange', function(req, res){    
+	var userEmail = req.body.email;
+	console.log("pwdchange:// Email "+userEmail);
+	PasswordResetRequestsHandler.createNew(userEmail, function (err, userToken){
+	  if(!err){
+	    res.send("Your Password Reset Instruction have been emailed to "+userEmail+". Your Token Number is "+userToken);
+	  }
+	  else{
+		res.send(err);
+	  }
+	});
+	//res.render('reset.ejs');
   });
 
   //user is requesting to view the submit form

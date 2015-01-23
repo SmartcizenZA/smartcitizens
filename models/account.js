@@ -11,6 +11,7 @@ var Account = new Schema({
     password: String,
 	email: String,
 	passwordResetRequestToken: String,
+	tokenExpiry: Date,
 	updated: { type: Date, default: Date.now }
 });
 

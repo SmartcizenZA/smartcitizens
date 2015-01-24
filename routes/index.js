@@ -184,7 +184,6 @@ module.exports = function (app, entities) {
 		res.send(err);
 	  }
 	});
-	//res.render('reset.ejs');
   });
 
   //user is requesting to view the submit form

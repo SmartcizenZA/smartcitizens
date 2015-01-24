@@ -9,6 +9,8 @@ var Schema = mongoose.Schema;
  For the purposes of Smart Citizen, we tie all municipality accounts under a single user account.
 */
 
+/*TODO: need to add previous readings (water and electricity) */
+
 var PropertySchema = new Schema({
     accountnumber: String,
     portion: String,

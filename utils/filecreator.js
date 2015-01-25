@@ -80,7 +80,7 @@ exports.generateFile = function (filename, dataObject,callback){
 			//put the meter reading image in the next page, if provided
 			if(dataObject.waterimage ){
 				doc.addPage();
-				doc.image(dataObject.waterimage, 100, 60, {fit: [120, 120]})
+				doc.image(dataObject.waterimage, 100, 60, {fit: [250, 250]})
 					.stroke()
 					.text('My Water Meter Reading Image. Location X, Y', 100, 50);
 			}
@@ -90,7 +90,7 @@ exports.generateFile = function (filename, dataObject,callback){
 				//put this image right below the Water image if available, otherwise put it where we'd otherwise have water image
 				//this is so that we do not have the unnecessary empty space when the water meter image is not included
 				var imageYlocation = (!dataObject.waterimage? 60: 200);
-				doc.image(dataObject.electricityimage, 100, imageYlocation, {fit: [120, 120]})
+				doc.image(dataObject.electricityimage, 100, imageYlocation, {fit: [250, 250]})
 					.stroke()
 					.text('My Electricity Meter Reading Image. Location X, Y', 100, 50);
 			}

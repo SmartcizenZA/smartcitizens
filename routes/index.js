@@ -11,6 +11,7 @@ var Authorizer = require('../utils/authorizer.js');
 var multer  = require('multer');
 var path = require('path');
 var fs = require('fs');
+var async = require('async');
 
 var uploadDone = false;
 var UsersManager = require('../routes/users.js');
@@ -331,65 +332,97 @@ module.exports = function (app, entities) {
   app.post('/readings', Authorizer.isAuthenticated ,function(req, res){	  
    //the upload middleware returned ? 
   if(uploadDone ==true){   
-    var uploadedFiles = req.files;
-	console.log(uploadedFiles);	
-	
-	//now we can add the file path to the request.body...
-		if(uploadedFiles.waterimage){			
-			//move the file to the user's specific directories
-			var newWaterImagePath = app.get('evidence_dir')+path.sep+req.user.username+path.sep+uploadedFiles.waterimage.name;
-			console.log("new path is"+newWaterImagePath);
-			fs.rename(uploadedFiles.waterimage.path.toString(),newWaterImagePath.toString() , function (err) {
-				if (err){ 
-				console.log("Error moving file", err);
-				throw err;}
-				console.log('Water Image File Move Complete');
-				req.body.waterimg=newWaterImagePath;
-			});
+	var uploadedFiles = req.files;
+	var meterreadingsData;
+	console.log("Uploaded Files: \n", uploadedFiles);	
+	  
+	  //here we use waterfall to streamline the steps that are necessary to prepare the meter-reading data for submission
+	  
+	async.waterfall([
+		function(done) {
+		  console.log("Step 1 - Creating Basic Meter-Reading Object from req");
+			meterreadingsData = {
+				"account" : req.body.accountNumber,
+				"bp" : req.body.bp,
+				"date" : req.body.readingDate,
+				"portion" : req.body.portion,
+				"electricity" : req.body.electricity,
+				"water" : req.body.water,
+				"electricityimage": "",
+				"waterimage": ""
+			};			
+			done(null, meterreadingsData);
+		}, function(readingsDataObject, done){
+		    console.log("Step 2 - Adding Water or Electricity Evidence Images");
+			if(uploadedFiles.waterimage){			
+				//move the file to the user's specific directories
+				var newWaterImagePath = app.get('evidence_dir')+path.sep+req.user.username+path.sep+uploadedFiles.waterimage.name;
+				console.log("new path is "+newWaterImagePath);
+				fs.rename(uploadedFiles.waterimage.path.toString(),newWaterImagePath.toString() , function (err) {
+					if (err){ 
+					console.log("Error moving file", err);
+					throw err;}
+					console.log('Water Image File Move Complete');
+					readingsDataObject.waterimage=newWaterImagePath;
+					done(null, readingsDataObject);
+				});
+			}
+			else{
+				done(null, readingsDataObject);
+			}			
+		},
+		function(readingsDataObjectWithWaterImage, done){
+			if(uploadedFiles.electricityimage){			
+				//move the file to the user's specific directories
+				var newElectricityImagePath = app.get('evidence_dir')+path.sep+req.user.username+path.sep+uploadedFiles.electricityimage.name;
+				console.log("new path is "+newElectricityImagePath);
+				fs.rename(uploadedFiles.electricityimage.path.toString(),newElectricityImagePath.toString() , function (err) {
+					if (err){ 
+					console.log("Error moving file", err);
+					throw err;}
+					console.log('Water Image File Move Complete');
+					readingsDataObjectWithWaterImage.electricityimage=newElectricityImagePath;
+					done(null);
+				});
+			}
+			else{
+				done(null);
+			}
 		}
-		if(uploadedFiles.electricityimage){
-			
-			//move the file to the user's specific directories
-			var newElectricityImagePath = app.get('evidence_dir')+path.sep+req.user.username+path.sep+uploadedFiles.electricityimage.name;
-			console.log("new path is"+newElectricityImagePath);
-			fs.rename(uploadedFiles.electricityimage.path.toString(),newElectricityImagePath.toString() , function (err) {
-				if (err){ 
-				console.log("Error moving file", err);
-				throw err;}
-				console.log('Water Image File Move Complete');
-				req.body.electricityimage=newElectricityImagePath;
-			});
-		}
-		MeterReadings.add(req, function(err, meterReadingObject){
-		if(meterReadingObject){
-			//render the readings list (updated with this new reading) - redirect 
-			//res.render('readingslist', {'readings':[meterReadingObject]});
-			//now email the metering to the city - this process is as follows
-			//1. Locate the associated property by finding the property tied to the account number in the readings
-			var readingsAssociatedAccount = meterReadingObject.account;
-			Properties.getPropertyByAccountNumber(readingsAssociatedAccount, function(errorLocatingProperty, associatedProperty){			
-				if(!associatedProperty){ 
-					console.log("Error is ", errorLocatingProperty);
-					return res.send("Property Associated With the account number was not found. It is impossible to email the meter readings to City of Tshwane Municipal office");
+		], function (err, result){
+			console.log("Water Fall Result is ",result);
+			//end of the water fall...send the meter readings
+			MeterReadings.add(meterreadingsData, function(err, meterReadingObject){
+				if(meterReadingObject){
+					//render the readings list (updated with this new reading) - redirect 
+					//res.render('readingslist', {'readings':[meterReadingObject]});
+					//now email the metering to the city - this process is as follows
+					//1. Locate the associated property by finding the property tied to the account number in the readings
+					var readingsAssociatedAccount = meterReadingObject.account;
+					Properties.getPropertyByAccountNumber(readingsAssociatedAccount, function(errorLocatingProperty, associatedProperty){			
+						if(!associatedProperty){ 
+							console.log("Error is ", errorLocatingProperty);
+							return res.send("Property Associated With the account number was not found. It is impossible to email the meter readings to City of Tshwane Municipal office");
+						}
+						//so we found the property associated with the readings, not email the readings along with property details
+						MeterReadings.findAndEmailReadings(meterReadingObject._id, associatedProperty, function(err, readingsEmailedSuccessfully){					
+							if(readingsEmailedSuccessfully)
+								res.send("Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id); //use flash?
+							else
+								res.send("There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk"); //TODO: use standard "error" window...eg. res.render(error.ejs, {message: 'some message', error: 'error-object'})
+						});				
+					});			
 				}
-				//so we found the property associated with the readings, not email the readings along with property details
-				MeterReadings.findAndEmailReadings(meterReadingObject._id, associatedProperty, function(err, readingsEmailedSuccessfully){					
-					if(readingsEmailedSuccessfully)
-						res.send("Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id); //use flash?
-					else
-						res.send("There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk"); //TODO: use standard "error" window...eg. res.render(error.ejs, {message: 'some message', error: 'error-object'})
-				});				
-			});			
-		}
-		else if(err){
-			res.send("There was a problem saving your readings - so we should stay on the same form/page and try again");
-		}
-		});
-		
+				else if(err){
+					res.send("There was a problem saving your readings - so we should stay on the same form/page and try again");
+				}
+			});		  	  
+		});	
 	}
-	else{ console.log("Upload not done");}	
-
+	else{ console.log("Upload not done");}
   });
+  
+  
   //read [one, some]
   app.get('/readings/:id', Authorizer.isAuthenticated, function(req, res){
 	var id = req.params.id;

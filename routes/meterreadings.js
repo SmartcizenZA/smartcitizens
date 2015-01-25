@@ -5,20 +5,9 @@ var entities = require('../models/modelentities');
 var MeterReading = entities.MeterReading;
 
 /*POST Meter reading*/
-exports.add = function(req, meterReadingsCallback) {
-  console.log("Adding Meter Readings For Account ", req.body.accountNumber);
-  // Get our form values. These rely on the "name" attributes   
-  var meterreadingsData = {
-    "account" : req.body.accountNumber,
-    "bp" : req.body.bp,
-    "date" : req.body.readingDate,
-    "portion" : req.body.portion,
-    "electricity" : req.body.electricity,
-    "water" : req.body.water,
-    "electricityimage": req.body.electricityimg,
-    "waterimage": req.body.waterimg
-  };
-  
+exports.add = function(meterreadingsData, meterReadingsCallback) {
+  console.log("Adding Meter Readings For Account ", meterreadingsData.account);  
+  console.log(" Meter-Readings Handler - add() \n", meterreadingsData);  
   var meterReadings = new MeterReading(meterreadingsData);
   //try to save in to the DB
   meterReadings.save(function (err) {

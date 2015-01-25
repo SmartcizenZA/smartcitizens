@@ -114,13 +114,17 @@ exports.deleteMeterReading = function (id, callback){
 	Helper method that finds the meter-reading by Id and then email it.
 */
 exports.findAndEmailReadings = function (readingsId, associatedProperty, callback){
-	MeterReading.findById(id, function (err, meterReading) {
-		if(!err && meterReading){
-			var data = meterReading;
-			data.surname = associatedProperty.surname;
-			data.physicaladdress = associatedProperty.physicaladdress;
-			data.initials = associatedProperty.initials;
-			submitReadingByEmail(meterReading._id, data, callback);	
+	MeterReading.findById(readingsId, function (err, meterReading) {
+		if(!err && meterReading){	
+			var meterReadingData = associatedProperty;
+			meterReadingData.water = meterReading.water;			
+			meterReadingData.electricity = meterReading.electricity;
+			meterReadingData.waterimage = meterReading.waterimage;
+			meterReadingData.electricityimage = meterReading.electricityimage;
+			meterReadingData.date = meterReading.date;
+			meterReadingData._id = meterReading._id;
+			console.log("MeterReading Before Submit = "+meterReadingData);
+			submitReadingByEmail(meterReading._id, meterReadingData, callback);	
 		}
 		else if(err){
 		  callback(err);
@@ -135,19 +139,22 @@ exports.findAndEmailReadings = function (readingsId, associatedProperty, callbac
 	API method for sending the meter readings by email.
 */
 exports.emailReadings = function(readingsId, readingsData,callback){
-   submitReadingByEmail(readingsId, readingsData, callback)
-}
+   submitReadingByEmail(readingsId, readingsData, callback);
+};
 /*
   Helper method to email the readings to the City of Tshwane 
 */
 function submitReadingByEmail(id, data, callback){
+
+	console.log("submitReadingByEmail ("+id+") - Data is \n", data);
+
   if(!data){ callback(new Error("No Data Supplied- Cannot Send Email.")); return; }
   console.log("submitReadingByEmail:: Abount to Email The Readings Data ", data);
   var subject = emailerUtility.DEFAULT_SUBJECT_PREFIX+data.accNum;
   var body = emailerUtility.DEFAULT_EMAIL_BODY;
   //the server-generated IDs are UUID and have dashes which, to create a file name, might need to be changed to underscores.
   var idSeparator = new RegExp("-", 'g');  
-  var serverGeneratedReadingsId =id.replace(idSeparator,"_"); 
+  var serverGeneratedReadingsId =id; //.toString().replace(idSeparator,"_"); 
   emailerUtility.sendMailToCity(data,subject ,body, function(success){
 		//here perhaps we need to record in our DBs that we have successfully posted the readings
 	   console.log("Email sent: ",success);
@@ -155,7 +162,7 @@ function submitReadingByEmail(id, data, callback){
 	    //delete the file that was attached - we can always generate this should we needed (which should not happen - but perhaps for reporting later on)
 		markAsEmailed(id);
 	   }
-	   callback(success);
+	   callback(null,success);
 	}, serverGeneratedReadingsId); 
 }
 
@@ -163,7 +170,7 @@ function submitReadingByEmail(id, data, callback){
    A helper method that simply set the emailed-property of a meter-reading model to True to indicate that it has been emailed.
 */
 function markAsEmailed(readingId){
- MeterReading.findById(id, function (err, meterReading) {
+ MeterReading.findById(readingId, function (err, meterReading) {
 		if(!err && meterReading){
 		 //set emailed to TURE	
 			meterReading.emailed = true;		 

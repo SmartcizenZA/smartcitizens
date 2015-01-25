@@ -24,8 +24,8 @@ exports.DEFAULT_EMAIL_BODY = defaultEmailBody;
 var smtpTransport = mailer.createTransport("SMTP",{
     service: "Gmail",
     auth: {
-        user: "smartcitizen-email",
-        pass: "smartcitizen-password"
+        user: "smartcitizen.cot@gmail.com",
+        pass: "RH0k2014"
     }
 });
 
@@ -35,7 +35,7 @@ var mail = {
     subject: "",
     text: "",
     html: ""
-}
+};
 
 //helper method for sending out an Email to City Offices with Meter Readings attached
 exports.sendMailToCity = function(meterDataObject, subject, text, callback, sysGeneratedReadingsId){

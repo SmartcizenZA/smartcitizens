@@ -228,7 +228,7 @@ module.exports = function (app, entities) {
 		"accountnumber" : req.body.accountnumber,
 		 "bp" : req.body.bp,
 		"contacttel" : req.body.contacttel,
-		"email" : req.body.email,
+		"email" : req.user.email,
 		"initials" : req.body.initials,
 		"surname" : req.body.surname,
 		"physicaladdress" : req.body.physicaladdress,
@@ -335,8 +335,7 @@ module.exports = function (app, entities) {
 	console.log(uploadedFiles);	
 	
 	//now we can add the file path to the request.body...
-		if(uploadedFiles.waterimage){
-			req.body.waterimg=uploadedFiles.waterimage.name;
+		if(uploadedFiles.waterimage){			
 			//move the file to the user's specific directories
 			var newWaterImagePath = app.get('evidence_dir')+path.sep+req.user.username+path.sep+uploadedFiles.waterimage.name;
 			console.log("new path is"+newWaterImagePath);
@@ -345,10 +344,11 @@ module.exports = function (app, entities) {
 				console.log("Error moving file", err);
 				throw err;}
 				console.log('Water Image File Move Complete');
+				req.body.waterimg=newWaterImagePath;
 			});
 		}
 		if(uploadedFiles.electricityimage){
-			req.body.electricityimage=uploadedFiles.electricityimage.name;
+			
 			//move the file to the user's specific directories
 			var newElectricityImagePath = app.get('evidence_dir')+path.sep+req.user.username+path.sep+uploadedFiles.electricityimage.name;
 			console.log("new path is"+newElectricityImagePath);
@@ -357,13 +357,29 @@ module.exports = function (app, entities) {
 				console.log("Error moving file", err);
 				throw err;}
 				console.log('Water Image File Move Complete');
+				req.body.electricityimage=newElectricityImagePath;
 			});
 		}
 		MeterReadings.add(req, function(err, meterReadingObject){
 		if(meterReadingObject){
 			//render the readings list (updated with this new reading) - redirect 
 			//res.render('readingslist', {'readings':[meterReadingObject]});
-			res.send("Meter Readings Saved. Reference number is "+meterReadingObject._id);
+			//now email the metering to the city - this process is as follows
+			//1. Locate the associated property by finding the property tied to the account number in the readings
+			var readingsAssociatedAccount = meterReadingObject.account;
+			Properties.getPropertyByAccountNumber(readingsAssociatedAccount, function(errorLocatingProperty, associatedProperty){			
+				if(!associatedProperty){ 
+					console.log("Error is ", errorLocatingProperty);
+					return res.send("Property Associated With the account number was not found. It is impossible to email the meter readings to City of Tshwane Municipal office");
+				}
+				//so we found the property associated with the readings, not email the readings along with property details
+				MeterReadings.findAndEmailReadings(meterReadingObject._id, associatedProperty, function(err, readingsEmailedSuccessfully){					
+					if(readingsEmailedSuccessfully)
+						res.send("Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id); //use flash?
+					else
+						res.send("There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk"); //TODO: use standard "error" window...eg. res.render(error.ejs, {message: 'some message', error: 'error-object'})
+				});				
+			});			
 		}
 		else if(err){
 			res.send("There was a problem saving your readings - so we should stay on the same form/page and try again");

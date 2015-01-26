@@ -44,7 +44,7 @@ exports.getPropertyById = function (id, callback){
 /* Get a Property belonging to a municipal account */
 exports.getPropertyByAccountNumber = function (accNumber, callback){
    console.log ("Get Property with Account Number = "+accNumber);
-   Property.find({'accountnumber':accNumber}, function (err, property) {
+   Property.findOne({'accountnumber':accNumber}, function (err, property) {
 		console.log ("Got Property by Account Number = ",property);
         callback(err, property);
     });

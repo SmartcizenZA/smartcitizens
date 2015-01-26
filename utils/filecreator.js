@@ -64,8 +64,9 @@ exports.generateFile = function (filename, dataObject,callback){
 			var emailY = telValuesY + 35;
 			var emailValuesY = emailY;
 			doc.text('Email. ', 53, emailY+6, {fit: [20, 50]}).rect(50, emailY, 150, 35).stroke();
-			var emailSeparator = new RegExp(",", 'g');
-			doc.text(dataObject.email.replace(emailSeparator,"\n"), secondColX, emailValuesY+6, {fit: [20, 50]}).rect(200, emailValuesY, 200, 35).stroke();
+			//var emailSeparator = new RegExp(",", 'g');
+			//var emailsString = dataObject.email.replace(emailSeparator,"\n");
+			doc.text(dataObject.email, secondColX, emailValuesY+6, {fit: [20, 50]}).rect(200, emailValuesY, 200, 35).stroke();
 			//INITIALS AND SURNAME
 			var initialsY = emailValuesY +35;
 			var initialsValuesY = initialsY;
@@ -79,17 +80,17 @@ exports.generateFile = function (filename, dataObject,callback){
 			//put the meter reading image in the next page, if provided
 			if(dataObject.waterimage ){
 				doc.addPage();
-				doc.image(dataObject.waterimage, 100, 60, {fit: [120, 120]})
+				doc.image(dataObject.waterimage, 100, 60, {fit: [250, 250]})
 					.stroke()
 					.text('My Water Meter Reading Image. Location X, Y', 100, 50);
 			}
 			//if there's a photo for electricity meter
-			if(dataObject.electricityimage ){
+			if(dataObject.electricityimage){
 				doc.addPage();
 				//put this image right below the Water image if available, otherwise put it where we'd otherwise have water image
 				//this is so that we do not have the unnecessary empty space when the water meter image is not included
 				var imageYlocation = (!dataObject.waterimage? 60: 200);
-				doc.image(dataObject.electricityimage, 100, imageYlocation, {fit: [120, 120]})
+				doc.image(dataObject.electricityimage, 100, imageYlocation, {fit: [250, 250]})
 					.stroke()
 					.text('My Electricity Meter Reading Image. Location X, Y', 100, 50);
 			}

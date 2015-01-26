@@ -1,34 +1,33 @@
 <%include header %>
 <link rel="stylesheet" href="jquery-ui/jquery-ui.css">
 <script src="jquery-ui/jquery-ui.js"></script>
+<script src="js/date.js"></script>
 <body>
 <%include loggedInHeader %>
 <div class="main container">
-
   <div class="ui active tab" data-tab="usage">
-
     <form class="ui form segment" action="/readings" method="POST" enctype="multipart/form-data">
       <h4 class="ui dividing header">Submit Water/Electricity Readings</h4>
         <label for="accountNumber">Choose Account Number</label>
         <select class="form-control" name="accountNumber" id="AccId">
-        <option selected value=<%= properties[0].accountnumber%>><%= properties[0].accountnumber %></option>
+        <option selected value='<%= properties[0].accountnumber%>'><%= properties[0].accountnumber %></option>
         <% properties.forEach(function(property) { %>
-        <option value=<%= property.accountnumber%>><%= property.accountnumber %></option>
+        <option value='<%= property.accountnumber%>'><%= property.accountnumber %></option>
     <% }); %>
          <!--load the first elements of the properties object-->
         </select>
         <label for="surname">Surname:</label>
-        <input type="text" name="surname" value=<%=properties[0].surname%> readonly />
+        <input type="text" name="surname" value='<%=properties[0].surname%>' readonly />
         <label for="physicaladdress">Address:</label>
-        <input type="text" name="physicaladdress" value=<%=properties[0].physicaladdress%> readonly />
+        <input type="text" name="physicaladdress" value='<%=properties[0].physicaladdress%>' readonly />
         <label for="contacttel">Contact:</label>
-        <input type="number" name="contacttel" value=<%=properties[0].contacttel%> readonly />
+        <input type="number" name="contacttel" value='<%=properties[0].contacttel%>' readonly />
         <label for="bp">BP:</label>
-        <input type="number" name="bp" value=<%=properties[0].bp%> readonly />
+        <input type="number" name="bp" value='<%=properties[0].bp%>' readonly />
         <label for="portion" >Portion:</label>
-        <input type="number" name="portion" value=<%=properties[0].portion%> readonly />
+        <input type="number" name="portion" value='<%=properties[0].portion%>' readonly />
         <label for="readingDate">Date</label>
-        <input type="date" id="datepicker1" name="readingDate" value="" readonly />
+        <input type="date" id="readingDate" name="readingDate" readonly/>
         <br/><hr/>
         <p class="text-info"> Enter your water and/or light readings </p>
         <label for="water"> Water Meter Readings</label>
@@ -48,13 +47,12 @@
 	</div>
 </div>
 <script>
+ 
+ //set date on the date input field
+ document.getElementById('readingDate').value = Date.today().toString("d-MMM-yyyy");
+
 $( document ).ready(function() {
     //automatically set the current date (do we need a timestamp)
-    $(function() {
-    $("#datepicker1").datepicker({
-        dateFormat: "dd-mm-yy"
-    }).datepicker("setDate", "0");
-  });
 
     //populate data into input fields based on the account number selected
      $('select[name="accountNumber"]').change(function(){ 

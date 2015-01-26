@@ -205,7 +205,7 @@ module.exports = function (app, entities) {
          	var empty = false;
     }
 	if(userProperties && !empty)
-		res.render('readingsform.ejs', {'properties':userProperties, title: "Submit Readings", user:rloggedInUser});
+		res.render('readingsform.ejs', {'properties':userProperties, title: "Submit Readings", user:loggedInUser});
 	else
 		res.render('addpropertyform.ejs', {title: "Smart CitizenS - Property",  user: loggedInUser, message: "You do not have any property - please add one first before submitting readings"});
 	});

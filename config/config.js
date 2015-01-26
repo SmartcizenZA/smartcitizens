@@ -11,7 +11,7 @@ var config = convict({
     }
   },
 	env: {
-		doc: 'Start Citizen Application Environment.', 
+		doc: 'Smart Citizen Application Environment.', 
 		format: ['production', 'development', 'demo'],
 		default: 'development',
 		env: 'NODE_ENV',

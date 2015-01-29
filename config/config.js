@@ -101,6 +101,31 @@ var config = convict({
 			env: 'LOG_LOCATION',
 			arg: 'log-location'
 		}
+	},
+	emailer: {
+		smpt:{
+			user:{
+				doc: 'SMPT Login Username',
+				default: 'smartcitizens-username',
+				env : 'SMTP_USERNAME',
+				arg: 'smtp-username'
+			},
+			pass:{
+				doc: 'SMTP Login Password',
+				default: 'smartcitizens-password',
+				env : 'SMTP_PASSWORD',
+				arg: 'smtp-password'
+			}
+		},
+		city_council: {
+			email: {
+				doc: 'Email Address for City Council',
+				default : 'meterrecords@tshwane.gov.za',
+				env : 'CITY_EMAIL',
+				arg : 'city-email'
+			}
+		}
+		
 	}
 });
 

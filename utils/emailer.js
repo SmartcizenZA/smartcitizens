@@ -9,6 +9,8 @@ var mailer = require("nodemailer");
 //for generating PDF files
 var fs = require('fs');
 var FileCreator = require('./filecreator');
+//required for accessing configurations
+var config = require('../config/config');
 
 //Some useful literals
 var CITY_OF_TSHWANE = "meterrecords@tshwane.gov.za";
@@ -24,8 +26,8 @@ exports.DEFAULT_EMAIL_BODY = defaultEmailBody;
 var smtpTransport = mailer.createTransport("SMTP",{
     service: "Gmail",
     auth: {
-        user: "smartcitizen.cot@gmail.com",
-        pass: "RH0k2014"
+        user: config.get('emailer.smtp.user'),
+        pass: config.get('emailer.smtp.pass')
     }
 });
 

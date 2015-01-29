@@ -320,7 +320,11 @@ module.exports = function (app, entities) {
 		return filename+Date.now();
 		},
 		onFileUploadStart: function (file) {			
-			console.log(file.originalname + ' is starting ...');
+			console.log(file.originalname + ' is starting ...extension is '+file.extension);
+			if(file.extension != "jpeg" && file.extension !="gif" && file.extension != "png" && file.extension != "jpg"){
+			    console.log("Unsupported File Extention for Readings Evidence ",file.extension);
+				return false;
+			}
 		},
 		onFileUploadComplete: function (file) {
 			console.log(file.fieldname + ' uploaded to  ' + file.path)
@@ -419,7 +423,9 @@ module.exports = function (app, entities) {
 			});		  	  
 		});	
 	}
-	else{ console.log("Upload not done");}
+	else{ console.log("Upload not done");
+	  res.send("Evidence File Rejected - possibly an unsupported Extension.");
+	}
   });
   
   

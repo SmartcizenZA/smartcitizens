@@ -138,7 +138,7 @@ function submitReadingByEmail(id, data, callback){
 	console.log("submitReadingByEmail ("+id+") - Data is \n", data);
 
   if(!data){ callback(new Error("No Data Supplied- Cannot Send Email.")); return; }
-  console.log("submitReadingByEmail:: Abount to Email The Readings Data ", data);
+  console.log("submitReadingByEmail:: About to Email The Readings Data ", data);
   var subject = emailerUtility.DEFAULT_SUBJECT_PREFIX+data.accNum;
   var body = emailerUtility.DEFAULT_EMAIL_BODY;
   //the server-generated IDs are UUID and have dashes which, to create a file name, might need to be changed to underscores.

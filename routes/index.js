@@ -12,6 +12,7 @@ var multer  = require('multer');
 var path = require('path');
 var fs = require('fs');
 var async = require('async');
+var _ = require('lodash');
 
 var uploadDone = false;
 var UsersManager = require('../routes/users.js');
@@ -119,18 +120,10 @@ module.exports = function (app, entities) {
 
   app.post('/login', passport.authenticate('local'), function(req, res) {
   	//get properties of loggedIn owner
-  	  Properties.getPropertiesOfOwner(req.user.id, function (err, property){
-        if (!Object.keys(property).length){
-        	var empty = true;
-           
-         }else
-         {
-         	var empty = false;
-         }
-
-		if(!err && !empty ){
+  	  Properties.getPropertiesOfOwner(req.user.id, function (err, properties){	  
+		if(properties && properties.length >0){
 		  //render main display page
-		  res.render('main.ejs', {title: "Smart CitizenS - Home",user:req.user, prop: property, message: ''});
+		  res.render('main.ejs', {title: "Smart CitizenS - Home",user:req.user, prop: properties, message: ''});
 		   //res.send(property+" isEmpty" + empty)
 		}
 		else{
@@ -190,24 +183,45 @@ module.exports = function (app, entities) {
   //user is requesting to view the submit form
   //must be authenticated
   app.get('/readingsform',Authorizer.isAuthenticated, function(req, res){
-  var loggedInUser = req.user;
+	var loggedInUser = req.user;
 	console.log("user is ",loggedInUser); 
    //this form must be pre-populated with the logged in user  
    if(loggedInUser){
     //get list of user accounts - the user must select which account the readings are for
+	var propertiesAndTheirLastReadings = [];
 	Properties.getPropertiesOfOwner(loggedInUser._id, function (err, userProperties){
-    
-    if (!Object.keys(userProperties).length){
-        	var empty = true;
-           
-         }else
-         {
-         	var empty = false;
-    }
-	if(userProperties && !empty)
-		res.render('readingsform.ejs', {'properties':userProperties, title: "Submit Readings", user:loggedInUser});
-	else
-		res.render('addpropertyform.ejs', {title: "Smart CitizenS - Property",  user: loggedInUser, message: "You do not have any property - please add one first before submitting readings"});
+	
+	//for each property, get the recent readings if available, otherwise set it to 0;
+    async.eachSeries(userProperties, function(userProperty, done){
+		var prop = userProperty.toJSON();
+		var accountNumber = prop.accountnumber;
+		//now get the last reading for this account
+		MeterReadings.getRecentMeterReadingForAccount(accountNumber, function (err, previousReading){
+		 //set previous reading values (water, electricity)
+			if(!err){
+				//if we got some values back, the set them
+				if(previousReading){
+					if(previousReading.water)
+						prop.pastWater = previousReading.water;
+					if(previousReading.electricity)
+						prop.pastElectricity = previousReading.electricity;
+				}
+			}
+			else{
+				console.log("There was an error while reading Recent Meter Reading for Account "+accountNumber, err);
+			}
+			//add it to the list
+			propertiesAndTheirLastReadings.push(prop);			
+		});
+		
+	}, function (getLastReadingError){
+		console.log(" Properties with Past Readings:: ", propertiesAndTheirLastReadings);	
+		if(propertiesAndTheirLastReadings && propertiesAndTheirLastReadings.length >0)
+			res.render('readingsform.ejs', {'properties':propertiesAndTheirLastReadings, title: "Submit Readings", user:loggedInUser});
+		else
+			res.render('addpropertyform.ejs', {title: "Smart CitizenS - Property",  user: loggedInUser, message: "You do not have any property - please add one first before submitting readings"});
+	});
+
 	});
    }
    else{
@@ -340,7 +354,7 @@ module.exports = function (app, entities) {
 	var meterreadingsData;
 	console.log("Uploaded Files: \n", uploadedFiles);	
 	  
-	  //here we use waterfall to streamline the steps that are necessary to prepare the meter-reading data for submission
+	//here we use waterfall to streamline the steps that are necessary to prepare the meter-reading data for submission
 	  
 	async.waterfall([
 		function(done) {

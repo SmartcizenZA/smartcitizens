@@ -38,6 +38,16 @@ exports.getMeterReadingForAccount = function (accountNumber, callback){
     callback(err, meterReadings);
   });
 };
+
+/*
+	This function returns the most recent meter-reading submitted for an account
+*/
+exports.getRecentMeterReadingForAccount = function (accountNumber, callback){
+  MeterReading.findOne({'account': accountNumber}, {}, { sort: { 'updated' : -1 } }, function(err, recentMeterReading) {
+  console.log( recentMeterReading );
+});
+}
+
 /*
   Return a Meter Reading identified with the provided Id.
 */

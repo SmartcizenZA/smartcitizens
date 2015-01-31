@@ -10,6 +10,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var MongoSessionStore = require('mongoose-session');
 var errorHandler = require('errorhandler');
 
 
@@ -27,9 +28,7 @@ app.use(morgan('tiny'));
 app.use(bodyParser());
 app.use(methodOverride());
 app.use(cookieParser(config.get('express.cookieParser.secret')));
-app.use(session({'secret':'c1TiZ3n'}));
-app.use(passport.initialize());
-app.use(passport.session());
+
 
 //set the static path to public (e.g. where images, css, javascripts are stored)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -50,6 +49,15 @@ passport.deserializeUser(Account.deserializeUser());
 
 // mongoose
 mongoose.connect('mongodb://localhost/smartcitizens');
+//session setup
+app.use(session({ 'secret':'c1TiZ3n',
+				  'key': 'session',
+				  'cookie': { maxAge: 2 * 60 * 60 * 1000 },
+				  'store': new MongoSessionStore(mongoose, {ttl: 2 * 60 * 60})
+				}));
+				
+app.use(passport.initialize());
+app.use(passport.session());
 
 // routes, pass in the entities object so that it is available to the routes
 require('./routes/index')(app, entities);

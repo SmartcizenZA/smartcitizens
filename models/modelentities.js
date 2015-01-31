@@ -53,3 +53,16 @@ var PasswordResetRequestSchema = new Schema({
 
 var PasswordResetRequest = mongoose.model('PasswordResetRequest',PasswordResetRequestSchema);
 exports.PasswordResetRequest = PasswordResetRequest;
+
+/*   Notification Model         */
+
+var NotificationSchema = new Schema({
+    account: String,
+	readings_id : String,
+	to: String,
+	message: String,
+	read: {type:Boolean, default: false},
+	updated: { type: Date, default: Date.now }
+});
+var Notification = mongoose.model('Notification',NotificationSchema);
+exports.Notification = Notification;

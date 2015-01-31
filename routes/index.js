@@ -18,6 +18,7 @@ var UsersManager = require('../routes/users.js');
 var Properties = require('../routes/properties.js');
 var MeterReadings = require('../routes/meterreadings.js');
 var PasswordResetRequestsHandler = require('./resets.js');
+var Notifications = require('../routes/notifications.js');
 
 /*
   The index.js plays the router role in this design. It gets passed the Application object from 
@@ -423,12 +424,28 @@ module.exports = function (app, entities) {
 							return res.send("Property Associated With the account number was not found. It is impossible to email the meter readings to City of Tshwane Municipal office");
 						}
 						//so we found the property associated with the readings, not email the readings along with property details
-						MeterReadings.findAndEmailReadings(meterReadingObject._id, associatedProperty, function(err, readingsEmailedSuccessfully){					
-							if(readingsEmailedSuccessfully)
-								res.send("Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id); //use flash?
-							else
-								res.send("There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk"); //TODO: use standard "error" window...eg. res.render(error.ejs, {message: 'some message', error: 'error-object'})
-						});				
+						MeterReadings.findAndEmailReadings(meterReadingObject._id, associatedProperty, function(err, readingsEmailedSuccessfully){		
+								var notification = {
+										'to' : req.user._id,
+										'reading_id': meterReadingObject._id,
+										'message' : ""
+									   };
+									
+								if(readingsEmailedSuccessfully){
+									notification.message = "Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id;
+									res.send("Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id); //use flash?
+									}
+								else{
+									res.send("There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk"); 
+									//TODO: use standard "error" window...eg. res.render(error.ejs, {message: 'some message', error: 'error-object'})
+									notification.message = "There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk. Help -> Contacts.";
+								}
+								//post the notification
+								Notifications.addNotification(notification, function(err, notificationId){
+									console.log("Error ? ",err);
+									console.log("Notification ID ? ",notificationId);
+								});							
+							});				
 					});			
 				}
 				else if(err){
@@ -519,13 +536,82 @@ module.exports = function (app, entities) {
 	var readingsId = req.params.readingsId;
 	var readingsData = req.body;
 	MeterReadings.emailReadings(readingsId, readingsData,function(success){
+	
+		/*
+		account: String,
+		readings_id : String,
+		to: String,
+		message: String,
+		read: {type:Boolean, default: false},
+		updated: { type: Date, default: Date.now }
+		*/
+	   //create a notification
+	   var notification = {
+	    'to' : req.user._id,
+		'reading_id': readingsId,
+		'message' : ""
+	   };
+	
 		if(successful){
 			alert("Readings Emailed To City of Tshwane!");
+			notification.message = "Readings Emailed To City of Tshwane. "+Date.now;
 			res.send("Readings Sent Successfully");
 		}
 		else{
+			notification.message = "Problems sending your Readings...you will try this again later. Go to Home, My Pending Readings and then Click on POST.";			
 			res.send("Problems sending your Readings...you will try this again later. Go to Home, My Pending Readings and then Click on POST.");
 		}
+		
+		//post the notification
+		Notifications.addNotification(notification, function(err, notificationId){
+			console.log("Error ? ",err);
+			console.log("Notification ID ? ",notificationId);
+		});
 	});	
   });  
+  
+  /**************************************************************
+   Notifications Management Region.
+   Here we have the routes for reading,adding, editing and removing notifications
+  */
+  
+  //Get list of Notifications for the current user
+  app.get('/notifications/me', Authorizer.isAuthenticated, function(req, res){
+	var userId = req.user._id;
+	console.log("Getting Notifications for User ", userId);
+	//get a list of notifications for this person
+	Notifications.getUserNotifications(userId, function(errorGettingNotifications, listOfNotifications){
+	  if(errorGettingNotifications){ console.log("Error Retrieving User Notifications. Error is ", errorGettingNotifications); return;}
+	  //return the list
+	  res.send(listOfNotifications);
+	});
+  });
+  
+  //Get list of notifications generated for an Account
+  app.get('/notifications/account/:accountNumber', Authorizer.isAuthenticated, function(req, res){
+	var accountNumber = req.params.accountNumber;
+	console.log("Getting Notifications for Account ", accountNumber);
+	//get a list of notifications for this person
+	Notifications.getAccountNotifications(accountNumber, function(errorGettingNotifications, listOfNotifications){
+	  if(errorGettingNotifications){ console.log("Error Retrieving Account Notifications. Error is ", errorGettingNotifications); return;}
+	  //return the list
+	  res.send(listOfNotifications);
+	});
+  });
+  
+  //Delete a notification
+  app.delete('/notifications/:id', Authorizer.isAuthenticated, function(req, res){
+	var notificationId = req.params.id;
+	Notifications.deleteNotification(notificationId, function(errorDeleting){
+		if(errorDeleting){
+			console.log("Error occurred while deleting Notification. Error is ", errorDeleting);
+			res.send("Error occurred while deleting Notification. Error is "+errorDeleting);
+		}
+		else{
+			console.log("Notification Deleted Successfully...");
+			res.send("Notification Deleted Successfully...");
+		}
+	});
+  });
+  
 };

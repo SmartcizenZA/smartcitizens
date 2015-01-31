@@ -12,7 +12,6 @@ var multer  = require('multer');
 var path = require('path');
 var fs = require('fs');
 var async = require('async');
-var _ = require('lodash');
 
 var uploadDone = false;
 var UsersManager = require('../routes/users.js');
@@ -196,7 +195,7 @@ module.exports = function (app, entities) {
 		var prop = userProperty.toJSON();
 		var accountNumber = prop.accountnumber;
 		//now get the last reading for this account
-		MeterReadings.getRecentMeterReadingForAccount(accountNumber, function (err, previousReading){
+		MeterReadings.getRecentMeterReadingForAccount(accountNumber, function (err, previousReading){		 
 		 //set previous reading values (water, electricity)
 			if(!err){
 				//if we got some values back, the set them
@@ -211,7 +210,8 @@ module.exports = function (app, entities) {
 				console.log("There was an error while reading Recent Meter Reading for Account "+accountNumber, err);
 			}
 			//add it to the list
-			propertiesAndTheirLastReadings.push(prop);			
+			propertiesAndTheirLastReadings.push(prop);
+			done(null);
 		});
 		
 	}, function (getLastReadingError){

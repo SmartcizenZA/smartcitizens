@@ -1,5 +1,6 @@
 readings_evidence/
 node_modules/
 node_modules/async/
+config/development.json
 npm-debug.log
 .DS_Store

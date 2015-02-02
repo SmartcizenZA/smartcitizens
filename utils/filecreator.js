@@ -78,6 +78,7 @@ exports.generateFile = function (filename, dataObject,callback){
 			doc.text('Physical Address. ', 53, addressY+6, {fit: [20, 50]}).rect(50, addressY, 150, 65).stroke();
 			doc.text(dataObject.physicaladdress, secondColX, addressValuesY+6, {fit: [20, 50]}).rect(200, addressValuesY, 200, 65).stroke();
 			//put the meter reading image in the next page, if provided
+			//TODO: We might put the images side-by side instead of creating a separate page for each image
 			if(dataObject.waterimage ){
 				doc.addPage();
 				doc.image(dataObject.waterimage, 100, 60, {fit: [250, 250]})
@@ -92,7 +93,7 @@ exports.generateFile = function (filename, dataObject,callback){
 				var imageYlocation = (!dataObject.waterimage? 60: 200);
 				doc.image(dataObject.electricityimage, 100, imageYlocation, {fit: [250, 250]})
 					.stroke()
-					.text('My Electricity Meter Reading Image. Location X, Y', 100, 50);
+					.text('My Electricity Meter Reading Image.', 100, 50);
 			}
 			
 			doc.end();

@@ -116,8 +116,26 @@ module.exports = function (app, entities) {
   app.get('/login', function(req, res) {
       res.render('index.ejs', {title: "Please Log In" });
   });
-
-
+	
+	/* 
+	  API to Support Single-Page Apps and Mobile Clients
+	*/
+	app.post('/api/login', passport.authenticate('local'), function(req, res) {
+  	//get properties of loggedIn owner
+  	  Properties.getPropertiesOfOwner(req.user.id, function (err, properties){	  
+		if(properties && properties.length >0){
+		  //render main display page
+		  var user = req.user;
+		  user.password = "this-is-not-it";
+		  res.send({"user":user, "properties": properties});		  
+		}
+		else{
+		  res.send({"user":user, "properties": []});
+		}	
+	});
+      
+  });
+	
   app.post('/login', passport.authenticate('local'), function(req, res) {
   	//get properties of loggedIn owner
   	  Properties.getPropertiesOfOwner(req.user.id, function (err, properties){	  

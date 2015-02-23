@@ -365,10 +365,21 @@ module.exports = function (app, entities) {
 		}
 	}));
 	
-  //create new readings
-  app.post('/readings', Authorizer.isAuthenticated ,function(req, res){	  
-   //the upload middleware returned ? 
-  if(uploadDone ==true){   
+  //create new readings  
+  app.post('/readings', Authorizer.isAuthenticated ,function(req, res){	
+	processMeterReadingPost(req, res, function (err, result){
+		if(!err)
+			res.send(result);
+		else
+			res.send({"error":err});
+	});
+  });
+  
+function processMeterReadingPost(req, res, callback){
+	//TODO: If the evidence file was not provided - the upload may be false which is incorrect
+	//This needs to be fixed - if no evidence file, then set to TRUE
+	//the upload middleware returned ? 
+	if(uploadDone ==true || (!req.body.waterimage && !req.body.electricityimage)){   
 	var uploadedFiles = req.files;
 	var meterreadingsData;
 	console.log("Uploaded Files: \n", uploadedFiles);	
@@ -453,8 +464,7 @@ module.exports = function (app, entities) {
 									notification.message = "Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id;
 									res.send("Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id); //use flash?
 									}
-								else{
-									res.send("There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk"); 
+								else{									
 									//TODO: use standard "error" window...eg. res.render(error.ejs, {message: 'some message', error: 'error-object'})
 									notification.message = "There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk. Help -> Contacts.";
 								}
@@ -473,7 +483,11 @@ module.exports = function (app, entities) {
 		});	
 	}
 	else{ console.log("Upload not done");
-	  res.send("Evidence File Rejected - possibly an unsupported Extension.");
+	//check if the evidence files were submitted or not
+		if(req.body.waterimage && req.body.electricityimage){
+			callback( new Error("Evidence File Rejected - possibly an unsupported Extension."));
+		}
+		else{ callback(null); }
 	}
   });
   

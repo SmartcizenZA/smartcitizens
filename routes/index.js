@@ -251,8 +251,14 @@ module.exports = function (app, entities) {
   /*   Property Management API       */
   //This route renders the form for adding new property
   app.get('/addpropertyform',Authorizer.isAuthenticated,function(req, res){
-  var userId = req.params.id;
+  var userId = req.user;
   res.render('addpropertyform.ejs', {user:userId, title: "Add Property", message: ""})
+  });
+
+  //This route renders the list of submtted readings
+  app.get('/viewreadings',Authorizer.isAuthenticated,function(req, res){
+  var userId = req.params.id;
+  res.render('viewreadings.ejs', {user:req.user, title: "View Readings", message: ""})
   });
   
   //create new property
@@ -489,7 +495,7 @@ function processMeterReadingPost(req, res, callback){
 		}
 		else{ callback(null); }
 	}
-  });
+  }
   
   
   //read [one, some]

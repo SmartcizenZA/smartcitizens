@@ -203,7 +203,7 @@ module.exports = function (app, entities) {
   app.get('/readingsform',Authorizer.isAuthenticated, function(req, res){
 	var loggedInUser = req.user;
 	console.log("user is ",loggedInUser); 
-   //this form must be pre-populated with the logged in user  
+   //this form must be pre-populated with the loggedin user  
    if(loggedInUser){
     //get list of user accounts - the user must select which account the readings are for
 	var propertiesAndTheirLastReadings = [];
@@ -255,10 +255,55 @@ module.exports = function (app, entities) {
   res.render('addpropertyform.ejs', {user:userId, title: "Add Property", message: ""})
   });
 
-  //This route renders the list of submtted readings
+  //This route renders the list of submitted/history of readings
   app.get('/viewreadings',Authorizer.isAuthenticated,function(req, res){
-  var userId = req.params.id;
-  res.render('viewreadings.ejs', {user:req.user, title: "View Readings", message: ""})
+  	var loggedInUser = req.user;
+ 
+    //before retrieving properties and readings - check if user is loggedin
+   if(loggedInUser){
+    //get list of user accounts - the user must select which account the readings are for
+	var propertiesAndreadings= [];
+	var previousReadings;
+	var userPropertyList;
+
+	Properties.getPropertiesOfOwner(loggedInUser._id, function (err, userProperties){
+	
+     userPropertyList = userProperties;
+
+	//for each property, get the recent readings if available, otherwise set it to 0;
+    async.eachSeries(userProperties, function(userProperty, done){
+		var prop = userProperty.toJSON();
+		var accountNumber = prop.accountnumber;
+		//now get the  readingHistory for this account
+		MeterReadings.getMeterReadingForAccount(accountNumber, function (err, previousReading){		 
+		 //retrieve all the previous readings
+			if(!err){
+				//if we got some values back, the set them
+				
+				if(previousReading){
+				previousReadings = previousReading; 
+				}
+			}
+			else{
+				console.log("There was an error while reading Recent Meter Reading for Account "+accountNumber, err);
+			}
+			
+			done(null);
+		});
+		
+	}, function (getLastReadingError){
+		console.log(" Past Readings:", previousReadings);	
+		if(previousReadings && previousReadings.length >0)
+			res.render('viewreadings.ejs', {"previousreadings":previousReadings, "userproperties": userPropertyList, title: "Submit Readings", user:loggedInUser, message: ""});
+		else
+			res.render('viewreadings.ejs', {title: "Smart CitizenS - Readings",  user: loggedInUser, message: "You do not have any readings - please submit readings first"});
+	});
+
+	});
+   }
+   else{
+	res.send('No User Found...');
+	}
   });
   
   //create new property
@@ -496,8 +541,7 @@ function processMeterReadingPost(req, res, callback){
 		else{ callback(null); }
 	}
   }
-  
-  
+
   //read [one, some]
   app.get('/readings/:id', Authorizer.isAuthenticated, function(req, res){
 	var id = req.params.id;

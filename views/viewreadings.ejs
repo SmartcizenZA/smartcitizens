@@ -6,30 +6,51 @@
   <%include loggedInHeader  %>
 <% } else { %>
 
- <%include nopropertyHeader %>
+ <%=message %>
 
   <%}%>
-<br>
-   <p class="text-danger text-center"><%=message%></p>
-   <div class="main container panel">
+<div class="container">
+    <div class="row">
+   		<div class="col-mid-1">
+      	<span class="label label-primary">Readings History</span>
+   	  	<br /><br />
+   	   	</div>
+   	</div>
+</div>
+<div class="container panel">
    <div class="row">
-  <div class="col-md-12 text-center">Recent Readings</div>
-  <div class="col-md-3">Water</div>
-  <div class="col-md-3">0 KL</div>
-  <div class="col-md-3">Electricity</div>
-  <div class="col-md-3">0 KWh</div>
-   </div>
-  </div>
-   <div class="main container panel">
-   <div class="row">
-  <div class="col-md-12 text-center">History of Readings</div>
-  <div class="col-md-3">Water</div>
-  <div class="col-md-3">Units</div>
-  <div class="col-md-3">Electricity</div>
-  <div class="col-md-3">Units</div>
-   </div>
-  </div>
+    <table id="readings" class="table table-hover table-responsive table-bordered">
+ 	<thead>
+ 		<tr>
+ 			<th>#</th>
+ 			<th>Account</th>
+ 			<th>Readings Date</th>
+ 			<th>Water Readings (KL)</th>
+ 			<th>Electricity Readings (KWh)</th>
+ 			<th>Email Status</th>
+ 		</tr>
+ 	</thead>
+ 	<tbody>
+ 	<% for(var i=0; i<previousreadings.length; i++) { %>
+        <tr>
+        	<td><%= i+1%></td>
+        	<td><%= previousreadings[i].account%></td>
+        	<td><%= previousreadings[i].date%></td>
+        	<td><%= previousreadings[i].water%></td>
+        	<td><%= previousreadings[i].electricity%></td>
+        	<td><%= previousreadings[i].emailed%></td>
+        </tr>
+    		<% } %>
+     </tbody>
+   </table>
+    </div>
+</div>
    <%include footer %>
 </body>
 </html>
+<script>
+$(document).ready(function() {
+    $('#readings').dataTable();
+} );
+</script>
 

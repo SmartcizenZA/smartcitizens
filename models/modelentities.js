@@ -66,3 +66,29 @@ var NotificationSchema = new Schema({
 });
 var Notification = mongoose.model('Notification',NotificationSchema);
 exports.Notification = Notification;
+
+var GCMRegistrationSchema = new Schema({
+    email: String,
+	app_name : String,
+	reg_id: String,
+	created: { type: Date, default: Date.now }
+});
+var GCMRegistration = mongoose.model('GCMRegistration',GCMRegistrationSchema);
+exports.GCMRegistration = GCMRegistration;
+
+
+/*
+ Routes for TuckShop Spotting in the Townships
+*/
+var TuckShopSchema = new Schema({
+	name: String,
+	x: String,
+	y: String,
+	airtime: {type: Boolean, default: false},
+	publicPhone : {type: Boolean, default: false},
+	electricity: {type: Boolean, default: false},
+	galleryURL : String,
+	discoverer: String
+});
+var TuckShop = mongoose.model('TuckShop',TuckShopSchema);
+exports.TuckShop = TuckShop;

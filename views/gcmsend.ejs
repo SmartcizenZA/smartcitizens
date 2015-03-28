@@ -1,0 +1,82 @@
+<% include header %>
+
+<body>
+   <div class="main container">
+
+	<div class="ui active tab" data-tab="usage">
+
+		<form class="ui form segment" action="/gcm/send" method="POST">
+		<h4 class="ui dividing header">Smart CitizenS GCM Testbed</h4>
+			<div class="ui error message">
+        		<div class="header">There are errors in your form</div>
+      		</div>
+			<div class="required field">
+				<label>Email</label>
+				<input placeholder="email@email.com" name="email" type="text">
+			</div>
+			
+			<div class="required field">
+				<label>Friendly App Name</label>
+				<input placeholder="my_app_name" name="app_name" type="text">
+			</div>
+
+			<div class="required field">
+				<label>Notification</label>
+				<input placeholder="message to send" name="message" type="text">
+			</div>
+
+			<input type="submit" class="btn btn-primary btn-block" value="Send" >		
+		</form>
+    </div>
+
+    <%include footer %>
+	<script type="text/javascript">
+		
+	$('.ui.form')
+	  .form({
+	    my_app_name: {
+	      identifier  : 'my_app_name',
+	      rules: [
+	        {
+	          	type   : 'empty',
+	          	prompt : 'Please supply your my_app_name (at least must be 6 characters long)'
+	        },
+	        {
+	        	type   : 'length[6]',
+          		prompt : 'Your my_app_name must be at least 6 characters'
+
+	        }
+	      ]
+	    },
+	    message: {
+	      identifier  : 'message',
+	      rules: [
+	        {
+	          	type   : 'empty',
+	          	prompt : 'message is a required field'
+	        },
+	        {
+	        	type   : 'length[4]',
+          		prompt : 'Your message must be at least 4 characters'
+	        }
+	      ]
+	    },
+	    email: {
+	      identifier  : 'email',
+	      rules: [
+	        {
+	          type   : 'empty',
+	          prompt : 'Email address is a required field'
+	        },
+	        {
+	          type	 : 'email[email]',
+	          prompt : 'Email address must be valid'
+	        }
+	      ]
+	    }
+	});
+	</script>
+   </div>
+</body>
+</html>
+

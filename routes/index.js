@@ -19,6 +19,7 @@ var Properties = require('../routes/properties.js');
 var MeterReadings = require('../routes/meterreadings.js');
 var PasswordResetRequestsHandler = require('./resets.js');
 var Notifications = require('../routes/notifications.js');
+var SmartCitizensGCM = require('../routes/gcm.js');
 
 /*
   The index.js plays the router role in this design. It gets passed the Application object from 
@@ -753,6 +754,74 @@ function processMeterReadingPost(req, res, callback){
 			res.send("Notification Deleted Successfully...");
 		}
 	});
+  });
+  
+  //GCM-Demo 
+	var gcm = require('node-gcm');
+	var sender = new gcm.Sender('AIzaSyD7s6lgYnKNqJlW63yqOloUsRxtfCREpl0');
+
+  //This is the route for sending notifications
+  app.post('/gcm/send', function (req, res){
+	console.log("GCM-Push Notification Request: ", req.body);
+	var emailOfRecipient = req.body.email;
+	//try to find the recipient's GCM-ID
+	SmartCitizensGCM.getGCMRegistrationByEmail(emailOfRecipient, function (err, gcmRegistrationEntry){
+		if(gcmRegistrationEntry){
+		  //now we can try and send the notification here...		  
+			var sendRequest = req.body;
+			var recipientGCMRegId = gcmRegistrationEntry.reg_id; 
+			var message = new gcm.Message();
+			message.addData('content', reg.body.message);
+			message.addData('time', Date.now);
+			
+			if(sender){
+			sender.send(message, [recipientGCMRegId], function (err, result) {
+				if(err){ 
+					console.error(err);
+					res.send("Bona, go na le error somewhere..."+err);
+				}
+				else {   console.log(result); 
+					res.send("Nice, Sending Push Notification now...check with the recipient..result = "+result);
+				}
+			});
+
+			}
+			else{
+			console.log("It seems we do not have GCM Connection to Google");
+			}
+		  
+		}
+		else{
+			//GCM Notification not possible...unknown recipient
+			res.send("Eish! Could Not Find GCM for the email provided...");
+		}
+	});
+		
+  });
+  
+  //This is the route for registering:
+  /*
+  
+    { email: String,
+	 app_name : String,
+	 reg_id: String}
+   You get back a new JSON model with attribute _id as a UUID - this shows your 3rd party reg was successful.
+  */
+  app.post('/gcm/register', function (req, res){
+    var registrationRequest = req.body;
+	console.log("GCM-Push Registration Request: ", registrationRequest);
+	SmartCitizensGCM.add(registrationRequest, function (err, gcmRegistrationEntry){
+	 if(gcmRegistrationEntry){ 
+		console.log("GCM Registration Successful on 3rd Party Server" ); 
+		res.send(gcmRegistrationEntry); 
+	 }
+	 else{ console.log("There was an error registering. Error is ", err); res.send("There was an error registering. Error is ");}
+	});
+	
+  });
+  
+  app.get('/gcm_send', function (res, res){
+     res.render('gcmsend.ejs', {title: "Smart CitizenS GCM Testbed"})
   });
   
 };

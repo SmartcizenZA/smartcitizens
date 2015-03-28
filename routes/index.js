@@ -658,6 +658,48 @@ function processMeterReadingPost(req, res, callback){
    Here we have the routes for reading,adding, editing and removing notifications
   */
   
+  //----------------Start API
+  
+  //Get notifications for a user
+  app.get('/api/notifications/:me', function(req, res){
+	var userId = req.params.me;
+	console.log("Getting Notifications for User ", userId);
+	//get a list of notifications for this person
+	Notifications.getUserNotifications(userId, function(errorGettingNotifications, listOfNotifications){
+	  if(errorGettingNotifications){ console.log("Error Retrieving User Notifications. Error is ", errorGettingNotifications); return;}
+	  //return the list
+	  res.send(listOfNotifications);
+	});	
+  });
+  
+  app.get('/api/notifications/account/:accountNumber', function(req, res){
+	var accountNumber = req.params.accountNumber;
+	console.log("Getting Notifications for Account ", accountNumber);
+	//get a list of notifications for this person
+	Notifications.getAccountNotifications(accountNumber, function(errorGettingNotifications, listOfNotifications){
+	  if(errorGettingNotifications){ console.log("Error Retrieving Account Notifications. Error is ", errorGettingNotifications); return;}
+	  //return the list
+	  res.send(listOfNotifications);
+	});
+  });
+  
+  app.delete('/api/notifications/:id', function(req, res){
+	var notificationId = req.params.id;
+	Notifications.deleteNotification(notificationId, function(errorDeleting){
+		if(errorDeleting){
+			console.log("Error occurred while deleting Notification. Error is ", errorDeleting);
+			res.send({'success': false, 'message': 'Delete Was Not Successful' });
+		}
+		else{
+			console.log("Notification Deleted Successfully...");
+			res.send({'success': true, 'message': 'Deleted Successfully' });
+		}
+	});
+  });
+  
+  
+  //----------------End API
+  
   //Get list of Notifications for the current user
   app.get('/notifications/me', Authorizer.isAuthenticated, function(req, res){
 	var userId = req.user._id;

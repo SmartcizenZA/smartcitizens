@@ -244,9 +244,7 @@ module.exports = function (app, entities) {
 
 	});
    }
-   else{
-	res.send('No User Found...');
-	}
+   else{ res.send('No User Found...'); }
   });
   
   /*   Property Management API       */
@@ -876,12 +874,10 @@ function processMeterReadingPost(req, res, callback){
 		res.send(gcmRegistrationEntry); 
 	 }
 	 else{ console.log("There was an error registering. Error is ", err); res.send("There was an error registering. Error is ");}
-	});
-	
+	});	
   });
   
   app.get('/gcm_send', function (res, res){
      res.render('gcmsend.ejs', {title: "Smart CitizenS GCM Testbed"})
-  });
-  
+  });  
 };

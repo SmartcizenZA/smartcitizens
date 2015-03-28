@@ -2,6 +2,7 @@
 //through the req.entities;
 var emailerUtility = require('../utils/emailer.js');
 var entities = require('../models/modelentities');
+var path = require('path');
 var MeterReading = entities.MeterReading;
 
 /*POST Meter reading*/
@@ -114,7 +115,7 @@ exports.deleteMeterReading = function (id, callback){
 /*
 	Helper method that finds the meter-reading by Id and then email it.
 */
-exports.findAndEmailReadings = function (readingsId, associatedProperty, callback){
+exports.findAndEmailReadings = function (readingsId, associatedProperty, userReadingsFilesDir, callback){
 	MeterReading.findById(readingsId, function (err, meterReading) {
 		if(!err && meterReading){	
 			var meterReadingData = associatedProperty;
@@ -125,7 +126,7 @@ exports.findAndEmailReadings = function (readingsId, associatedProperty, callbac
 			meterReadingData.date = meterReading.date;
 			meterReadingData._id = meterReading._id;
 			console.log("MeterReading Before Submit = "+meterReadingData);
-			submitReadingByEmail(meterReading._id, meterReadingData, callback);	
+			submitReadingByEmail(meterReading._id, meterReadingData, userReadingsFilesDir, callback);	
 		}
 		else if(err){
 		  callback(err);
@@ -140,12 +141,12 @@ exports.findAndEmailReadings = function (readingsId, associatedProperty, callbac
 	API method for sending the meter readings by email.
 */
 exports.emailReadings = function(readingsId, readingsData,callback){
-   submitReadingByEmail(readingsId, readingsData, callback);
+   submitReadingByEmail(readingsId, readingsData, null, callback);
 };
 /*
   Helper method to email the readings to the City of Tshwane 
 */
-function submitReadingByEmail(id, data, callback){
+function submitReadingByEmail(id, data, userReadingsFilesDir, callback){
 
 	console.log("submitReadingByEmail ("+id+") - Data is \n", data);
 
@@ -156,6 +157,8 @@ function submitReadingByEmail(id, data, callback){
   //the server-generated IDs are UUID and have dashes which, to create a file name, might need to be changed to underscores.
   var idSeparator = new RegExp("-", 'g');  
   var serverGeneratedReadingsId =id; //.toString().replace(idSeparator,"_"); 
+  //compute the actual generated-PDF file path
+  var userReadingsFile = (!userReadingsFilesDir? serverGeneratedReadingsId+".pdf" : userReadingsFilesDir+path.sep+serverGeneratedReadingsId+".pdf");
   emailerUtility.sendMailToCity(data,subject ,body, function(success){
 		//here perhaps we need to record in our DBs that we have successfully posted the readings
 	   console.log("Email sent: ",success);
@@ -164,7 +167,7 @@ function submitReadingByEmail(id, data, callback){
 		markAsEmailed(id);
 	   }
 	   callback(null,success);
-	}, serverGeneratedReadingsId); 
+	}, userReadingsFile); 
 }
 
 /*

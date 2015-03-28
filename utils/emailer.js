@@ -8,6 +8,7 @@ This script is used to generate an email to be sent to the City - the email cont
 var mailer = require("nodemailer");
 //for generating PDF files
 var fs = require('fs');
+var path = require('path');
 var FileCreator = require('./filecreator');
 //required for accessing configurations
 var config = require('../config/config');
@@ -40,16 +41,17 @@ var mail = {
 };
 
 //helper method for sending out an Email to City Offices with Meter Readings attached
-exports.sendMailToCity = function(meterDataObject, subject, text, callback, sysGeneratedReadingsId){
+exports.sendMailToCity = function(meterDataObject, subject, text, callback, readingFileName){
 
     if(text){
-	 console.log("Data provided, can generate file");
-	 //now use file generator
-	 var readingFileName = sysGeneratedReadingsId+".pdf";
+	 console.log("Data provided, can generate file to location :: ", readingFileName);
+	 //now use file generator	 
+	 
 	  FileCreator.generateFile(readingFileName,meterDataObject, function (error, data){
 	     if(data){
 		 //add as attachments
-			mail.attachments = [{"filePath": "./"+readingFileName}];
+			console.log("File-Creator-Generated File - located :: ", readingFileName);
+			mail.attachments = [{"filePath": readingFileName}];
 			//TODO: change this to CITY_OF_TSHWANE_EMAIL
 			mail.to = meterDataObject.email;
 			mail.subject = subject;

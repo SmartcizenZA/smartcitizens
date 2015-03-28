@@ -589,7 +589,9 @@ function processMeterReadingPost(req, res, callback){
 							return res.send("Property Associated With the account number was not found. It is impossible to email the meter readings to City of Tshwane Municipal office");
 						}
 						//so we found the property associated with the readings, not email the readings along with property details
-						MeterReadings.findAndEmailReadings(meterReadingObject._id, associatedProperty, function(err, readingsEmailedSuccessfully){		
+						//Compute the current user's evidence-file location
+						var userReadingsFilesDir = app.get('evidence_dir')+path.sep+req.user.username;
+						MeterReadings.findAndEmailReadings(meterReadingObject._id, associatedProperty, userReadingsFilesDir, function(err, readingsEmailedSuccessfully){		
 								var notification = {
 										'to' : req.user._id,
 										'reading_id': meterReadingObject._id,

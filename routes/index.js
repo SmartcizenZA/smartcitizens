@@ -417,6 +417,90 @@ module.exports = function (app, entities) {
 		}
 	}));
 	
+	//--------------Start API
+	
+	app.post('/api/readings', function(req, res){	
+	processMeterReadingPost(req, res, function (err, result){
+		if(!err)
+			res.send({'success': true,'result':result});
+		else
+			res.send({'success': false,"error":err});
+	});
+  });
+	
+	app.get('/api/readings/:id', function(req, res){
+	var id = req.params.id;
+	MeterReadings.getMeterReadingById(id, function(err, meterReading){
+		if(meterReading){
+			res.send(meterReading);
+		}
+		else{
+			console.log("Something happened and we did not get readings. Error ", err);
+			res.send("There was a problem retrieving your readings. Show a custom Not Found Page. ");
+		}
+	});
+  });
+  
+  //get [list of ] meter-readings for an Account.
+  app.get('/api/readings/:accountNumber', function(req, res){
+	var accountNumber = req.params.accountNumber;
+	MeterReadings.getMeterReadingById(accountNumber, function(err, meterReadingsForAccount){
+		if(meterReadingsForAccount){
+			res.send(meterReadingsForAccount);
+		}
+		else{
+			console.log("Something happened and we did not get readings. Error ", err);
+			res.send("There was a problem retrieving your readings. Show a custom Not Found Page. ");
+		}
+	});  
+  });
+  
+  //list 
+  app.get('/api/readings', function(req, res){
+	MeterReadings.list(function(err, listOfMeterReadings){
+		if(listOfMeterReadings){
+			res.send(listOfMeterReadings);
+		}
+		else{
+			console.log("Something happened and we did not get readings. Error ", err);
+			res.send("There was a problem retrieving your readings. Show a custom Not Found Page. ");
+		}
+	});
+  });
+  
+  //update
+  app.put('/api/readings/:id', function(req, res){
+	var id = req.params.id;
+	var values = req.body;	
+	MeterReadings.updateMeterReading(id, values, function(err, updatedReading){
+		if(updatedReading){
+			res.send(updatedReading);
+		}
+		else{
+			console.log("Something happened and we did not update readings. Error ", err);
+			res.send("There was a problem Updating your readings. Show error and stay put. ");
+		}
+	});  
+  });
+  
+  //delete
+  app.delete('/api/readings/:id', function(req, res){
+	var id = req.params.id;
+	MeterReadings.deleteMeterReading(id,function(err){
+		if(!err){
+			res.send("Deleting was successful");
+		}
+		else{
+			console.log("Something happened and we did not update readings. Error ", err);
+			res.send("There was a problem Deleting your readings. Show error and stay put. ");
+		}
+	});  
+  });
+	
+	
+	//------------------------- End API
+	
+	
   //create new readings  
   app.post('/readings', Authorizer.isAuthenticated ,function(req, res){	
 	processMeterReadingPost(req, res, function (err, result){
@@ -618,16 +702,7 @@ function processMeterReadingPost(req, res, callback){
 	console.log("Your Request to Email Readings is noted...");
 	var readingsId = req.params.readingsId;
 	var readingsData = req.body;
-	MeterReadings.emailReadings(readingsId, readingsData,function(success){
-	
-		/*
-		account: String,
-		readings_id : String,
-		to: String,
-		message: String,
-		read: {type:Boolean, default: false},
-		updated: { type: Date, default: Date.now }
-		*/
+	MeterReadings.emailReadings(readingsId, readingsData,function(success){	
 	   //create a notification
 	   var notification = {
 	    'to' : req.user._id,

@@ -204,7 +204,7 @@ module.exports = function (app, entities) {
   app.get('/readingsform',Authorizer.isAuthenticated, function(req, res){
 	var loggedInUser = req.user;
 	console.log("user is ",loggedInUser); 
-   //this form must be pre-populated with the logged in user  
+   //this form must be pre-populated with the loggedin user  
    if(loggedInUser){
     //get list of user accounts - the user must select which account the readings are for
 	var propertiesAndTheirLastReadings = [];
@@ -252,11 +252,62 @@ module.exports = function (app, entities) {
   /*   Property Management API       */
   //This route renders the form for adding new property
   app.get('/addpropertyform',Authorizer.isAuthenticated,function(req, res){
-  var userId = req.params.id;
+  var userId = req.user;
   res.render('addpropertyform.ejs', {user:userId, title: "Add Property", message: ""})
   });
+
+  //This route renders the list of submitted/history of readings
+  app.get('/viewreadings',Authorizer.isAuthenticated,function(req, res){
+  	var loggedInUser = req.user;
+ 
+    //before retrieving properties and readings - check if user is loggedin
+   if(loggedInUser){
+    //get list of user accounts - the user must select which account the readings are for
+	var propertiesAndreadings= [];
+	var previousReadings;
+	var userPropertyList;
+
+	Properties.getPropertiesOfOwner(loggedInUser._id, function (err, userProperties){
+	
+     userPropertyList = userProperties;
+
+	//for each property, get the recent readings if available, otherwise set it to 0;
+    async.eachSeries(userProperties, function(userProperty, done){
+		var prop = userProperty.toJSON();
+		var accountNumber = prop.accountnumber;
+		//now get the  readingHistory for this account
+		MeterReadings.getMeterReadingForAccount(accountNumber, function (err, previousReading){		 
+		 //retrieve all the previous readings
+			if(!err){
+				//if we got some values back, the set them
+				
+				if(previousReading){
+				previousReadings = previousReading; 
+				}
+			}
+			else{
+				console.log("There was an error while reading Recent Meter Reading for Account "+accountNumber, err);
+			}
+			
+			done(null);
+		});
+		
+	}, function (getLastReadingError){
+		console.log(" Past Readings:", previousReadings);	
+		if(previousReadings && previousReadings.length >0)
+			res.render('viewreadings.ejs', {"previousreadings":previousReadings, "userproperties": userPropertyList, title: "Submit Readings", user:loggedInUser, message: ""});
+		else
+			res.render('viewreadings.ejs', {title: "Smart CitizenS - Readings",  user: loggedInUser, message: "You do not have any readings - please submit readings first"});
+	});
+
+	});
+   }
+   else{
+	res.send('No User Found...');
+	}
+  });
   
-  //create new property  
+  //create new property
   app.post('/properties',Authorizer.isAuthenticated, function(req, res){
   var data = {
 		"portion" : req.body.portion,
@@ -277,80 +328,7 @@ module.exports = function (app, entities) {
 	});  
   });
   
-  //Client API
-  app.post('/api/properties',Authorizer.isAuthenticated, function(req, res){
-  var data = {
-		"portion" : req.body.portion,
-		"accountnumber" : req.body.accountnumber,
-		 "bp" : req.body.bp,
-		"contacttel" : req.body.contacttel,
-		"email" : req.user.email,
-		"initials" : req.body.initials,
-		"surname" : req.body.surname,
-		"physicaladdress" : req.body.physicaladdress,
-		'owner': req.user._id
-	   };
-	//add a new property
-	Properties.add(data, function(error, property){
-		console.log("Back from adding Property!"); 
-		if(property) {res.send({"created": true, "property":property}); }
-		else{res.send({"created": false, "Error": "Property Not Added"});}
-	});  
-  });
-  
   //list All properties
-  app.get('/api/properties', Authorizer.isAuthenticated, function (req, res){
-    Properties.list(function (err, properties){  		
-		//render properties list page
-		res.send(properties);		
-	});
-  });
-  
-  app.get('/api/properties/owner/:ownerId', Authorizer.isAuthenticated, function (req, res){
-    Properties.getPropertiesOfOwner(req.params.ownerId, function (err, properties){		
-		  //render properties list page
-		res.send(properties);			
-	});
-  });
-  
-    app.get('/api/properties/:id', Authorizer.isAuthenticated, function (req, res){
-    Properties.getPropertyById(req.params.id, function (err, property){		
-		  //render properties display page
-		  res.send(property);		
-	});
-  });
-  
-  app.put('/api/properties/:id', Authorizer.isAuthenticated, function(req, res){
-  var propertyId = req.params.id;
-  var values = req.body;
-	Properties.updateProperty(propertyId, values, function(errorUpdating){
-		if(!errorUpdating){
-		//The client should retrieve the updated model - or we should return the updated model here?
-		res.send({"updated": true});
-		}
-		else{
-		//There was a problem updating - so we should stay on the same form/page
-		res.send({"updated": false});
-		}
-	});
-  });
-  //delete
-  app.delete('/api/properties/:id', Authorizer.isAuthenticated, function(req, res){
-	var propertyId = req.params.id;
-	Properties.deteleProperty(propertyId, function(errorDeleting){
-		if(!errorDeleting){
-			//Everything went well, we might want to move the user to some other screen or simply refresh the ui
-			res.send({"deleted": true});
-		}
-		else{
-			//There was a problem deleting - so we should stay on the same form/page - perhaps an Alert
-			res.send({"deleted": false});
-		}	
-	});  
-  });
-  
-  //END-API
-  
   app.get('/properties', Authorizer.isAuthenticated, function (req, res){
     Properties.list(function (err, properties){
   		if(!err){
@@ -367,6 +345,7 @@ module.exports = function (app, entities) {
   app.get('/properties/owner/:ownerId', Authorizer.isAuthenticated, function (req, res){
     Properties.getPropertiesOfOwner(req.params.ownerId, function (err, properties){
 		if(!err){
+
 		  //render properties list page
 		  res.send(properties+" "+isEmpty);
 		}
@@ -438,43 +417,7 @@ module.exports = function (app, entities) {
 		}
 	}));
 	
-	
-	//Meter-Readings API
-	app.post('/api/readings', Authorizer.isAuthenticated ,function(req, res){	
-		processMeterReadingPost(req, res, function (err, result){
-			if(!err)
-				res.send(result);
-			else
-				res.send({"error":err});
-		});
-  });
-  
-    app.get('/api/readings/:id', Authorizer.isAuthenticated, function(req, res){
-	var id = req.params.id;
-	MeterReadings.getMeterReadingById(id, function(err, meterReading){		
-		res.send(meterReading);		
-	});
-  });
-  
-  //get [list of ] meter-readings for an Account.
-  app.get('/api/readings/:accountNumber', Authorizer.isAuthenticated, function(req, res){
-	var accountNumber = req.params.accountNumber;
-	MeterReadings.getMeterReadingById(accountNumber, function(err, meterReadingsForAccount){
-		res.send(meterReadingsForAccount);		
-	});  
-  });
-  
-  //list 
-  app.get('/api/readings', Authorizer.isAuthenticated, function(req, res){
-	MeterReadings.list(function(err, listOfMeterReadings){		
-		res.send(listOfMeterReadings);		
-	});
-  });  
-  
-  //End API
-	
-  //create new readings
-    
+  //create new readings  
   app.post('/readings', Authorizer.isAuthenticated ,function(req, res){	
 	processMeterReadingPost(req, res, function (err, result){
 		if(!err)
@@ -559,7 +502,7 @@ function processMeterReadingPost(req, res, callback){
 					Properties.getPropertyByAccountNumber(readingsAssociatedAccount, function(errorLocatingProperty, associatedProperty){			
 						if(!associatedProperty){ 
 							console.log("Error is ", errorLocatingProperty);
-							return callback( new Error("Property Associated With the account number was not found. It is impossible to email the meter readings to City of Tshwane Municipal office"));
+							return res.send("Property Associated With the account number was not found. It is impossible to email the meter readings to City of Tshwane Municipal office");
 						}
 						//so we found the property associated with the readings, not email the readings along with property details
 						MeterReadings.findAndEmailReadings(meterReadingObject._id, associatedProperty, function(err, readingsEmailedSuccessfully){		
@@ -570,7 +513,8 @@ function processMeterReadingPost(req, res, callback){
 									   };
 									
 								if(readingsEmailedSuccessfully){
-									notification.message = "Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id;	
+									notification.message = "Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id;
+									res.send("Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is "+meterReadingObject._id); //use flash?
 									}
 								else{									
 									//TODO: use standard "error" window...eg. res.render(error.ejs, {message: 'some message', error: 'error-object'})
@@ -580,14 +524,12 @@ function processMeterReadingPost(req, res, callback){
 								Notifications.addNotification(notification, function(err, notificationId){
 									console.log("Error ? ",err);
 									console.log("Notification ID ? ",notificationId);
-								});	
-								//return
-								callback(null, {"id":meterReadingObject._id, "status": notification.message});
+								});							
 							});				
 					});			
 				}
-				else if(err){					
-					callback( new Error("There was a problem saving your readings"));
+				else if(err){
+					res.send("There was a problem saving your readings - so we should stay on the same form/page and try again");
 				}
 			});		  	  
 		});	
@@ -599,9 +541,8 @@ function processMeterReadingPost(req, res, callback){
 		}
 		else{ callback(null); }
 	}
-  
   }
-  
+
   //read [one, some]
   app.get('/readings/:id', Authorizer.isAuthenticated, function(req, res){
 	var id = req.params.id;

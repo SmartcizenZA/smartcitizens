@@ -29,7 +29,8 @@ $( document ).ready(function() {
         $('input[name="contacttel"]').val(properties[index].contacttel);
         $('input[name="physicaladdress"]').val(properties[index].physicaladdress);
         $('input[name="surname"]').val(properties[index].surname);
-
+        $('input[name="water"]').val(properties[index].pastWater);
+        $('input[name="electricity"]').val(properties[index].pastElectricity);
          }
       }
    });
@@ -37,6 +38,14 @@ $( document ).ready(function() {
 </script>
 <body>
 <%include loggedInHeader %>
+<div class="container">
+    <div class="row">
+        <div class="col-mid-1">
+        <span class="label label-primary">Readings Submission Form</span>
+        <br /><br />
+        </div>
+    </div>
+</div>
 <div class="main container">
   <div class="ui active tab" data-tab="usage">
     <form class="ui form segment" action="/readings" method="POST" enctype="multipart/form-data">
@@ -66,9 +75,9 @@ $( document ).ready(function() {
         <br/><hr/>
         <p class="text-info"> Enter your water and/or light readings </p>
         <label for="water"> Water Meter Readings</label>
-        <input type="number" name="water" placeholder="0351" min=0351 step=1 required>
+        <input type="number" name="water" placeholder='<%=properties[0].pastWater%>' min='<%=properties[0].pastWater%>' step=1 required>
         <label for="electricity">Electricity Meter Readings</label>
-        <input type="number" name="electricity"  placeholder="134091" min=134091 step=1>
+        <input type="number" name="electricity"  placeholder='<%=properties[0].pastElectricity%>' min='<%=properties[0].pastElectricity%>' step=1>
         <hr/>
         <p class="text-info"> Provide a picture of your meter readings [optional] </p>
         <label for ="waterimage">Water Meter Readings Evidence </label>

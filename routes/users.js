@@ -33,6 +33,34 @@ exports.add = function (req, res){
 		}
 	});
   };
+  
+  //apiAddUser
+  exports.apiAddUser = function (req, res){
+	console.log("Registration Request "+JSON.stringify(req.body));
+    alreadyExisits(req.body.username, function(err, exists){
+		if(exists){
+			console.log("Chosen Name Already Exists, forgot password?");
+			res.send({'success': false, 'message': "That username already exists, you might have forgotten your password. Otherwise choose a different name"});
+		}
+		else{			
+			Account.register(new Account({ username : req.body.username, email: req.body.email }), req.body.password, function(err, account) {
+				if (err) {
+					return res.send({'success':false, 'message': 'There was Error Registering Your Account.'});
+				}
+				//at this point we created the user -
+				var userSpecificFolder = req.body.baseFolder+'/'+account.username;
+				console.log("Folder will be at:: "+userSpecificFolder);
+				mkdirp(userSpecificFolder, function(err) { 
+				  if(err){ console.log("PROBLEM: User Created but his/her images folder not created. ", err);}
+				  else{ console.log("Folder Created At:: "+userSpecificFolder);}
+				});
+				passport.authenticate('local')(req, res, function () {
+				  res.send({'success':true, 'user':account});
+				});
+			});
+		}
+	});
+  };
  /*
 	Get a User Account by ID - this is done by admin or the user whose account is looked up.
 */ 

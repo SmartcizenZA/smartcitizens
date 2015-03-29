@@ -55,6 +55,7 @@ module.exports = function (app, entities) {
   });
 
   //create new user (signup)
+  app.post('/api/users', function(req, res, next){ req.body.baseFolder = app.get('evidence_dir'); next(); }, UsersManager.apiAddUser);
   app.post('/users', function(req, res, next){ req.body.baseFolder = app.get('evidence_dir'); next(); }, UsersManager.add);
   
   //read [one, some]

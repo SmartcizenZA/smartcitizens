@@ -92,3 +92,14 @@ var TuckShopSchema = new Schema({
 });
 var TuckShop = mongoose.model('TuckShop',TuckShopSchema);
 exports.TuckShop = TuckShop;
+
+/*
+ Model for a traffic light at a specific geo-location
+ x - the x-coordinate of the traffic light
+ y - the y-coordinate of the traffic light
+ street-name
+ status : [working, off, out-of-sync, flashing]
+ statusUpdated : now,
+ state: [red, amber, green]
+ stateUpdated  :now,
+*/

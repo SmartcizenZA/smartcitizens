@@ -135,6 +135,9 @@ module.exports = function (app, entities) {
 	});
       
   });
+    
+   //app.post('/api/register, pass
+    
 	
   app.post('/login', passport.authenticate('local'), function(req, res) {
   	//get properties of loggedIn owner
@@ -308,23 +311,23 @@ module.exports = function (app, entities) {
   
   //create new property
   app.post('/properties',Authorizer.isAuthenticated, function(req, res){
-  var data = {
-		"portion" : req.body.portion,
-		"accountnumber" : req.body.accountnumber,
-		 "bp" : req.body.bp,
-		"contacttel" : req.body.contacttel,
-		"email" : req.user.email,
-		"initials" : req.body.initials,
-		"surname" : req.body.surname,
-		"physicaladdress" : req.body.physicaladdress,
-		'owner': req.user._id
-	   };
-	//add a new property
-	Properties.add(data, function(error, property){ 
+	  var data = {
+			"portion" : req.body.portion,
+			"accountnumber" : req.body.accountnumber,
+			"bp" : req.body.bp,
+			"contacttel" : req.body.contacttel,
+			"email" : req.user.email,
+			"initials" : req.body.initials,
+			"surname" : req.body.surname,
+			"physicaladdress" : req.body.physicaladdress,
+			'owner': req.user._id
+		   };
+		//add a new property
+		Properties.add(data, function(error, property){ 
 
-		console.log("Back from adding Property!"); 
-		res.render('main.ejs', {user:req.user, title: "Smart CitizenS", message: "", prop:property }); 
-	});  
+			console.log("Back from adding Property!"); 
+			res.render('main.ejs', {user:req.user, title: "Smart CitizenS", message: "", prop:property }); 
+		});  
   });
   
   //list All properties

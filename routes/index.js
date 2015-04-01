@@ -19,6 +19,7 @@ var Properties = require('../routes/properties.js');
 var MeterReadings = require('../routes/meterreadings.js');
 var PasswordResetRequestsHandler = require('./resets.js');
 var Notifications = require('../routes/notifications.js');
+var SmartCitizensGCM = require('../routes/gcm.js');
 
 /*
   The index.js plays the router role in this design. It gets passed the Application object from 
@@ -54,6 +55,7 @@ module.exports = function (app, entities) {
   });
 
   //create new user (signup)
+  app.post('/api/users', function(req, res, next){ req.body.baseFolder = app.get('evidence_dir'); next(); }, UsersManager.apiAddUser);
   app.post('/users', function(req, res, next){ req.body.baseFolder = app.get('evidence_dir'); next(); }, UsersManager.add);
   
   //read [one, some]
@@ -246,9 +248,7 @@ module.exports = function (app, entities) {
 
 	});
    }
-   else{
-	res.send('No User Found...');
-	}
+   else{ res.send('No User Found...'); }
   });
   
   /*   Property Management API       */
@@ -308,6 +308,47 @@ module.exports = function (app, entities) {
 	res.send('No User Found...');
 	}
   });
+  
+  //Properties API
+  ----------------
+  app.post('/api/properties',function(req, res){
+  var data = {
+		"portion" : req.body.portion,
+		"accountnumber" : req.body.accountnumber,
+		 "bp" : req.body.bp,
+		"contacttel" : req.body.contacttel,
+		"email" : req.user.email,
+		"initials" : req.body.initials,
+		"surname" : req.body.surname,
+		"physicaladdress" : req.body.physicaladdress,
+		'owner': req.user._id
+	   };
+	//add a new property
+	Properties.add(data, function(error, property){ 
+		if(err){
+			res.send({'success': false, 'error':'There was a problem adding a Property '+err }); 
+		}
+		else{
+			res.send({'success': true, 'property':property }); 
+		}			
+		
+	});  
+  });
+  //Get owner's properties
+  app.get('/api/properties/owner/:ownerId', function (req, res){
+    Properties.list(function (err, properties){
+  		if(!err){
+		  //render properties list page
+		  res.render({'success':true, 'properties': properties })
+		}
+		else{
+		  res.send({"success":false, "error":"An error occurred while looking up Properties. "+err});
+		}	
+	});
+  });
+  
+  
+  //----End API ----------
   
   //create new property
   app.post('/properties',Authorizer.isAuthenticated, function(req, res){
@@ -419,6 +460,90 @@ module.exports = function (app, entities) {
 		}
 	}));
 	
+	//--------------Start API
+	
+	app.post('/api/readings', function(req, res){	
+	processMeterReadingPost(req, res, function (err, result){
+		if(!err)
+			res.send({'success': true,'result':result});
+		else
+			res.send({'success': false,"error":err});
+	});
+  });
+	
+	app.get('/api/readings/:id', function(req, res){
+	var id = req.params.id;
+	MeterReadings.getMeterReadingById(id, function(err, meterReading){
+		if(meterReading){
+			res.send(meterReading);
+		}
+		else{
+			console.log("Something happened and we did not get readings. Error ", err);
+			res.send("There was a problem retrieving your readings. Show a custom Not Found Page. ");
+		}
+	});
+  });
+  
+  //get [list of ] meter-readings for an Account.
+  app.get('/api/readings/:accountNumber', function(req, res){
+	var accountNumber = req.params.accountNumber;
+	MeterReadings.getMeterReadingById(accountNumber, function(err, meterReadingsForAccount){
+		if(meterReadingsForAccount){
+			res.send(meterReadingsForAccount);
+		}
+		else{
+			console.log("Something happened and we did not get readings. Error ", err);
+			res.send("There was a problem retrieving your readings. Show a custom Not Found Page. ");
+		}
+	});  
+  });
+  
+  //list 
+  app.get('/api/readings', function(req, res){
+	MeterReadings.list(function(err, listOfMeterReadings){
+		if(listOfMeterReadings){
+			res.send(listOfMeterReadings);
+		}
+		else{
+			console.log("Something happened and we did not get readings. Error ", err);
+			res.send("There was a problem retrieving your readings. Show a custom Not Found Page. ");
+		}
+	});
+  });
+  
+  //update
+  app.put('/api/readings/:id', function(req, res){
+	var id = req.params.id;
+	var values = req.body;	
+	MeterReadings.updateMeterReading(id, values, function(err, updatedReading){
+		if(updatedReading){
+			res.send(updatedReading);
+		}
+		else{
+			console.log("Something happened and we did not update readings. Error ", err);
+			res.send("There was a problem Updating your readings. Show error and stay put. ");
+		}
+	});  
+  });
+  
+  //delete
+  app.delete('/api/readings/:id', function(req, res){
+	var id = req.params.id;
+	MeterReadings.deleteMeterReading(id,function(err){
+		if(!err){
+			res.send("Deleting was successful");
+		}
+		else{
+			console.log("Something happened and we did not update readings. Error ", err);
+			res.send("There was a problem Deleting your readings. Show error and stay put. ");
+		}
+	});  
+  });
+	
+	
+	//------------------------- End API
+	
+	
   //create new readings  
   app.post('/readings', Authorizer.isAuthenticated ,function(req, res){	
 	processMeterReadingPost(req, res, function (err, result){
@@ -507,7 +632,9 @@ function processMeterReadingPost(req, res, callback){
 							return res.send("Property Associated With the account number was not found. It is impossible to email the meter readings to City of Tshwane Municipal office");
 						}
 						//so we found the property associated with the readings, not email the readings along with property details
-						MeterReadings.findAndEmailReadings(meterReadingObject._id, associatedProperty, function(err, readingsEmailedSuccessfully){		
+						//Compute the current user's evidence-file location
+						var userReadingsFilesDir = app.get('evidence_dir')+path.sep+req.user.username;
+						MeterReadings.findAndEmailReadings(meterReadingObject._id, associatedProperty, userReadingsFilesDir, function(err, readingsEmailedSuccessfully){		
 								var notification = {
 										'to' : req.user._id,
 										'reading_id': meterReadingObject._id,
@@ -620,16 +747,7 @@ function processMeterReadingPost(req, res, callback){
 	console.log("Your Request to Email Readings is noted...");
 	var readingsId = req.params.readingsId;
 	var readingsData = req.body;
-	MeterReadings.emailReadings(readingsId, readingsData,function(success){
-	
-		/*
-		account: String,
-		readings_id : String,
-		to: String,
-		message: String,
-		read: {type:Boolean, default: false},
-		updated: { type: Date, default: Date.now }
-		*/
+	MeterReadings.emailReadings(readingsId, readingsData,function(success){	
 	   //create a notification
 	   var notification = {
 	    'to' : req.user._id,
@@ -659,6 +777,48 @@ function processMeterReadingPost(req, res, callback){
    Notifications Management Region.
    Here we have the routes for reading,adding, editing and removing notifications
   */
+  
+  //----------------Start API
+  
+  //Get notifications for a user
+  app.get('/api/notifications/:me', function(req, res){
+	var userId = req.params.me;
+	console.log("Getting Notifications for User ", userId);
+	//get a list of notifications for this person
+	Notifications.getUserNotifications(userId, function(errorGettingNotifications, listOfNotifications){
+	  if(errorGettingNotifications){ console.log("Error Retrieving User Notifications. Error is ", errorGettingNotifications); return;}
+	  //return the list
+	  res.send(listOfNotifications);
+	});	
+  });
+  
+  app.get('/api/notifications/account/:accountNumber', function(req, res){
+	var accountNumber = req.params.accountNumber;
+	console.log("Getting Notifications for Account ", accountNumber);
+	//get a list of notifications for this person
+	Notifications.getAccountNotifications(accountNumber, function(errorGettingNotifications, listOfNotifications){
+	  if(errorGettingNotifications){ console.log("Error Retrieving Account Notifications. Error is ", errorGettingNotifications); return;}
+	  //return the list
+	  res.send(listOfNotifications);
+	});
+  });
+  
+  app.delete('/api/notifications/:id', function(req, res){
+	var notificationId = req.params.id;
+	Notifications.deleteNotification(notificationId, function(errorDeleting){
+		if(errorDeleting){
+			console.log("Error occurred while deleting Notification. Error is ", errorDeleting);
+			res.send({'success': false, 'message': 'Delete Was Not Successful' });
+		}
+		else{
+			console.log("Notification Deleted Successfully...");
+			res.send({'success': true, 'message': 'Deleted Successfully' });
+		}
+	});
+  });
+  
+  
+  //----------------End API
   
   //Get list of Notifications for the current user
   app.get('/notifications/me', Authorizer.isAuthenticated, function(req, res){
@@ -699,4 +859,70 @@ function processMeterReadingPost(req, res, callback){
 	});
   });
   
+  //GCM-Demo 
+	var gcm = require('node-gcm');
+	var sender = new gcm.Sender('AIzaSyD7s6lgYnKNqJlW63yqOloUsRxtfCREpl0');
+
+  //This is the route for sending notifications
+  app.post('/gcm/send', function (req, res){
+	console.log("GCM-Push Notification Request: ", req.body);
+	var emailOfRecipient = req.body.email;
+	//try to find the recipient's GCM-ID
+	SmartCitizensGCM.getGCMRegistrationByEmail(emailOfRecipient, function (err, gcmRegistrationEntry){
+		if(gcmRegistrationEntry){
+		  //now we can try and send the notification here...		  
+			var sendRequest = req.body;
+			var recipientGCMRegId = gcmRegistrationEntry.reg_id; 
+			var message = new gcm.Message();
+			message.addData('content', reg.body.message);
+			message.addData('time', Date.now);
+			
+			if(sender){
+			sender.send(message, [recipientGCMRegId], function (err, result) {
+				if(err){ 
+					console.error(err);
+					res.send("Bona, go na le error somewhere..."+err);
+				}
+				else {   console.log(result); 
+					res.send("Nice, Sending Push Notification now...check with the recipient..result = "+result);
+				}
+			});
+
+			}
+			else{
+			console.log("It seems we do not have GCM Connection to Google");
+			}
+		  
+		}
+		else{
+			//GCM Notification not possible...unknown recipient
+			res.send("Eish! Could Not Find GCM for the email provided...");
+		}
+	});
+		
+  });
+  
+  //This is the route for registering:
+  /*
+  
+    { email: String,
+	 app_name : String,
+	 reg_id: String}
+   You get back a new JSON model with attribute _id as a UUID - this shows your 3rd party reg was successful.
+  */
+  app.post('/gcm/register', function (req, res){
+    var registrationRequest = req.body;
+	console.log("GCM-Push Registration Request: ", registrationRequest);
+	SmartCitizensGCM.add(registrationRequest, function (err, gcmRegistrationEntry){
+	 if(gcmRegistrationEntry){ 
+		console.log("GCM Registration Successful on 3rd Party Server" ); 
+		res.send(gcmRegistrationEntry); 
+	 }
+	 else{ console.log("There was an error registering. Error is ", err); res.send("There was an error registering. Error is ");}
+	});	
+  });
+  
+  app.get('/gcm_send', function (res, res){
+     res.render('gcmsend.ejs', {title: "Smart CitizenS GCM Testbed"})
+  });  
 };

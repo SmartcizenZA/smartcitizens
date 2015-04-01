@@ -102,7 +102,7 @@ exports.generateFile = function (filename, dataObject,callback){
 		},
 		function(cbDone){
 			console.log("Now got the file handle...");
-			fs.readFile("./"+filename, function (err, fileData){
+			fs.readFile(filename, function (err, fileData){
 			cbDone(null,fileData);
 			});
 		}

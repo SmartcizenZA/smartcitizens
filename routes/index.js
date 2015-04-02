@@ -309,8 +309,9 @@ module.exports = function (app, entities) {
 	
 	app.post('/api/properties',function(req, res){
 		var data = {
-			"portion" : reg.body.portion,
+			"portion" : req.body.portion,
 			"accountnumber" : req.body.accountnumber,
+			"bp" : req.body.bp,
 			"contacttel" : req.body.contacttel,
 			"email" : req.body.email,
 			"initials" : req.body.initials,
@@ -350,7 +351,7 @@ module.exports = function (app, entities) {
   var data = {
 		"portion" : req.body.portion,
 		"accountnumber" : req.body.accountnumber,
-		 "bp" : req.body.bp,
+		"bp" : req.body.bp,
 		"contacttel" : req.body.contacttel,
 		"email" : req.user.email,
 		"initials" : req.body.initials,

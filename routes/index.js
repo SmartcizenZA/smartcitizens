@@ -137,9 +137,6 @@ module.exports = function (app, entities) {
 	});
       
   });
-    
-   //app.post('/api/register, pass
-    
 	
   app.post('/login', passport.authenticate('local'), function(req, res) {
   	//get properties of loggedIn owner
@@ -308,10 +305,48 @@ module.exports = function (app, entities) {
 	res.send('No User Found...');
 	}
   });
+  // Properties API
+	
+	app.post('/api/properties',function(req, res){
+		var data = {
+			"portion" : reg.body.portion,
+			"accountnumber" : req.body.accountnumber,
+			"contacttel" : req.body.contacttel,
+			"email" : req.body.email,
+			"initials" : req.body.initials,
+			"surname" : req.body.surname, 
+			"physicaladdress" : req.body.physicaladdress,
+			"owner" : req.body.owner
+		};
+	    
+		Properties.add(data, function(error, property) {
+			if ( error ) {
+				res.send({'success': false, 'error':'There was a problem adding a Property '+error });
+			}
+			else 
+			{
+				res.send({'success': true, 'property':property }); 
+			}
+		});
+	});	
   
-  //Properties API
-  ----------------
-  app.post('/api/properties',function(req, res){
+	app.get('/api/properties/owner/:ownerId', function (req, res){
+		Properties.list(function (error, properties){
+			if(!error){
+				//render properties list page
+				res.render({'success':true, 'properties': properties });
+			}	
+			else
+			{
+				res.send({"success":false, "error":"An error occurred while looking up Properties. "+error});
+			}	
+		});
+	});
+  
+	
+  // -----End API -----------	
+  //create new property
+  app.post('/properties',Authorizer.isAuthenticated, function(req, res){
   var data = {
 		"portion" : req.body.portion,
 		"accountnumber" : req.body.accountnumber,
@@ -325,50 +360,10 @@ module.exports = function (app, entities) {
 	   };
 	//add a new property
 	Properties.add(data, function(error, property){ 
-		if(err){
-			res.send({'success': false, 'error':'There was a problem adding a Property '+err }); 
-		}
-		else{
-			res.send({'success': true, 'property':property }); 
-		}			
-		
-	});  
-  });
-  //Get owner's properties
-  app.get('/api/properties/owner/:ownerId', function (req, res){
-    Properties.list(function (err, properties){
-  		if(!err){
-		  //render properties list page
-		  res.render({'success':true, 'properties': properties })
-		}
-		else{
-		  res.send({"success":false, "error":"An error occurred while looking up Properties. "+err});
-		}	
-	});
-  });
-  
-  
-  //----End API ----------
-  
-  //create new property
-  app.post('/properties',Authorizer.isAuthenticated, function(req, res){
-	  var data = {
-			"portion" : req.body.portion,
-			"accountnumber" : req.body.accountnumber,
-			"bp" : req.body.bp,
-			"contacttel" : req.body.contacttel,
-			"email" : req.user.email,
-			"initials" : req.body.initials,
-			"surname" : req.body.surname,
-			"physicaladdress" : req.body.physicaladdress,
-			'owner': req.user._id
-		   };
-		//add a new property
-		Properties.add(data, function(error, property){ 
 
-			console.log("Back from adding Property!"); 
-			res.render('main.ejs', {user:req.user, title: "Smart CitizenS", message: "", prop:property }); 
-		});  
+		console.log("Back from adding Property!"); 
+		res.render('main.ejs', {user:req.user, title: "Smart CitizenS", message: "", prop:property }); 
+	});  
   });
   
   //list All properties

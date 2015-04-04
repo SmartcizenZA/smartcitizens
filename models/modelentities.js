@@ -103,3 +103,15 @@ exports.TuckShop = TuckShop;
  state: [red, amber, green]
  stateUpdated  :now,
 */
+var TrafficLightSchema = new Schema({
+	x: String,
+	y: String,
+	street1: String,
+	street2: String,
+	spotter: String,
+	working: {type: Boolean, default: true},
+	state: { type: String, enum: ['RED', 'AMBER', 'GREEN'], default: 'RED'},
+	updated: { type: Date, default: Date.now }
+});
+var TrafficLight = mongoose.model('TrafficLight',TrafficLightSchema);
+exports.TrafficLight = TrafficLight;

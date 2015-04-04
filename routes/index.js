@@ -20,6 +20,7 @@ var MeterReadings = require('../routes/meterreadings.js');
 var PasswordResetRequestsHandler = require('./resets.js');
 var Notifications = require('../routes/notifications.js');
 var SmartCitizensGCM = require('../routes/gcm.js');
+var TrafficLightsSpotter = require('../routes/trafficlights.js');
 
 /*
   The index.js plays the router role in this design. It gets passed the Application object from 
@@ -921,4 +922,38 @@ function processMeterReadingPost(req, res, callback){
   app.get('/gcm_send', function (res, res){
      res.render('gcmsend.ejs', {title: "Smart CitizenS GCM Testbed"})
   });  
+  
+  
+  /*
+    Spotters:: This region contains routes for city data collection named Spotters. Spotters are citizens who voluntarily report interesting things that they spot in the city.
+	We are interested in building a city-wide data layer that contains the location of things such as traffic lights, wifi-hotspots, etc.
+  */
+  
+  app.post('/spotters/traffic/lights', function (req, res){
+    console.log("THANK YOU! - Here comes a spotter: ", req.body);
+	var trafficLightSpottingReport = req.body;
+	if(trafficLightSpottingReport){	
+		TrafficLightsSpotter.add(trafficLightSpottingReport, function (err, newTrafficLight){
+			if(!err){
+				res.send({'success':true, 'trafficLight':newTrafficLight});
+			}
+			else{
+				res.send({'success':false, 'message':' There was a problem adding your Spotted Traffic Light '});
+			}
+		});	   
+	}
+	else{
+	  res.send({'success': false, 'message':'We Did Not Receive Any Data'});
+	}
+  });
+  /*
+    Get a list of traffic lights in the system
+  */
+  app.get('/spotters/traffic/lights', function (req, res){
+	TrafficLightsSpotter.list(function (err, trafficLights){
+	if(!err) {res.send(trafficLights); }
+	else{ res.send({'success':false, 'message':'There was an error reading traffic Lights Data. Contact Smart Citizen Data Foundation'}); }
+	});		
+  });
+  
 };

@@ -126,9 +126,9 @@ module.exports = function (app, entities) {
 	app.post('/api/login', passport.authenticate('local'), function(req, res) {
   	//get properties of loggedIn owner
   	  Properties.getPropertiesOfOwner(req.user.id, function (err, properties){	  
+		var user = req.user;
 		if(properties && properties.length >0){
-		  //render main display page
-		  var user = req.user;
+		  //render main display page		  
 		  user.password = "this-is-not-it";
 		  res.send({"user":user, "properties": properties});		  
 		}

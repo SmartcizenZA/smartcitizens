@@ -336,7 +336,7 @@ module.exports = function (app, entities) {
 		Properties.list(function (error, properties){
 			if(!error){
 				//render properties list page
-				res.render({'success':true, 'properties': properties });
+				res.send({'success':true, 'properties': properties });
 			}	
 			else
 			{

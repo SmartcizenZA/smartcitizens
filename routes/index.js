@@ -131,14 +131,20 @@ module.exports = function (app, entities) {
 		//get properties of loggedIn owner
   	  Properties.getPropertiesOfOwner(req.user.id, function (err, properties){	  
 		var user = req.user;
-		if(properties && properties.length >0){
-		  //render main display page		  
-		  user.password = "this-is-not-it";
-		  res.send({"user":user, "properties": properties});		  
+		if (err) {
+			res.send({'success': false, 'message':'Username or Password is wrong'});
 		}
-		else{
-		  res.send({"user":user, "properties": []});
-		}	
+		else {
+			if(properties && properties.length >0){
+			  //render main display page		  
+			  user.password = "this-is-not-it";
+			  res.send({"user":user, "properties": properties});		  
+			}
+			else{
+			  res.send({"user":user, "properties": []});
+			}	
+		}
+		
 	});
       
   });

@@ -122,9 +122,13 @@ module.exports = function (app, entities) {
 	
 	/* 
 	  API to Support Single-Page Apps and Mobile Clients
+	  This login-handler method has been updated to return login-failure messages back to the clients
 	*/
-	app.post('/api/login', passport.authenticate('local'), function(req, res) {
-  	//get properties of loggedIn owner
+	app.post('/api/login', passport.authenticate('local', {successRedirect: '/api/login-success', failureRedirect: '/api/login-failure'}));
+	//redirect for when login succeeds
+	app.get('/api/login-success', function(req, res) {
+		console.log("Login-Success- Redirect");
+		//get properties of loggedIn owner
   	  Properties.getPropertiesOfOwner(req.user.id, function (err, properties){	  
 		var user = req.user;
 		if(properties && properties.length >0){
@@ -137,6 +141,11 @@ module.exports = function (app, entities) {
 		}	
 	});
       
+  });
+  //redirect method for when login failed
+  app.get('/api/login-failure', function (req, res){
+	console.log("Login-Failure- Redirect");
+	res.send({"success":false, "message": "Login Failed. Incorrect Username or Password"});	
   });
 	
   app.post('/login', passport.authenticate('local'), function(req, res) {

@@ -323,7 +323,7 @@ module.exports = function(app, entities) {
       user: userId,
       title: "Add Property",
       message: ""
-    })
+    });
   });
 
   //This route renders the list of submitted/history of readings
@@ -469,7 +469,7 @@ module.exports = function(app, entities) {
           title: "Smart CitizenS",
           message: "",
           prop: properties
-        })
+        });
       } else {
         res.send("An error occurred while looking up Properties. " + err);
       }
@@ -544,7 +544,7 @@ module.exports = function(app, entities) {
       }
     },
     onFileUploadComplete: function(file) {
-      console.log(file.fieldname + ' uploaded to  ' + file.path)
+      console.log(file.fieldname + ' uploaded to  ' + file.path);
       uploadDone = true;
     }
   }));
@@ -650,7 +650,7 @@ module.exports = function(app, entities) {
     //TODO: If the evidence file was not provided - the upload may be false which is incorrect
     //This needs to be fixed - if no evidence file, then set to TRUE
     //the upload middleware returned ?
-    if (uploadDone == true || (!req.body.waterimage && !req.body.electricityimage)) {
+    if (uploadDone === true || (!req.body.waterimage && !req.body.electricityimage)) {
       var uploadedFiles = req.files;
       var meterreadingsData;
       console.log("Uploaded Files: \n", uploadedFiles);
@@ -1037,7 +1037,8 @@ module.exports = function(app, entities) {
   */
 
   app.post('/spotters/traffic/lights', function(req, res) {
-    var rawTrafficLightData = JSON.parse(req.body.trafficLight);
+    var rawTrafficLightData = req.body.trafficLight;
+    // var rawTrafficLightData = JSON.parse(req.body.trafficLight);
     if (rawTrafficLightData) {
       TrafficLightsSpotter.add(rawTrafficLightData, function(err, newTrafficLight) {
         if (!err) {

@@ -23,7 +23,10 @@ function getMarkersInfo(map) {
       markers.push({
         lat: element.y,
         lng: element.x,
-        title: element.street1
+        title: element.street1,
+        infoWindow: {
+          content: '<h4>' + element.street1 + '</h4>'
+        }
       });
     });
 

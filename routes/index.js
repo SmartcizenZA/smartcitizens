@@ -947,6 +947,7 @@ function processMeterReadingPost(req, res, callback){
   app.post('/spotters/traffic/lights', function (req, res){
     console.log("THANK YOU! - Here comes a spotter: ", req.body);
 	var rawTrafficLightData = req.body.trafficLight;	
+	console.log("req.body.trafficLight = ",rawTrafficLightData);
 	if(rawTrafficLightData){
 	  rawTrafficLightData = JSON.parse(rawTrafficLightData.toString());	  
 	}

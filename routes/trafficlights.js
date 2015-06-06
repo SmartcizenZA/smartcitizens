@@ -60,8 +60,8 @@ exports.getClosestsTrafficLights = function (coordinates, callback){
 function geocode(x, y, callback){
   if(!x || !y){ return callback(new Error("Both X and Y MUST be submitted."));}
   //
-  var longitute = parseFloat('-26.087212');
-  var latitute = parseFloat('27.983646');
+  var longitute = parseFloat(x);
+  var latitute = parseFloat(y);
   
   console.log("geocode("+longitute+" , "+latitute+")");
   

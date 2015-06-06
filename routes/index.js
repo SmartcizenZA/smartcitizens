@@ -945,15 +945,9 @@ function processMeterReadingPost(req, res, callback){
   */
   
   app.post('/spotters/traffic/lights', function (req, res){
-    console.log("THANK YOU! - Here comes a spotter: ", req.body);
-	var rawTrafficLightData = req.body.trafficLight;	
-	console.log("req.body.trafficLight = ",rawTrafficLightData);
-	if(rawTrafficLightData){
-	  rawTrafficLightData = JSON.parse(rawTrafficLightData.toString());	  
-	}
-	var trafficLightSpottingReport = rawTrafficLightData;
-	if(trafficLightSpottingReport){	
-		TrafficLightsSpotter.add(trafficLightSpottingReport, function (err, newTrafficLight){
+	var rawTrafficLightData = JSON.parse(req.body.trafficLight);	
+	if(rawTrafficLightData){	
+		TrafficLightsSpotter.add(rawTrafficLightData, function (err, newTrafficLight){
 			if(!err){
 				res.send({'success':true, 'trafficLight':newTrafficLight});
 			}
@@ -971,7 +965,7 @@ function processMeterReadingPost(req, res, callback){
   */
   app.get('/spotters/traffic/lights', function (req, res){
 	TrafficLightsSpotter.list(function (err, trafficLights){
-	if(!err) {res.send(trafficLights); }
+	if(!err) {res.send(trafficLights);}
 	else{ res.send({'success':false, 'message':'There was an error reading traffic Lights Data. Contact Smart Citizen Data Foundation'}); }
 	});		
   });

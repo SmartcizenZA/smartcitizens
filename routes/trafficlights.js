@@ -5,17 +5,16 @@ var entities = require('../models/modelentities');
 var TrafficLight = entities.TrafficLight;
 
 //adding a new traffic light
-exports.add = function (newTrafficLightData, callback){
-	console.log("Registration Request Object ", newTrafficLightData);
-	var data = {'street1': newTrafficLightData.street1,
-				'street2': newTrafficLightData.street2,
-				'x':newTrafficLightData.xcoordinates,
-				'y':newTrafficLightData.ycoordinates,
+exports.add = function (newTrafficLightData, callback){	
+	var data = {'street1': newTrafficLightData.location.street1,
+				'street2': newTrafficLightData.location.street2,
+				'x':newTrafficLightData.location.xcoordinates,
+				'y':newTrafficLightData.location.ycoordinates,
 				'working': newTrafficLightData.isWorking
 				};
 	var newTrafficLight = new TrafficLight(data);
 	newTrafficLight.save(function (err) {
-		if(!err){console.log("All went well. Traffic Light Successfully Added To Smart Citizen DATA Foundation. ", newTrafficLight); }
+		if(!err){console.log("All went well. Traffic Light Successfully Added To Smart Citizen DATA Foundation. "); }
 		  callback(err, newTrafficLight);
 	});
 };
@@ -24,7 +23,6 @@ exports.add = function (newTrafficLightData, callback){
 */
 exports.list = function(callback){
 	TrafficLight.find(function (err, trafficLights) {
-		console.log ("Got TrafficLights = ",trafficLights);
         callback(err, trafficLights);
     });
 };
@@ -34,7 +32,6 @@ exports.list = function(callback){
 exports.getTrafficLightById = function (id, callback){
    console.log ("Get TrafficLight with Id = "+id);
    TrafficLight.findById(id, function (err, trafficLight) {
-		console.log ("Got TrafficLight by ID = ",trafficLight);
         callback(err, trafficLight);
     });
 };

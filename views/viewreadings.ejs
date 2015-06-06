@@ -1,13 +1,14 @@
 <% include header %>
 
 <body>
-	<% if ( message == '') { %>
-
-  <%include loggedInHeader  %>
-<% } else { %>
-
- <%=message %>
-
+<%include loggedInHeader  %>
+	<% if ( message != '') { %>
+ 
+<div class="container">
+    <div class="row">
+      	<%=message %>
+   	</div>
+</div>
   <%}%>
 <div class="container">
     <div class="row">
@@ -31,6 +32,7 @@
  		</tr>
  	</thead>
  	<tbody>
+	<%if (typeof previousreadings != "undefined") { %>
  	<% for(var i=0; i<previousreadings.length; i++) { %>
         <tr>
         	<td><%= i+1%></td>
@@ -41,6 +43,7 @@
         	<td><%= previousreadings[i].emailed%></td>
         </tr>
     		<% } %>
+			<% } %>
      </tbody>
    </table>
     </div>

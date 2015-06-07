@@ -1080,7 +1080,7 @@ module.exports = function(app, entities) {
     Update the Verified State of a TrafficLight.
 	This is used by the system administrator to verify the submitted traffic light
   */
-  app.put('/traffic/lights/:trafficLightId/verify',);
+  app.put('/traffic/lights/:trafficLightId/verify', Authorizer.isAuthenticated, TrafficLight.verify);
   
   /*
     Register a new spotter app

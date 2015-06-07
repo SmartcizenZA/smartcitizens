@@ -60,7 +60,8 @@ exports.add = function(newTrafficLightData, callback) {
     'street2': newTrafficLightData.location.street2,
     'x': newTrafficLightData.location.xcoordinates,
     'y': newTrafficLightData.location.ycoordinates,
-    'working': newTrafficLightData.isWorking
+    'working': newTrafficLightData.isWorking,
+	'spotter': newTrafficLightData.spotter
   };
 
   geocode(data.x, data.y, function(err, geoCodedString) {

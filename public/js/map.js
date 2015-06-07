@@ -1,5 +1,5 @@
 // var baseUrl = '//smartcitizen.defensivethinking.co.za';
-var baseUrl = '//smartcitizen.defensivethinking.co.za/';
+var baseUrl = '//smartcitizen.defensivethinking.co.za';
 var markers = [];
 
 $(document).ready(function(){

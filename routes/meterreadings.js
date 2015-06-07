@@ -8,18 +8,44 @@ var MeterReading = entities.MeterReading;
 /*POST Meter reading*/
 exports.add = function(meterreadingsData, meterReadingsCallback) {
   console.log("Adding Meter Readings For Account ", meterreadingsData.account);  
-  console.log(" Meter-Readings Handler - add() \n", meterreadingsData);  
-  var meterReadings = new MeterReading(meterreadingsData);
-  //try to save in to the DB
-  meterReadings.save(function (err) {
-		if(!err){
-			console.log("All went well. Property Successfully saved meter readings for Smart Citizen. ", meterReadings); 
-			meterReadingsCallback (null, meterReadings);
-		}
-		else{
-			meterReadingsCallback (err);
-		}
-	});    
+    console.log(" Meter-Readings Handler - add() \n", meterreadingsData);
+
+    exports.getRecentMeterReadingForAccount(meterreadingsData.account, function(err, previousReading) {
+        //set previous reading values (water, electricity)
+
+        var canAdd = false;
+        if (!err) {
+            //if we got some values back, the set them
+            if (previousReading) {
+                if (previousReading.water === meterreadingsData.water || previousReading.electricity === meterreadingsData.electricity) {
+                    var error = "Cannot add same readings twice!";
+                    console.log(error);
+                    meterReadingsCallback(error);
+                } else {
+                    canAdd = true;
+                }
+            } else {
+                canAdd = true;
+            }
+            if (canAdd) {
+                var meterReadings = new MeterReading(meterreadingsData);
+                //try to save in to the DB
+                meterReadings.save(function(err) {
+                    if (!err) {
+                        console.log("All went well. Property Successfully saved meter readings for Smart Citizen. ", meterReadings);
+                        meterReadingsCallback(null, meterReadings);
+                    } else {
+                        meterReadingsCallback(err);
+                    }
+                });
+            } else {
+                meterReadingsCallback(null,{});
+            }
+        } else {
+            console.log("There was an error while reading Recent Meter Reading for Account " + accountNumber, err);
+        }
+    });
+ 
 };
 
 /*

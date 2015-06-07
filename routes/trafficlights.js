@@ -5,6 +5,53 @@ var entities = require('../models/modelentities');
 var geocoder = require('geocoder');
 
 var TrafficLight = entities.TrafficLight;
+var TrafficLightSpotter = entities.TrafficLightSpotter;
+
+/*
+   Spotter CRUD Region
+*/
+//This function is used to register a new spotter on to the system;
+exports.addSpotter = function (req,res){
+  if(!req.body.gcmRegId){
+     res.send({'success':false, 'message':'No Data Received for Spotter Registration'});
+  }
+  else{
+	var gcmRegId = req.body.gcmRegId;
+	var TrafficLightSpotter = new TrafficLightSpotter({'gcmRegistrationId': gcmRegId});
+	TrafficLightSpotter.save(function (errorSaving){
+		if(errorSaving){ res.send({'success':false, 'message':'An error occured during Spotter Registration. [Technical Details] Error is '+errorSaving});}
+		else{
+		  //now we send back the registration response which bears the UUID (_id_) of the spotter App;
+		  var registrationResponse = {'success': true, 'spotter':{'gcmRegistrationId':gcmRegId, 'spotterId': TrafficLightSpotter._id}};
+		  res.send(registrationResponse);
+		}
+	});
+  }
+    
+};
+//List
+exports.listSpotters = function (req, res){
+   TrafficLightSpotter.find(function(err, spotters) {
+    res.send(spotters);
+  });
+};
+
+exports.verify = function (req, res){
+  var trafficLightId = req.params.trafficLightId;
+  TrafficLightSpotter.findById(trafficLightId, function(err, trafficLight){
+	if(!err && trafficLight){
+	   //now set verified to true;
+	   trafficLight.verified = true;
+	   trafficLight.save(function (errorVerifying){
+	     if(!errorVerifying){ res.send({'success':true, 'message': 'Traffic Light Spotting Verified.'});}
+		 else{ res.send({'success':false, 'message': 'Erorr occured while verifying Traffic Light.[Technical Details ] error is '+errorVerifying});}
+	   });
+	}
+	else{
+	 res.send({'success':false, 'message':'Could Not Locate the Traffic Light to Verify. [Technical Details ] error is '+err});
+	}
+  });
+};
 
 //adding a new traffic light
 exports.add = function(newTrafficLightData, callback) {
@@ -28,10 +75,7 @@ exports.add = function(newTrafficLightData, callback) {
       }
       callback(err, newTrafficLight);
     });
-
   });
-
-
 };
 /*
   List all traffic lights spotted
@@ -68,14 +112,10 @@ function geocode(x, y, callback) {
   var longitute = parseFloat(x);
   var latitute = parseFloat(y);
 
-  console.log("geocode(" + longitute + " , " + latitute + ")");
-
   geocoder.reverseGeocode(latitute, longitute, function(err, data) {
     if (!err) {
-      console.log("GeoCoding Results:: (" + longitute + " , " + latitute + ")", data);
       var geocodedAddress = (data.results && data.results[0] ? data.results[0].formatted_address : "");
       return callback(null, geocodedAddress);
     }
   });
-
 }

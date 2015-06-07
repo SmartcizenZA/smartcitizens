@@ -110,8 +110,17 @@ var TrafficLightSchema = new Schema({
 	street2: String,
 	spotter: String,
 	working: {type: Boolean, default: true},
+	verified: {type: Boolean, default: false},
 	state: { type: String, enum: ['RED', 'AMBER', 'GREEN'], default: 'RED'},
 	updated: { type: Date, default: Date.now }
 });
 var TrafficLight = mongoose.model('TrafficLight',TrafficLightSchema);
 exports.TrafficLight = TrafficLight;
+
+var TrafficLightSpotterSchema = new Schema({
+	gcmRegistrationId: String,
+	status: { type: String, enum: ['BANNED', 'OK'], default: 'OK'},
+	joined: { type: Date, default: Date.now }
+});
+var TrafficLightSpotter = mongoose.model('TrafficLightSpotter',TrafficLightSpotterSchema);
+exports.TrafficLightSpotter = TrafficLightSpotter;

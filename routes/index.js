@@ -1075,6 +1075,17 @@ module.exports = function(app, entities) {
       }
     });
   });
+  
+  /*
+    Update the Verified State of a TrafficLight.
+	This is used by the system administrator to verify the submitted traffic light
+  */
+  app.put('/traffic/lights/:trafficLightId/verify',);
+  
+  /*
+    Register a new spotter app
+  */
+  app.post('/traffic/lights/spotters', TrafficLightsSpotter.addSpotter);
 
   app.get('/map', function(req, res) {
     res.render('map.ejs', {

@@ -1039,8 +1039,8 @@ module.exports = function(app, entities) {
   */
 
   app.post('/spotters/traffic/lights', function(req, res) {
-    var rawTrafficLightData = req.body.trafficLight;
-    // var rawTrafficLightData = JSON.parse(req.body.trafficLight);
+    // var rawTrafficLightData = req.body.trafficLight;
+    var rawTrafficLightData = JSON.parse(req.body.trafficLight);
     if (rawTrafficLightData) {
       TrafficLightsSpotter.add(rawTrafficLightData, function(err, newTrafficLight) {
         if (!err) {

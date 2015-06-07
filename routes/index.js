@@ -741,12 +741,12 @@ module.exports = function(app, entities) {
                   //TODO: use standard "error" window...eg. res.render(error.ejs, {message: 'some message', error: 'error-object'})
                   var message = "There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk. Help -> Contacts.";
                   notification.message = message;
-                  res.send(message);
                 }
                 //post the notification
                 Notifications.addNotification(notification, function(err, notificationId) {
-                  console.log("Error ? ", err);
-                  console.log("Notification ID ? ", notificationId);
+                    console.log("Error ? ", err);
+                    console.log("Notification ID ? ", notificationId);
+                    res.send(notification.message);
                 });
               });
             });

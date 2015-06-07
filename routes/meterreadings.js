@@ -39,7 +39,7 @@ exports.add = function(meterreadingsData, meterReadingsCallback) {
                     }
                 });
             } else {
-                meterReadingsCallback(null,{});
+                meterReadingsCallback(null);
             }
         } else {
             console.log("There was an error while reading Recent Meter Reading for Account " + accountNumber, err);

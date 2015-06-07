@@ -739,7 +739,9 @@ module.exports = function(app, entities) {
                   res.send("Meter Readings Saved and emailed to the City of Tshwane for consideration. Your Smart Citizen Reference number is " + meterReadingObject._id); //use flash?
                 } else {
                   //TODO: use standard "error" window...eg. res.render(error.ejs, {message: 'some message', error: 'error-object'})
-                  notification.message = "There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk. Help -> Contacts.";
+                  var message = "There were some problems emailing your readings. Try again or contact your regional Smart Citizen Help Desk. Help -> Contacts.";
+                  notification.message = message;
+                  res.send(message);
                 }
                 //post the notification
                 Notifications.addNotification(notification, function(err, notificationId) {

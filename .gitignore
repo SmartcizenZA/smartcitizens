@@ -1,5 +1,9 @@
 readings_evidence/
 node_modules
 config/development.json
+routes/mllpparser.js
+mllp.js
+hprs_mllp_mediator.js
+Gruntfile.js
 npm-debug.log
 .DS_Store

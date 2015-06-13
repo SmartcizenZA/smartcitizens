@@ -18,15 +18,18 @@ $(document).ready(function(){
 function getMarkersInfo(map) {
   $.ajax({
     method: 'GET',
-    url: baseUrl + '/spotters/traffic/lights',
+    url: baseUrl + '/spotters/traffic/lights/manage',
   }).done(function (response) {
     response.forEach(function (element, index, array) {
       infoContent = '<h4>' + element.street1 + '</h4>';
       if (element.verified) {
-        infoContent += '<span>Verified</span> ';
-		infoContent += '<span>'+(element.working? "Working":"Not Working")+'</span>';
-      } 
-	  
+        infoContent += '<span>Verified</span>';
+      } else {
+        infoContent += '<p id="traffic_id">' + element._id + '</p>';
+		//made a small change here to pass the traffic-light-ID to the function to verify
+        infoContent +=  '<button onclick="verifyTrafficLight(\''+element._id+'\')">Verify</button>  <button onclick="rejectTrafficLight(\''+element._id+'\')">Reject</button>'; 
+		//'<a href="'+baseUrl+'/traffic/lights/'+element._id+'/verify">verify</a> <a href="'+baseUrl+'/traffic/lights/'+element._id+'/reject">Reject</a>';
+      }
 	  //this check is necessary for those submissions for which the X/Y values may not have been submitted
      if(element.y && element.x)
       markers.push({
@@ -49,7 +52,6 @@ function getMarkersInfo(map) {
   });
 }
 
-/*
 function verifyTrafficLight(trafficLightId) {
   console.log('Verify traffic light '+trafficLightId);
   processAction('verify',trafficLightId);
@@ -73,4 +75,4 @@ function processAction(action, trafficLightId){
 			}
 		}
 	});
-} */
+}

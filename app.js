@@ -25,7 +25,8 @@ app.set('evidence_dir',path.join(__dirname, 'readings_evidence'));
 app.set('view engine', 'ejs');
 app.set('view options', { layout: false });
 app.use(morgan('tiny'));
-app.use(bodyParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(methodOverride());
 app.use(cookieParser(config.get('express.cookieParser.secret')));
 
@@ -53,11 +54,26 @@ mongoose.connect('mongodb://localhost/smartcitizens');
 app.use(session({ 'secret':'c1TiZ3n',
 				  'key': 'session',
 				  'cookie': { maxAge: 2 * 60 * 60 * 1000 },
-				  'store': new MongoSessionStore(mongoose, {ttl: 2 * 60 * 60})
+				  'store': new MongoSessionStore(mongoose, {ttl: 2 * 60 * 60}),
+				  'resave': true,
+				  'saveUninitialized': true
 				}));
 				
 app.use(passport.initialize());
 app.use(passport.session());
+
+var allowAllCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+ // res.header('Access-Control-Allow-Headers', ['Content-Type', 'x-smartcitizens-token']);
+  if ('OPTIONS' == req.method) {
+    res.status(200).end();
+  } else {
+    next();
+  }
+}
+app.use(allowAllCrossDomain);
 
 // routes, pass in the entities object so that it is available to the routes
 require('./routes/index')(app, entities);

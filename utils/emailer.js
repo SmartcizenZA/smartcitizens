@@ -33,7 +33,7 @@ var smtpTransport = mailer.createTransport("SMTP",{
 });
 
 var mail = {
-    from: "Smart Citizen <smartcitizen.cot@gmail.com>",
+    from: "Smart Citizen <smartcitizens.za@gmail.com>",
     to: "",
     subject: "",
     text: "",

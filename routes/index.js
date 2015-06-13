@@ -1064,10 +1064,26 @@ module.exports = function(app, entities) {
     }
   });
   /*
-    Get a list of traffic lights in the system
+    Get a list of traffic lights in the system (admin-view)
+  */
+  app.get('/spotters/traffic/lights/manage', function(req, res) {
+    TrafficLightsSpotter.list(function(err, trafficLights) {
+      if (!err) {
+        res.send(trafficLights);
+      } else {
+        res.send({
+          'success': false,
+          'message': 'There was an error reading traffic Lights Data. Contact Smart Citizen Data Foundation'
+        });
+      }
+    });
+  });
+  
+  /*
+    Get a list of traffic lights in the system (public-view)
   */
   app.get('/spotters/traffic/lights', function(req, res) {
-    TrafficLightsSpotter.list(function(err, trafficLights) {
+    TrafficLightsSpotter.listPublic(function(err, trafficLights) {
       if (!err) {
         res.send(trafficLights);
       } else {
@@ -1083,7 +1099,16 @@ module.exports = function(app, entities) {
     Update the Verified State of a TrafficLight.
 	This is used by the system administrator to verify the submitted traffic light
   */
-  app.put('/traffic/lights/:trafficLightId/verify', Authorizer.isAuthenticated, TrafficLightsSpotter.verify);
+  app.put('/traffic/lights/:trafficLightId/verify', TrafficLightsSpotter.verify);
+  
+  app.put('/traffic/lights/:trafficLightId/reject', TrafficLightsSpotter.reject);
+  
+  app.get('/admin-map', Authorizer.isAuthenticated,function(req, res) {
+    res.render('admin_map.ejs', {
+      title: '[Admin] Traffic Light Map'
+    });
+  });
+  
   /*
     Register a new spotter app
   */
@@ -1091,8 +1116,11 @@ module.exports = function(app, entities) {
 
   app.get('/map', function(req, res) {
     res.render('map.ejs', {
+	  user : req.user,
       title: 'Traffic Light Map'
     });
   });
+  
+  
 
 };

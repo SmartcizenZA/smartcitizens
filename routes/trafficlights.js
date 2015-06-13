@@ -36,23 +36,6 @@ exports.listSpotters = function (req, res){
   });
 };
 
-exports.verify = function (req, res){
-  var trafficLightId = req.params.trafficLightId;
-  TrafficLightSpotter.findById(trafficLightId, function(err, trafficLight){
-	if(!err && trafficLight){
-	   //now set verified to true;
-	   trafficLight.verified = true;
-	   trafficLight.save(function (errorVerifying){
-	     if(!errorVerifying){ res.send({'success':true, 'message': 'Traffic Light Spotting Verified.'});}
-		 else{ res.send({'success':false, 'message': 'Erorr occured while verifying Traffic Light.[Technical Details ] error is '+errorVerifying});}
-	   });
-	}
-	else{
-	 res.send({'success':false, 'message':'Could Not Locate the Traffic Light to Verify. [Technical Details ] error is '+err});
-	}
-  });
-};
-
 //adding a new traffic light
 exports.add = function(newTrafficLightData, callback) {
   var data = {
@@ -79,13 +62,23 @@ exports.add = function(newTrafficLightData, callback) {
   });
 };
 /*
-  List all traffic lights spotted
+  List all traffic lights spotted (admin-view)
 */
 exports.list = function(callback) {
   TrafficLight.find(function(err, trafficLights) {
     callback(err, trafficLights);
   });
 };
+
+/*
+  List all traffic lights spotted (public-view)
+*/
+exports.listPublic = function(callback) {
+  TrafficLight.find({'verified':true},function(err, trafficLights) {
+    callback(err, trafficLights);
+  });
+};
+
 /*
   Get a traffic light
 */
@@ -95,6 +88,52 @@ exports.getTrafficLightById = function(id, callback) {
     callback(err, trafficLight);
   });
 };
+
+/*
+  As Admin: Verify a traffic light
+*/
+exports.verify = function (req, res){  
+  var trafficLightId = req.params.trafficLightId;
+  console.log("Verifying Traffic Light ",trafficLightId);
+  TrafficLight.findById(trafficLightId, function(err, trafficLight){
+	if(!err && trafficLight){
+	   //now set verified to true;
+	   console.log("Found Traffic Light :: ", trafficLight);
+	   trafficLight.verified = true;
+	   trafficLight.save(function (errorVerifying){
+	     if(!errorVerifying){ res.send({'success':true, 'message': 'Traffic Light Spotting Verified.'});}
+		 else{ res.send({'success':false, 'message': 'Erorr occured while verifying Traffic Light.[Technical Details ] error is '+errorVerifying});}
+	   });
+	}
+	else{
+	console.log("Traffic Light "+trafficLightId+" Not Found");
+	 res.send({'success':false, 'message':'Could Not Locate the Traffic Light to Verify. [Technical Details ] error is '+err});
+	}
+  });
+};
+
+/*
+  As admin - reject traffic light
+*/
+exports.reject = function (req, res){  
+  var trafficLightId = req.params.trafficLightId;
+  console.log("Rejecting Traffic Light ",trafficLightId);
+  TrafficLight.findById(trafficLightId, function(err, trafficLight){
+	if(!err && trafficLight){
+	   //now delete	   
+	   trafficLight.remove(function (errorRemoving){
+	     if(!errorRemoving){ res.send({'success':true, 'message': 'Traffic Light Spotting Rejected.'});}
+		 else{ res.send({'success':false, 'message': 'Erorr occured while rejecting Traffic Light.[Technical Details ] error is '+errorRemoving});}
+	   });
+	}
+	else{
+	console.log("Traffic Light "+trafficLightId+" Not Found");
+	 res.send({'success':false, 'message':'Could Not Locate the Traffic Light to Reject. [Technical Details ] error is '+err});
+	}
+  });
+};
+
+
 /*
   Retrieve a list of Traffic Lights closest to the specified X,Y coordinates;
 */

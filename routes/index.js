@@ -1040,8 +1040,8 @@ module.exports = function(app, entities) {
   */
 
   app.post('/spotters/traffic/lights', function(req, res) {
-    var rawTrafficLightData = req.body.trafficLight;
-    // var rawTrafficLightData = JSON.parse(req.body.trafficLight);
+    // var rawTrafficLightData = req.body.trafficLight;
+    var rawTrafficLightData = JSON.parse(req.body.trafficLight);
     if (rawTrafficLightData) {
       TrafficLightsSpotter.add(rawTrafficLightData, function(err, newTrafficLight) {
         if (!err) {
@@ -1078,13 +1078,12 @@ module.exports = function(app, entities) {
       }
     });
   });
-  
+
   /*
     Update the Verified State of a TrafficLight.
 	This is used by the system administrator to verify the submitted traffic light
   */
   app.put('/traffic/lights/:trafficLightId/verify', Authorizer.isAuthenticated, TrafficLightsSpotter.verify);
-  
   /*
     Register a new spotter app
   */

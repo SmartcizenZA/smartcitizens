@@ -22,6 +22,7 @@ var Notifications = require('../routes/notifications.js');
 var SmartCitizensGCM = require('../routes/gcm.js');
 var TrafficLightsSpotter = require('../routes/trafficlights.js');
 
+
 /*
   The index.js plays the router role in this design. It gets passed the Application object from
   app.js. It then delegates handlers for the routes as needed.
@@ -1082,7 +1083,7 @@ module.exports = function(app, entities) {
     Update the Verified State of a TrafficLight.
 	This is used by the system administrator to verify the submitted traffic light
   */
-  app.put('/traffic/lights/:trafficLightId/verify', Authorizer.isAuthenticated, TrafficLight.verify);
+  app.put('/traffic/lights/:trafficLightId/verify', Authorizer.isAuthenticated, TrafficLightsSpotter.verify);
   
   /*
     Register a new spotter app

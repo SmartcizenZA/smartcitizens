@@ -13,6 +13,8 @@ var path = require('path');
 var fs = require('fs');
 var async = require('async');
 
+var _ = require('lodash');
+
 var uploadDone = false;
 var UsersManager = require('../routes/users.js');
 var Properties = require('../routes/properties.js');
@@ -1094,7 +1096,25 @@ module.exports = function(app, entities) {
       }
     });
   });
-
+  
+  /*
+	This function is used to return traffic lights within the 50 kilometre radius from the user's current location.
+  */
+  app.get('/closest/traffic/lights/:latitude/:longitude', function(req, res) {
+	var userLocationData = {'latitude': req.params.latitude, 'longitude': req.params.longitude};
+    TrafficLightsSpotter.getClosestsTrafficLights(userLocationData, function(err, trafficLights) {
+      if (!err) {
+        res.send(trafficLights);
+      } else {
+        res.send({
+          'success': false,
+          'message': 'There was an error reading traffic Lights Data. Contact Smart Citizen Data Foundation'
+        });
+      }
+    });
+  });
+  
+  
   /*
     Update the Verified State of a TrafficLight.
 	This is used by the system administrator to verify the submitted traffic light
@@ -1121,6 +1141,85 @@ module.exports = function(app, entities) {
     });
   });
   
+  /*
+    Stand-Alone Toping Modelling Test in JavaScript
+  */
+  /*
+  var lda = require('lda');
+  app.get('/topics/spot', function (req, res){
+    // try out LDA for a dummy text
+	var text = 'Started in the City of Tshwane, Pretoria, South Africa, the Open City Traffic Lights data Initiative is a ' + 
+			   'user/community driven project aimed at crowdsource data about traffic lights in and around the city. '+
+			   ' The data collected currently is the location of the traffic lights (from pedestrian/drive perspectives - '+
+			   'not the actual signal poles). The availability of such data is aimed at promoting the development and provision '+
+			   'of value-adding, traffic-related services around the cities in South Africa (and possibly around the world). Typical applications include (but not limited to) '+
+			   'These tools are helping us with crowdsourcing and verification of the data. As part of this initiative, the crowdsourced data will be made available for research '+
+			   ' purposes – for those interested in data-driven policy-making, as well as data science applications. '+
+			   'An API will be made available for these researchers/users with the understanding that they will likewise make their work publicly available at no cost';
+	// Extract sentences.
+	console.log("Length of Text = ", text.length);
+	var dataFreq = (8/text.length)*100;
+	console.log("Frequency of Data = ", dataFreq);
+	var documents = text.match( /[^\.!\?]+[\.!\?]+/g );
+	// Run LDA to get terms for 2 topics (5 terms each).
+	var topicsCount = 3;
+	var termsCount = 5;
+	var result = lda(documents, topicsCount, termsCount);
+	
+	//here I create an array of words with highest frequency from all topics
+	var topTermsInTopics = [];
+	
+	//here is an array of name-size pairs expected by d3.js library
+	var termNameSizeMatrix = [];
+	//here we have an array of TopicsBubbleChart children
+	var topicsBubbleChartChildren = [];
+	
+	for (var i in result) {
+		var row = result[i];
+		//row is a term-frequency matrix
+		//row is ALREADY ranked in descending order of proportion
+		//row[0].term is the term in this topic with the highest frequency
+		console.log('Topic ' + (parseInt(i) + 1) + " is most likely about > "+row[0].term+ "<");		
+		topTermsInTopics.push(row[0]);
+    
+		// For each term. 	
+		for (var j in row) {
+			var term = row[j];
+			console.log(term.term + ' (' + term.probability + '%)');
+			termNameSizeMatrix.push({'name': term.term, 'size': term.probability});
+		} 
+	    //for d3, label the topic
+		var topicLabel = "Topic"+(parseInt(i) + 1);
+		var topicLevelFrequencyBubbles = {"name": topicLabel, "children": termNameSizeMatrix};
+		//push the topic-level bubble children nodes into the top node-gcm
+		topicsBubbleChartChildren.push(topicLevelFrequencyBubbles);
+		
+		console.log('');
+		
+		
+	}
+	console.log("Top Terms", topTermsInTopics);
+	//with the top terms, we could group them still by term
+	//we can now mapValues to reduce the grouped-by array into term-overallFrequencies
+	//the grouped-by keys represent potential topic labels
+	var groupedTermFrequencies = _.mapValues(_.groupBy(topTermsInTopics, 'term'), function(valueElement){
+	 var termOverallFrequencyInDoc = (valueElement.length? (valueElement.length/topTermsInTopics.length)*100: 0)
+	 return termOverallFrequencyInDoc+ "%";
+	});
+	console.log("Grouped Top Terms", groupedTermFrequencies);
+	//now displaying a ranked list by topic-level distribution (this is how you get a 'key' without knowing it)
+	var overallFavorite = Object.keys(groupedTermFrequencies)[0];
+	
+	console.log("The Entire document is MOST LIKELY ABOUT ...... ", overallFavorite);
+	//at this point we can create a Bubble Chart to visualize the data in d3.js :: E.g http://bl.ocks.org/mbostock/4063269
+	//Generate the data as expected by Bubble Chart...
+	//change d3.json("flare.json", function(error, root) to use a JSON object instead of reading from file...
+	//So use the JSON-object in place of "root" in the rest of the code...
+	var bubbbleChartData = {'name': "CloudTutor Topics", 'children': topicsBubbleChartChildren};
+	res.send({'results':result, 'bubbleChartData':bubbbleChartData});
+  });
+  
+  */
   
 
 };

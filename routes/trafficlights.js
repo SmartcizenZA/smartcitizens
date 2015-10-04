@@ -2,10 +2,12 @@
   This is the script for processing incoming reports of spotting Traffic Lights from Smart Citizens;
 */
 var entities = require('../models/modelentities');
+var SpottersUtil = require('./spotters');
 var geocoder = require('geocoder');
 
 var TrafficLight = entities.TrafficLight;
 var TrafficLightSpotter = entities.TrafficLightSpotter;
+var TrafficLightReport = entities.TrafficLightReport;
 
 /*
    Spotter CRUD Region
@@ -52,20 +54,55 @@ exports.add = function(newTrafficLightData, callback) {
       //got the geocoded string, add it as street1
       data.street1 = geoCodedString;
     }
-    var newTrafficLight = new TrafficLight(data);
-    newTrafficLight.save(function(err) {
-      if (!err) {
-        console.log("All went well. Traffic Light Successfully Added To Smart Citizen DATA Foundation. ");
-      }
-      callback(err, newTrafficLight);
-    });
+	
+	//check if the spotter is enabled for auto-verify. If so, set [verified=true]
+	SpottersUtil.isInAutoVerify(data.spotter, function(isAutoVerified){
+		data.verified = (isAutoVerified? true:false);
+		var newTrafficLight = new TrafficLight(data);
+		newTrafficLight.save(function(err) {
+		  if (!err){
+			console.log("All went well. Traffic Light Successfully Added To Smart Citizen DATA Foundation. ");	
+			//if the spotter is not yet in auto-verify - try adding him if he's legible 
+			SpottersUtil.addIfCanAddToAutoVerify(data.spotter, function (added){
+			  if(added) console.log("Spotter Added to Auto-Verify...");
+			});			
+		  }
+		  callback(err, newTrafficLight);
+		});
+	});
   });
 };
+
 /*
-  List all traffic lights spotted (admin-view)
+  This utility function is used to update an existing traffic (that it is working or not).
+  trafficLightReport = {'id':value,'isWorking':Boolean}
+*/
+exports.updateTrafficLight = function(trafficLightReport, callback){
+    //find the traffic light
+	TrafficLight.findById(trafficLightId, function(err, trafficLight){
+		 if(trafficLight){
+				//now push the new report into the array of reports
+				var report = {'reporter': trafficLightReport.spotter,'trafficLightId': trafficLightReport.id , 'working': trafficLightReport.isWorking};
+				var newTrafficLightReport = new TrafficLightReport(report);
+				trafficLight.report.push(newTrafficLightReport);
+				trafficLight.save(function(errorSaving){
+				 if(errorSaving){ callback({'success':false, 'message':'An error occured during Spotter Registration. [Technical Details] Error is '+errorSaving});}
+				 else{
+					callback({'success':true, 'message':'Traffic Light Report Processed Successfully. Thank You.'});
+				 }
+				});		 
+			}
+		 else{
+			callback({'success':false, 'message':'Traffic Light Report Could Not Be Processed. The Referenced Traffic Light Could Not Be Found.'});
+		 }
+	});
+}
+
+/*
+  List all traffic lights spotted (admin-view) - the admin can see unverified traffic lights (to approve or reject)
 */
 exports.list = function(callback) {
-  TrafficLight.find(function(err, trafficLights) {
+  TrafficLight.find({'verified':false},function(err, trafficLights) {
     callback(err, trafficLights);
   });
 };
@@ -101,7 +138,12 @@ exports.verify = function (req, res){
 	   console.log("Found Traffic Light :: ", trafficLight);
 	   trafficLight.verified = true;
 	   trafficLight.save(function (errorVerifying){
-	     if(!errorVerifying){ res.send({'success':true, 'message': 'Traffic Light Spotting Verified.'});}
+	     if(!errorVerifying){ 
+			res.send({'success':true, 'message': 'Traffic Light Spotting Verified.'});
+			//check if the spotter is legible for auto-verification
+			
+			
+		 }
 		 else{ res.send({'success':false, 'message': 'Erorr occured while verifying Traffic Light.[Technical Details ] error is '+errorVerifying});}
 	   });
 	}
@@ -127,19 +169,62 @@ exports.reject = function (req, res){
 	   });
 	}
 	else{
-	console.log("Traffic Light "+trafficLightId+" Not Found");
-	 res.send({'success':false, 'message':'Could Not Locate the Traffic Light to Reject. [Technical Details ] error is '+err});
+		console.log("Traffic Light "+trafficLightId+" Not Found");
+		res.send({'success':false, 'message':'Could Not Locate the Traffic Light to Reject. [Technical Details ] error is '+err});
 	}
   });
 };
 
 
 /*
-  Retrieve a list of Traffic Lights closest to the specified X,Y coordinates;
+  Retrieve a list of Traffic Lights closest to the specified Lat-Long coordinates;
+  Closeness is considered as traffic lights within the 50KM radius
 */
-exports.getClosestsTrafficLights = function(coordinates, callback) {
+exports.getClosestsTrafficLights = function(userCoordinates, callback) {
+   var closestTrafficLights = [];
+   //first retrieve all coordinates (from around the world - that are verified)
+   TrafficLight.find({'verified':true},function(err, trafficLights) {
+      if(trafficLights){
+	    //iterate through all traffic lights - checking each against a 50KM radius
+		for(var x=0; x< trafficLights.length; x++){
+			var trafficLight = trafficLights[x];
+			var trafficLightLat = trafficLight.y;
+			var trafficLightLon = trafficLight.x;
+			if(isDistanceBetweenPointsWithinRange(userCoordinates.latitude, userCoordinates.longitude, trafficLightLat, trafficLightLon, 50)){
+				closestTrafficLights.push(trafficLight);
+			}
+			//check if this was the last of the traffic lights
+			if( (x+1) >= trafficLights.length){ return callback(null, closestTrafficLights); }			
+		}
+	  }
+	  else{
+		return callback(err, []);
+	  }
+  });
+  
 
 };
+/*
+ This function calculates the distance between two points, and checks if the distance is less or equal to the radius.
+ This is a modified version of http://www.geodatasource.com/developers/javascript (many thanks!)
+*/
+function isDistanceBetweenPointsWithinRange (userLat, userLong, trafficLightLat, trafficLightLong, radius){
+    
+	var radlat1 = Math.PI * userLat/180;
+	var radlat2 = Math.PI * trafficLightLat/180;
+	var radlon1 = Math.PI * userLong/180;
+	var radlon2 = Math.PI * trafficLightLong/180;
+	var theta = userLong-trafficLightLong;
+	var radtheta = Math.PI * theta/180
+	var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+	dist = Math.acos(dist)
+	dist = dist * 180/Math.PI
+	dist = dist * 60 * 1.1515
+	var distanceInKilos = dist * 1.609344;
+	//check if the distance is less or equal to the radius	
+	return (distanceInKilos > radius? false: true);
+
+}
 
 /*
   This is a utility function that geo-codes the x-y coordinates received from the spotter.
@@ -159,3 +244,4 @@ function geocode(x, y, callback) {
     }
   });
 }
+

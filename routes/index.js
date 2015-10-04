@@ -1097,6 +1097,20 @@ module.exports = function(app, entities) {
     });
   });
   
+  //exports.listBrokenTrafficLights
+  app.get('/spotters/traffic/lights/broken', function(req, res) {
+    TrafficLightsSpotter.listBrokenTrafficLights(function(err, trafficLights) {
+      if (!err) {
+        res.send(trafficLights);
+      } else {
+        res.send({
+          'success': false,
+          'message': 'There was an error reading traffic Lights Data. Contact Smart Citizen Data Foundation'
+        });
+      }
+    });
+  });
+  
   /*
 	This function is used to return traffic lights within the 50 kilometre radius from the user's current location.
   */
@@ -1123,6 +1137,23 @@ module.exports = function(app, entities) {
   
   app.put('/traffic/lights/:trafficLightId/reject', TrafficLightsSpotter.reject);
   
+  /****************************************************
+    Region :: Traffic Light Reporter Routes    ********
+	***************************************************
+  */
+  
+  /*
+	This function is used by the app users to report their traffic light encounters.
+	The encounters are recorded as traffic status reports.
+  */
+  app.post('/traffic/lights/reports', function(req, res){
+	var trafficLightEncounter = JSON.parse(req.body.encounter);
+	TrafficLightsSpotter.updateTrafficLight(trafficLightEncounter, function(result){
+		res.send(result);
+	});
+  });
+  
+  
   app.get('/admin-map', Authorizer.isAuthenticated,function(req, res) {
     res.render('admin_map.ejs', {
       title: '[Admin] Traffic Light Map'
@@ -1140,6 +1171,9 @@ module.exports = function(app, entities) {
       title: 'Traffic Light Map'
     });
   });
+  
+  
+  
   
   /*
     Stand-Alone Toping Modelling Test in JavaScript

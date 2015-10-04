@@ -111,10 +111,29 @@ exports.list = function(callback) {
   List all traffic lights spotted (public-view)
 */
 exports.listPublic = function(callback) {
+  /*
   TrafficLight.find({'verified':true},function(err, trafficLights) {
     callback(err, trafficLights);
-  });
+  }); */
+  
+  //because these are verified traffic lights - it is expected that reports will be filed against it
+  TrafficLight.find({'verified':true})            
+            .populate('reports')
+            .exec(function(err, trafficLights) {
+               callback(err, trafficLights);
+            })
+  
 };
+
+exports.listBrokenTrafficLights = function (callback){
+	  TrafficLight.find({'verified':true})            
+            .populate({	path: 'reports',
+						match: {'working': false}
+					  })
+            .exec(function(err, brokenTrafficLights) {
+               callback(err, brokenTrafficLights);
+            })
+}
 
 /*
   Get a traffic light

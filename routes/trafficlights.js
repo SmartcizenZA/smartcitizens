@@ -134,6 +134,32 @@ exports.listBrokenTrafficLights = function (callback){
                callback(err, brokenTrafficLights);
             })
 }
+/*
+ Return List of Traffic Lights Reported As Broken and Closest to the User Location.
+*/
+exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){
+	  TrafficLight.find({'verified':true})            
+            .populate({	path: 'reports',
+						match: {'working': false}
+					  })
+            .exec(function(err, brokenTrafficLights) {			
+				if(brokenTrafficLights){
+					//iterate through all traffic lights - checking each against a 50KM radius
+					var closestTrafficLights = [];
+					for(var x=0; x< brokenTrafficLights.length; x++){
+						var trafficLight = brokenTrafficLights[x];
+						var trafficLightLat = trafficLight.y;
+						var trafficLightLon = trafficLight.x;
+						if(isDistanceBetweenPointsWithinRange(userCoordinates.latitude, userCoordinates.longitude, trafficLightLat, trafficLightLon, 50)){
+							closestTrafficLights.push(trafficLight);
+						}
+						//check if this was the last of the traffic lights
+						if( (x+1) >= brokenTrafficLights.length){ return callback(null, closestTrafficLights); }			
+					}
+				}
+				else{ callback(err, []); }               
+            })
+}
 
 /*
   Get a traffic light

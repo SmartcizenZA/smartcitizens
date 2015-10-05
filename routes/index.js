@@ -1112,6 +1112,22 @@ module.exports = function(app, entities) {
   });
   
   /*
+	Loads Broken Traffic Lights Reports Closest to the user.
+  */
+  app.get('/closest/broken/traffic/lights/:latitude/:longitude', function(req, res) {
+	var userLocationData = {'latitude': req.params.latitude, 'longitude': req.params.longitude};
+    TrafficLightsSpotter.listClosestBrokenTrafficLights(userLocationData, function(err, trafficLights) {
+      if (!err) {
+        res.send(trafficLights);
+      } else {
+        res.send({
+          'success': false,
+          'message': 'There was an error reading traffic Lights Data. Contact Smart Citizen Data Foundation'
+        });
+      }
+    });
+  });
+  /*
 	This function is used to return traffic lights within the 50 kilometre radius from the user's current location.
   */
   app.get('/closest/traffic/lights/:latitude/:longitude', function(req, res) {

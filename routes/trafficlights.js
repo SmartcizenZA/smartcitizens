@@ -79,11 +79,17 @@ exports.add = function(newTrafficLightData, callback) {
 */
 exports.updateTrafficLight = function(trafficLightReport, callback){
     //find the traffic light
-	TrafficLight.findById(trafficLightId, function(err, trafficLight){
+	TrafficLight.findById(trafficLightReport.trafficLightId, function(err, trafficLight){
 		 if(trafficLight){
 				//now push the new report into the array of reports
-				var report = {'reporter': trafficLightReport.spotter,'trafficLightId': trafficLightReport.id , 'working': trafficLightReport.isWorking};
+				var report =   {'updated': trafficLightReport.date, 
+								'reporter': trafficLightReport.spotterId,
+								'trafficLightId': trafficLightReport.trafficLightId , 
+								'working': trafficLightReport.working
+								};
 				var newTrafficLightReport = new TrafficLightReport(report);
+				//set new status of the traffic light as reported (last update wins)
+				trafficLight.working = trafficLightReport.working;
 				trafficLight.report.push(newTrafficLightReport);
 				trafficLight.save(function(errorSaving){
 				 if(errorSaving){ callback({'success':false, 'message':'An error occured during Spotter Registration. [Technical Details] Error is '+errorSaving});}

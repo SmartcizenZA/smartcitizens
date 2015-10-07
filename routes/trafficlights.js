@@ -144,7 +144,7 @@ exports.listBrokenTrafficLights = function (callback){
  Return List of Traffic Lights Reported As Broken and Closest to the User Location.
 */
 exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){
-	  TrafficLight.find({'verified':true})            
+	  TrafficLight.find({'verified':true, 'working': false})            
             .populate({	path: 'reports',
 						match: {'working': false}
 					  })

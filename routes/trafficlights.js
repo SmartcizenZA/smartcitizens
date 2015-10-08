@@ -88,15 +88,21 @@ exports.updateTrafficLight = function(trafficLightReport, callback){
 								'working': trafficLightReport.working
 								};
 				var newTrafficLightReport = new TrafficLightReport(report);
-				//set new status of the traffic light as reported (last update wins)
-				trafficLight.working = trafficLightReport.working;
-				trafficLight.report.push(newTrafficLightReport);
-				trafficLight.save(function(errorSaving){
-				 if(errorSaving){ callback({'success':false, 'message':'An error occured during Spotter Registration. [Technical Details] Error is '+errorSaving});}
-				 else{
-					callback({'success':true, 'message':'Traffic Light Report Processed Successfully. Thank You.'});
+				newTrafficLightReport.save(function(errorSavingReport){
+				 if(errorSavingReport){ callback({'success':false, 'message':'An error occured while saving Traffic Light Encounter Report. [Technical Details] Error is '+errorSavingReport});}
+				 else{					
+						//set new status of the traffic light as reported (last update wins)
+						trafficLight.working = trafficLightReport.working;
+						trafficLight.report.push(newTrafficLightReport._id);
+						trafficLight.save(function(errorSaving){
+						 if(errorSaving){ callback({'success':false, 'message':'An Error Occured While Saving Updating Traffic Light With Encounter Report. [Technical Details] Error is '+errorSaving});}
+						 else{
+							callback({'success':true, 'message':'Traffic Light Report Processed Successfully. Thank You.'});
+						 }
+						});	
 				 }
-				});		 
+				});
+					 
 			}
 		 else{
 			callback({'success':false, 'message':'Traffic Light Report Could Not Be Processed. The Referenced Traffic Light Could Not Be Found.'});
@@ -144,7 +150,7 @@ exports.listBrokenTrafficLights = function (callback){
  Return List of Traffic Lights Reported As Broken and Closest to the User Location.
 */
 exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){
-	  TrafficLight.find({'verified':true, 'working': false})            
+	  TrafficLight.find({'working': false})            
             .populate({	path: 'reports',
 						match: {'working': false}
 					  })

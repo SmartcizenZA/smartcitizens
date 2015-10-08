@@ -151,11 +151,9 @@ exports.listBrokenTrafficLights = function (callback){
 */
 exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){
 	  TrafficLight.find({'verified': true})            
-            .populate({	path: 'reports',
-						match: {'working': false}
-					  })
+            .populate('reports', null,{'working': false})
             .exec(function(err, brokenTrafficLights) {			
-				if(brokenTrafficLights){
+				if(brokenTrafficLights){				    
 					//iterate through all traffic lights - checking each against a 50KM radius
 					var closestTrafficLights = [];
 					for(var x=0; x< brokenTrafficLights.length; x++){

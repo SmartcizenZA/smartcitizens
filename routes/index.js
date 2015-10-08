@@ -1164,6 +1164,7 @@ module.exports = function(app, entities) {
   */
   app.post('/traffic/lights/reports', function(req, res){
 	var trafficLightEncounter = JSON.parse(req.body.encounter);
+	console.log("Encounter Report: ", trafficLightEncounter);
 	TrafficLightsSpotter.updateTrafficLight(trafficLightEncounter, function(result){
 		res.send(result);
 	});

@@ -78,22 +78,26 @@ exports.add = function(newTrafficLightData, callback) {
   trafficLightReport = {'id':value,'isWorking':Boolean}
 */
 exports.updateTrafficLight = function(trafficLightReport, callback){
+	
     //find the traffic light
-	TrafficLight.findById(trafficLightReport.trafficLightId, function(err, trafficLight){
+	TrafficLight.findById(trafficLightReport.encounteredTrafficLightId, function(err, trafficLight){
 		 if(trafficLight){
 				//now push the new report into the array of reports
-				var report =   {'updated': trafficLightReport.date, 
+				var report =   {'updated': new Date(trafficLightReport.date), 
 								'reporter': trafficLightReport.spotterId,
-								'trafficLightId': trafficLightReport.trafficLightId , 
+								'trafficLightId': trafficLightReport.encounteredTrafficLightId , 
 								'working': trafficLightReport.working
-								};
+								};								
+				
 				var newTrafficLightReport = new TrafficLightReport(report);
 				newTrafficLightReport.save(function(errorSavingReport){
 				 if(errorSavingReport){ callback({'success':false, 'message':'An error occured while saving Traffic Light Encounter Report. [Technical Details] Error is '+errorSavingReport});}
 				 else{					
 						//set new status of the traffic light as reported (last update wins)
-						trafficLight.working = trafficLightReport.working;
-						trafficLight.report.push(newTrafficLightReport._id);
+						trafficLight.working = newTrafficLightReport.working;
+						if(!trafficLight.reports){ trafficLight.reports = [];}
+						trafficLight.reports.push(newTrafficLightReport._id);
+												
 						trafficLight.save(function(errorSaving){
 						 if(errorSaving){ callback({'success':false, 'message':'An Error Occured While Saving Updating Traffic Light With Encounter Report. [Technical Details] Error is '+errorSaving});}
 						 else{
@@ -148,23 +152,27 @@ exports.listBrokenTrafficLights = function (callback){
 }
 /*
  Return List of Traffic Lights Reported As Broken and Closest to the User Location.
+ {'reports.1': {$exists: true}} - at least one report exists   //returns only the broken reports - but is not useful for showing stats on the app
 */
-exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){
+exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){	  
 	  TrafficLight.find({'verified': true})            
-            .populate('reports', null,{'working': false})
+            .populate('reports', null,{'reports.1': {$exists: true}})
             .exec(function(err, brokenTrafficLights) {			
-				if(brokenTrafficLights){				    
+				if(brokenTrafficLights){
+					//we could perhaps filter out those that have at least one "Broken" report 
+					var thoseWithBrokenReports = brokenTrafficLights.filter(function(item){ return item.working === false ;});
+				
 					//iterate through all traffic lights - checking each against a 50KM radius
 					var closestTrafficLights = [];
-					for(var x=0; x< brokenTrafficLights.length; x++){
-						var trafficLight = brokenTrafficLights[x];
+					for(var x=0; x< thoseWithBrokenReports.length; x++){
+						var trafficLight = thoseWithBrokenReports[x];
 						var trafficLightLat = trafficLight.y;
 						var trafficLightLon = trafficLight.x;
 						if(isDistanceBetweenPointsWithinRange(userCoordinates.latitude, userCoordinates.longitude, trafficLightLat, trafficLightLon, 50)){
 							closestTrafficLights.push(trafficLight);
 						}
-						//check if this was the last of the traffic lights
-						if( (x+1) >= brokenTrafficLights.length){ return callback(null, closestTrafficLights); }			
+						//check if this was the last of the traffic lights						
+						if( (x+1) >= thoseWithBrokenReports.length){ return callback(null, closestTrafficLights); }			
 					}
 				}
 				else{ callback(err, []); }               
@@ -245,7 +253,9 @@ exports.getClosestsTrafficLights = function(userCoordinates, callback) {
 			var trafficLight = trafficLights[x];
 			var trafficLightLat = trafficLight.y;
 			var trafficLightLon = trafficLight.x;
-			if(isDistanceBetweenPointsWithinRange(userCoordinates.latitude, userCoordinates.longitude, trafficLightLat, trafficLightLon, 50)){
+			if(isDistanceBetweenPointsWithinRange(userCoordinates.latitude, userCoordinates.longitude, trafficLightLat, trafficLightLon, 50)){	
+				//clearing the reports attribute on the outgoing data (these are not necessary when we only need locations of traffic lights (to setup GeoFences)
+				trafficLight.reports=[];
 				closestTrafficLights.push(trafficLight);
 			}
 			//check if this was the last of the traffic lights

@@ -244,7 +244,7 @@ exports.reject = function (req, res){
 exports.getClosestsTrafficLights = function(userCoordinates, callback) {
    var closestTrafficLights = [];
    //first retrieve all coordinates (from around the world - that are verified)
-   TrafficLight.find({'verified':true},function(err, trafficLights) {
+   TrafficLight.find({'verified':true}).populate('reports').exec(function(err, trafficLights) {
       if(trafficLights){
 	    //iterate through all traffic lights - checking each against a 50KM radius
 		for(var x=0; x< trafficLights.length; x++){
@@ -253,7 +253,7 @@ exports.getClosestsTrafficLights = function(userCoordinates, callback) {
 			var trafficLightLon = trafficLight.x;
 			if(isDistanceBetweenPointsWithinRange(userCoordinates.latitude, userCoordinates.longitude, trafficLightLat, trafficLightLon, 50)){	
 				//clearing the reports attribute on the outgoing data (these are not necessary when we only need locations of traffic lights (to setup GeoFences)
-				trafficLight.reports=[];
+			//	trafficLight.reports=[];
 				closestTrafficLights.push(trafficLight);
 			}
 			//check if this was the last of the traffic lights

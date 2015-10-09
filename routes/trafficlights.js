@@ -77,8 +77,7 @@ exports.add = function(newTrafficLightData, callback) {
   This utility function is used to update an existing traffic (that it is working or not).
   trafficLightReport = {'id':value,'isWorking':Boolean}
 */
-exports.updateTrafficLight = function(trafficLightReport, callback){
-	
+exports.updateTrafficLight = function(trafficLightReport, callback){	
     //find the traffic light
 	TrafficLight.findById(trafficLightReport.encounteredTrafficLightId, function(err, trafficLight){
 		 if(trafficLight){
@@ -152,16 +151,15 @@ exports.listBrokenTrafficLights = function (callback){
 }
 /*
  Return List of Traffic Lights Reported As Broken and Closest to the User Location.
- {'reports.1': {$exists: true}} - at least one report exists   //returns only the broken reports - but is not useful for showing stats on the app
+  {'_id':{$ne: null}} - at least one report exists   //returns only the broken reports - but is not useful for showing stats on the app
 */
 exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){	  
 	  TrafficLight.find({'verified': true})            
-            .populate('reports', null,{'reports.1': {$exists: true}})
+            .populate('reports', null, {'_id':{$ne: null}})
             .exec(function(err, brokenTrafficLights) {			
 				if(brokenTrafficLights){
-					//we could perhaps filter out those that have at least one "Broken" report 
-					var thoseWithBrokenReports = brokenTrafficLights.filter(function(item){ return item.working === false ;});
-				
+					//we could perhaps filter out those that have at least one "Broken" report					
+					var thoseWithBrokenReports = brokenTrafficLights.filter(function(item){ return item.working === false ;});					
 					//iterate through all traffic lights - checking each against a 50KM radius
 					var closestTrafficLights = [];
 					for(var x=0; x< thoseWithBrokenReports.length; x++){

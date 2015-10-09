@@ -1163,8 +1163,7 @@ module.exports = function(app, entities) {
 	The encounters are recorded as traffic status reports.
   */
   app.post('/traffic/lights/reports', function(req, res){
-	var trafficLightEncounter = JSON.parse(req.body.encounter);
-	console.log("Encounter Report: ", trafficLightEncounter);
+	var trafficLightEncounter = JSON.parse(req.body.encounter);	
 	TrafficLightsSpotter.updateTrafficLight(trafficLightEncounter, function(result){
 		res.send(result);
 	});

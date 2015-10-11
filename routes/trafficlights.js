@@ -171,6 +171,10 @@ exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){
 					var thoseWithBrokenReports = brokenTrafficLights.filter(function(item){ return item.working === false ;});					
 					//iterate through all traffic lights - checking each against a 50KM radius
 					var closestTrafficLights = [];
+					if(!thoseWithBrokenReports || thoseWithBrokenReports.length ===0){
+						console.log("No Broken Lights At This Location");
+						return callback(null, []); 
+					}
 					for(var x=0; x< thoseWithBrokenReports.length; x++){
 						var trafficLight = thoseWithBrokenReports[x];
 						var trafficLightLat = trafficLight.y;
@@ -257,33 +261,46 @@ exports.reject = function (req, res){
   Closeness is considered as traffic lights within the 50KM radius
 */
 exports.getClosestsTrafficLights = function(userCoordinates, callback) {
-   var closestTrafficLights = [];
-   //first retrieve all coordinates (from around the world - that are verified)
-   TrafficLight.find({'verified':true}).populate('reports').exec(function(err, trafficLights) {
-      if(trafficLights){
-	    //iterate through all traffic lights - checking each against a 50KM radius
-		for(var x=0; x< trafficLights.length; x++){
-			var trafficLight = trafficLights[x];
-			var trafficLightLat = trafficLight.y;
-			var trafficLightLon = trafficLight.x;
-			if(isDistanceBetweenPointsWithinRange(userCoordinates.latitude, userCoordinates.longitude, trafficLightLat, trafficLightLon, 50)){	
-				//clearing the reports attribute on the outgoing data (these are not necessary when we only need locations of traffic lights (to setup GeoFences)
-			//	trafficLight.reports=[];
-				closestTrafficLights.push(trafficLight);
-			}
-			//check if this was the last of the traffic lights
-			if( (x+1) >= trafficLights.length){ 
-			console.log("getClosestsTrafficLights:: Returning "+trafficLights.length+" Traffic Lights");
-			return callback(null, closestTrafficLights); }			
+   getNearestTrafficLights(userCoordinates, function (err, nearestTrafficLights){
+		if(!err){
+			return callback(null, nearestTrafficLights);
 		}
-	  }
-	  else{
-		return callback(err, []);
-	  }
-  });
-  
-
+		else{
+			return callback(err, []);
+		}
+   });
 };
+
+/*
+  Utility Function To Retrieve Traffic Lights and Associated Reports.
+*/
+function getNearestTrafficLights(userCoordinates, callback){
+	var closestTrafficLights = [];
+	   //first retrieve all coordinates (from around the world - that are verified)
+	   TrafficLight.find({'verified':true}).populate('reports').exec(function(err, trafficLights) {
+		  if(trafficLights){
+			//iterate through all traffic lights - checking each against a 50KM radius
+			for(var x=0; x< trafficLights.length; x++){
+				var trafficLight = trafficLights[x];
+				var trafficLightLat = trafficLight.y;
+				var trafficLightLon = trafficLight.x;
+				if(isDistanceBetweenPointsWithinRange(userCoordinates.latitude, userCoordinates.longitude, trafficLightLat, trafficLightLon, 50)){	
+					//clearing the reports attribute on the outgoing data (these are not necessary when we only need locations of traffic lights (to setup GeoFences)
+				//	trafficLight.reports=[];
+					closestTrafficLights.push(trafficLight);
+				}
+				//check if this was the last of the traffic lights
+				if( (x+1) >= trafficLights.length){ 
+				console.log("getClosestsTrafficLights:: Returning "+closestTrafficLights.length+" Traffic Lights");
+				return callback(null, closestTrafficLights); }			
+			}
+		  }
+		  else{
+			return callback(err, []);
+		  }
+	  });
+}
+
 /*
  This function calculates the distance between two points, and checks if the distance is less or equal to the radius.
  This is a modified version of http://www.geodatasource.com/developers/javascript (many thanks!)

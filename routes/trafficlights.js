@@ -153,8 +153,9 @@ exports.listBrokenTrafficLights = function (callback){
  Return List of Traffic Lights Reported As Broken and Closest to the User Location.
   {'_id':{$ne: null}} - at least one report exists   //returns only the broken reports - but is not useful for showing stats on the app
 */
-exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){	  
-	  TrafficLight.find({'verified': true})            
+exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){	
+		console.log("listClosestBrokenTrafficLights. For User At Location :: ", userCoordinates);
+		TrafficLight.find({'verified': true})            
             .populate('reports', null, {'_id':{$ne: null}})
             .exec(function(err, brokenTrafficLights) {			
 				if(brokenTrafficLights){
@@ -170,10 +171,13 @@ exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){
 							closestTrafficLights.push(trafficLight);
 						}
 						//check if this was the last of the traffic lights						
-						if( (x+1) >= thoseWithBrokenReports.length){ return callback(null, closestTrafficLights); }			
+						if( (x+1) >= thoseWithBrokenReports.length){ 
+							console.log("Returning "+closestTrafficLights.length+" Traffic Lights Reports");
+							return callback(null, closestTrafficLights); 
+						}			
 					}
 				}
-				else{ callback(err, []); }               
+				else{ return callback(err, []); }               
             })
 }
 

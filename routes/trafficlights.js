@@ -78,6 +78,7 @@ exports.add = function(newTrafficLightData, callback) {
   trafficLightReport = {'id':value,'isWorking':Boolean}
 */
 exports.updateTrafficLight = function(trafficLightReport, callback){	
+	console.log("Processing Traffic Light Report. Data ", trafficLightReport);
     //find the traffic light
 	TrafficLight.findById(trafficLightReport.encounteredTrafficLightId, function(err, trafficLight){
 		 if(trafficLight){
@@ -90,7 +91,10 @@ exports.updateTrafficLight = function(trafficLightReport, callback){
 				
 				var newTrafficLightReport = new TrafficLightReport(report);
 				newTrafficLightReport.save(function(errorSavingReport){
-				 if(errorSavingReport){ callback({'success':false, 'message':'An error occured while saving Traffic Light Encounter Report. [Technical Details] Error is '+errorSavingReport});}
+				 if(errorSavingReport){ 
+					console.log("Error Saving Report. Error is ", errorSavingReport);
+					callback({'success':false, 'message':'An error occured while saving Traffic Light Encounter Report. [Technical Details] Error is '+errorSavingReport});
+				  }
 				 else{					
 						//set new status of the traffic light as reported (last update wins)
 						trafficLight.working = newTrafficLightReport.working;
@@ -98,7 +102,9 @@ exports.updateTrafficLight = function(trafficLightReport, callback){
 						trafficLight.reports.push(newTrafficLightReport._id);
 												
 						trafficLight.save(function(errorSaving){
-						 if(errorSaving){ callback({'success':false, 'message':'An Error Occured While Saving Updating Traffic Light With Encounter Report. [Technical Details] Error is '+errorSaving});}
+						 if(errorSaving){ 
+							console.log("Error Saving Traffic Light WITH REPORT. Error is ", errorSaving);
+						 callback({'success':false, 'message':'An Error Occured While Saving Updating Traffic Light With Encounter Report. [Technical Details] Error is '+errorSaving});}
 						 else{
 							callback({'success':true, 'message':'Traffic Light Report Processed Successfully. Thank You.'});
 						 }
@@ -108,6 +114,7 @@ exports.updateTrafficLight = function(trafficLightReport, callback){
 					 
 			}
 		 else{
+			console.log("Traffic Light Report Could Not Be Processed. The Referenced Traffic Light Could Not Be Found.");
 			callback({'success':false, 'message':'Traffic Light Report Could Not Be Processed. The Referenced Traffic Light Could Not Be Found.'});
 		 }
 	});
@@ -159,6 +166,7 @@ exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){
             .populate('reports', null, {'_id':{$ne: null}})
             .exec(function(err, brokenTrafficLights) {			
 				if(brokenTrafficLights){
+					console.log("listClosestBrokenTrafficLights. Got Some Traffic Lights.");
 					//we could perhaps filter out those that have at least one "Broken" report					
 					var thoseWithBrokenReports = brokenTrafficLights.filter(function(item){ return item.working === false ;});					
 					//iterate through all traffic lights - checking each against a 50KM radius
@@ -177,7 +185,10 @@ exports.listClosestBrokenTrafficLights = function (userCoordinates, callback){
 						}			
 					}
 				}
-				else{ return callback(err, []); }               
+				else{ 
+					console.log("NO Traffic Lights Reports At This Location.... Error ? ", err);
+					return callback(err, []); 
+				}               
             })
 }
 
@@ -261,7 +272,9 @@ exports.getClosestsTrafficLights = function(userCoordinates, callback) {
 				closestTrafficLights.push(trafficLight);
 			}
 			//check if this was the last of the traffic lights
-			if( (x+1) >= trafficLights.length){ return callback(null, closestTrafficLights); }			
+			if( (x+1) >= trafficLights.length){ 
+			console.log("getClosestsTrafficLights:: Returning "+trafficLights.length+" Traffic Lights");
+			return callback(null, closestTrafficLights); }			
 		}
 	  }
 	  else{

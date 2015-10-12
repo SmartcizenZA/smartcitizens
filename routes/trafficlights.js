@@ -254,7 +254,18 @@ exports.reject = function (req, res){
   Closeness is considered as traffic lights within the 50KM radius
 */
 exports.getClosestsTrafficLights = function(userCoordinates, callback) {
-   getNearestTrafficLights(userCoordinates, function (err, nearestTrafficLights){
+   getNearestTrafficLights(userCoordinates, true, function (err, nearestTrafficLights){
+		if(!err){
+			return callback(null, nearestTrafficLights);
+		}
+		else{
+			return callback(err, []);
+		}
+   });
+};
+
+exports.getClosestsUnverifiedTrafficLights = function(userCoordinates, callback) {
+   getNearestTrafficLights(userCoordinates, false, function (err, nearestTrafficLights){
 		if(!err){
 			return callback(null, nearestTrafficLights);
 		}
@@ -267,10 +278,10 @@ exports.getClosestsTrafficLights = function(userCoordinates, callback) {
 /*
   Utility Function To Retrieve Traffic Lights and Associated Reports.
 */
-function getNearestTrafficLights(userCoordinates, callback){
+function getNearestTrafficLights(userCoordinates, onlyVerified, callback){
 	var closestTrafficLights = [];
 	   //first retrieve all coordinates (from around the world - that are verified)
-	   TrafficLight.find({'verified':true}).populate('reports').exec(function(err, trafficLights) {
+	   TrafficLight.find({'verified':onlyVerified}).populate('reports').exec(function(err, trafficLights) {
 		  if(trafficLights){
 			//iterate through all traffic lights - checking each against a 50KM radius
 			for(var x=0; x< trafficLights.length; x++){

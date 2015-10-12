@@ -1144,6 +1144,23 @@ module.exports = function(app, entities) {
     });
   });
   
+  /*
+	This function is used to return traffic lights within the 50 kilometre radius from the user's current location.
+	This ONLY returns unverified ones - the user has the option of showing unverified.
+  */
+  app.get('/closest/unverified/traffic/lights/:latitude/:longitude', function(req, res) {
+	var userLocationData = {'latitude': req.params.latitude, 'longitude': req.params.longitude};
+    TrafficLightsSpotter.getClosestsUnverifiedTrafficLights(userLocationData, function(err, trafficLights) {
+      if (!err) {
+        res.send(trafficLights);
+      } else {
+        res.send({
+          'success': false,
+          'message': 'There was an error reading traffic Lights Data. Contact Smart Citizen Data Foundation'
+        });
+      }
+    });
+  });
   
   /*
     Update the Verified State of a TrafficLight.

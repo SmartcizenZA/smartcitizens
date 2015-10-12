@@ -132,18 +132,11 @@ exports.list = function(callback) {
 /*
   List all traffic lights spotted (public-view)
 */
-exports.listPublic = function(callback) {
-  /*
-  TrafficLight.find({'verified':true},function(err, trafficLights) {
-    callback(err, trafficLights);
-  }); */
-  
+exports.listPublic = function(callback) {    
   //because these are verified traffic lights - it is expected that reports will be filed against it
-  TrafficLight.find({'verified':true})            
-            .populate('reports')
-            .exec(function(err, trafficLights) {
-               callback(err, trafficLights);
-            })
+  TrafficLight.find().populate('reports').exec(function(err, trafficLights) {
+		   callback(err, trafficLights);
+    })
   
 };
 

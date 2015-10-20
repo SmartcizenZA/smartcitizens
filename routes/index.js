@@ -23,6 +23,7 @@ var PasswordResetRequestsHandler = require('./resets.js');
 var Notifications = require('../routes/notifications.js');
 var SmartCitizensGCM = require('../routes/gcm.js');
 var TrafficLightsSpotter = require('../routes/trafficlights.js');
+var TrafficIncidentReporter = require('../routes/trafficreports.js');
 
 
 /*
@@ -1115,7 +1116,7 @@ module.exports = function(app, entities) {
 	Loads Broken Traffic Lights Reports Closest to the user.
   */
   app.get('/closest/broken/traffic/lights/:latitude/:longitude', function(req, res) {
-	var userLocationData = {'latitude': req.params.latitude, 'longitude': req.params.longitude};
+	var userLocationData = {'latitude': req.params.latitude, 'longitude': req.params.longitude};	
     TrafficLightsSpotter.listClosestBrokenTrafficLights(userLocationData, function(err, trafficLights) {
       if (!err) {
         res.send(trafficLights);
@@ -1197,6 +1198,35 @@ module.exports = function(app, entities) {
     Register a new spotter app
   */
   app.post('/traffic/lights/spotters', TrafficLightsSpotter.addSpotter);
+  
+  /*
+    Register a new Traffic Incident Report
+  */
+  app.post('/traffic/incidents/reports', TrafficIncidentReporter.addTrafficReport);
+  /*
+    Retrieve a list of all Traffic Incidents, including those about Traffic Lights
+  */
+  app.get('/closest/traffic/incidents/reports/:latitude/:longitude', function (req, res){
+    //get user location
+	var userLocationData = {'latitude': req.params.latitude, 'longitude': req.params.longitude};
+	//variable to host combined list of incidents
+	var reportsList = [];
+	TrafficIncidentReporter.listClosest(userLocationData, function (err, closestReports){
+	  if(closestReports && closestReports.length > 0){ reportsList = reportsList.concat(closestReports); }
+	  //now get the traffic lights
+	  TrafficLightsSpotter.listClosestBrokenTrafficLights(userLocationData, function(err, trafficLights){
+		if(trafficLights && trafficLights.length > 0){
+			reportsList = reportsList.concat(closestReports);
+		}
+		//now return whatever is in the combined list
+		res.send(reportsList);
+	  });
+	});
+  });
+  /*
+    List Traffic Incident Reports within 50 KM of the specified location
+  */
+  
 
   app.get('/map', function(req, res) {
     res.render('map.ejs', {

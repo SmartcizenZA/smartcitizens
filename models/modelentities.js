@@ -127,6 +127,20 @@ var TrafficLightReportSchema = new Schema({
 var TrafficLightReport = mongoose.model('TrafficLightReport',TrafficLightReportSchema);
 exports.TrafficLightReport = TrafficLightReport;
 
+//Generic Incident Report Schema
+var TrafficIncidentReportSchema = new Schema({
+	latitude: String,
+	longitude: String,
+	location: String,
+	description: String,
+	reporter: String,
+	category: String,
+	verified: {type: Boolean, default: true},
+	updated: { type: Date, default: Date.now }
+});
+var TrafficIncidentReport = mongoose.model('TrafficIncidentReport',TrafficIncidentReportSchema);
+exports.TrafficIncidentReport = TrafficIncidentReport;
+
 
 var TrafficLightSpotterSchema = new Schema({
 	gcmRegistrationId: String,

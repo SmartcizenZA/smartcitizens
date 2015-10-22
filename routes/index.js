@@ -1213,14 +1213,14 @@ module.exports = function(app, entities) {
 	var reportsList = [];
 	TrafficIncidentReporter.listClosest(userLocationData, function (err, closestReports){
 	  if(closestReports && closestReports.length > 0){ reportsList = reportsList.concat(closestReports); }
-	  //now get the traffic lights
-	  TrafficLightsSpotter.listClosestBrokenTrafficLights(userLocationData, function(err, trafficLights){
-		if(trafficLights && trafficLights.length > 0){
-			reportsList = reportsList.concat(closestReports);
-		}
-		//now return whatever is in the combined list
+	  //now return whatever is in the combined list
 		res.send(reportsList);
-	  });
+	  //now get the traffic lights
+			//	  TrafficLightsSpotter.listClosestBrokenTrafficLights(userLocationData, function(err, trafficLights){
+			//		if(trafficLights && trafficLights.length > 0){
+			//			reportsList = reportsList.concat(closestReports);
+			//		}
+			//	  });
 	});
   });
   /*

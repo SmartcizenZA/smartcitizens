@@ -47,7 +47,7 @@ exports.addIfCanAddToAutoVerify = function(spotterId, callback){
 	//find the traffic lights submitted by this spotter;
 	TrafficLight.find({'verified':true, 'spotter': spotterId},function(err, trafficLights) {
        //if the traffic lights are more than the configured max
-	   var autoVerifyCount = config.get('spotting.auto_verify_count');
+	   var autoVerifyCount = 10; //config.get('spotting.auto_verify_count');
 	   if(trafficLights && trafficLights.length <= autoVerifyCount){
 			//this spotter is legible
 			addToAutoVerify(spotterId, callback);

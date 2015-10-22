@@ -129,8 +129,8 @@ exports.TrafficLightReport = TrafficLightReport;
 
 //Generic Incident Report Schema
 var TrafficIncidentReportSchema = new Schema({
-	latitude: String,
-	longitude: String,
+	latitude: {type: Number},
+	longitude: {type: Number},
 	location: String,
 	description: String,
 	reporter: String,

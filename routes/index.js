@@ -1203,6 +1203,11 @@ module.exports = function(app, entities) {
     Register a new Traffic Incident Report
   */
   app.post('/traffic/incidents/reports', TrafficIncidentReporter.addTrafficReport);
+  
+  /*
+    List all available Traffic Reports (World Wide)
+  */
+  app.get('/traffic/incidents/reports', TrafficIncidentReporter.list);
   /*
     Retrieve a list of all Traffic Incidents, including those about Traffic Lights
   */

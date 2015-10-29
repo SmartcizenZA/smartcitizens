@@ -51,6 +51,7 @@ exports.listClosest = function (userLocationData, callback){
 exports.addTrafficReport = function (req, res){
   //parse the incoming data from the app
    var rawTrafficReportData = JSON.parse(req.body.report);
+      
    if(rawTrafficReportData){
 	  //check if coordinates are available, if so, geocode them to get the location
 	  if(rawTrafficReportData.latitude && rawTrafficReportData.longitude){

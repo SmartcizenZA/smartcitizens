@@ -6,6 +6,7 @@
 var entities = require('../models/modelentities');
 var SpottersUtil = require('./spotters');
 var geocoder = require('geocoder');
+var _ = require('lodash');
 
 var TrafficIncidentReport = entities.TrafficIncidentReport;
 
@@ -22,7 +23,7 @@ exports.list = function (req, res){
 };
 
 exports.listClosest = function (userLocationData, callback){
- var  closestReport = []; 
+ var  closestReports = []; 
  TrafficIncidentReport.find(function(err, trafficReports) {
 		if(trafficReports){
 			for(var x=0; x< trafficReports.length; x++){
@@ -30,12 +31,14 @@ exports.listClosest = function (userLocationData, callback){
 				var trafficReportLat = trafficReport.latitude;
 				var trafficReporttLon = trafficReport.longitude;
 				if(isDistanceBetweenPointsWithinRange(userLocationData.latitude, userLocationData.longitude, trafficReportLat, trafficReporttLon, 50)){					
-					closestReport.push(trafficReport);
+					closestReports.push(trafficReport);
 				}
 				//check if this was the last of the traffic lights
 				if( (x+1) >= trafficReports.length){ 
-					console.log("listClosest - Traffic Incident Reports:: Returning "+closestReport.length+" Traffic Reports");
-					callback(null, closestReport);
+					console.log("listClosest - Traffic Incident Reports:: Returning "+closestReports.length+" Traffic Reports");
+					//sort the array
+					var orderedList = _.sortByOrder(closestReports, ['updated'], ['desc']);
+					callback(null, orderedList);
 				}			
 			}
 		}

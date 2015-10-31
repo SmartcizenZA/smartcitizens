@@ -17,7 +17,8 @@ exports.list = function (req, res){
 			res.send([]);
 		}
 		else{
-			res.send(trafficReports);
+			var orderedList = _.sortByOrder(trafficReports, ['updated'], ['desc']);
+			res.send(orderedList);
 		}		
 	 });
 };

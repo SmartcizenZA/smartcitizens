@@ -1220,14 +1220,20 @@ module.exports = function(app, entities) {
 	  if(closestReports && closestReports.length > 0){ reportsList = reportsList.concat(closestReports); }
 	  //now return whatever is in the combined list
 		res.send(reportsList);
-	  //now get the traffic lights
-			//	  TrafficLightsSpotter.listClosestBrokenTrafficLights(userLocationData, function(err, trafficLights){
-			//		if(trafficLights && trafficLights.length > 0){
-			//			reportsList = reportsList.concat(closestReports);
-			//		}
-			//	  });
 	});
   });
+  
+  //Route for adding subscription for Traffic Alerts
+  app.post('/traffic/incidents/alerts/subscribe', function (req, res){
+	//parse the payload body into subscription request JSON
+	var subscriptionRequest = req.body; //JSON.parse(req.body);
+	console.log("Subscription Request Received: Data = ", subscriptionRequest);
+	SmartCitizensGCM.registerForGeoAlerts(subscriptionRequest, function (err, result){
+	  if(err){ res.send({"success":false, "message":"Error Occurred. Technical Details "+err}) }
+	  else { res.send({"success":true}); }	  
+	});
+  });
+  
   /*
     List Traffic Incident Reports within 50 KM of the specified location
   */

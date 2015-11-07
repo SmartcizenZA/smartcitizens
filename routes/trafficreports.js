@@ -5,6 +5,7 @@
 */
 var entities = require('../models/modelentities');
 var SpottersUtil = require('./spotters');
+var TrafficAlertService = require('./gcm');
 var geocoder = require('geocoder');
 var _ = require('lodash');
 
@@ -85,6 +86,23 @@ function saveIncidentData (trafficReportData, res){
 		else{
 			//if it worked, then send the success status along with the new record
 			console.log("New Report:: ", newTrafficReport);
+			//Also send the traffic Alert to those who subscribed to be notified
+			//Get list of users who are close-by (20KM radius)
+			var incidentLocationObject = {"latitude": newTrafficReport.latitude, "longitude": newTrafficReport.longitude};
+			TrafficAlertService.getClosestSubscribers( incidentLocationObject, function (errorRetrieving, gcmRegistrationIDs){			
+				var IshmaelGCMReg = "APA91bFtBmVPTAjwvfm7RodgLOZuAEtmNmOy3-U97S560RVOIKlSZZ8UBeny09MJmnglbe9tat_WDuu8zsSrhpkkwGBGK6qvkUGZpfknOoA-e56HQpAM3Pw6H0NedkSgQmiay-_AhEbYnOzSK4P3m5ZgvsBTJ33YJA";
+				if(gcmRegistrationIDs && gcmRegistrationIDs.length > 0){				
+					TrafficAlertService.sendTrafficAlert(newTrafficReport, gcmRegistrationIDs, function (err, result){
+						console.log("GCM Send Results:: ", result);
+						console.log("GCM Send Error? :: ", err);
+					});				
+				}
+				else{
+				 console.log("Alerting Not Possible. Not List of GCM-Reg-IDs. Error ? ", errorRetrieving);
+				}
+						
+			});		
+			
 			res.send({'success':true, 'id': newTrafficReport._id});
 		}
 	 });

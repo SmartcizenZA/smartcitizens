@@ -141,6 +141,16 @@ var TrafficIncidentReportSchema = new Schema({
 var TrafficIncidentReport = mongoose.model('TrafficIncidentReport',TrafficIncidentReportSchema);
 exports.TrafficIncidentReport = TrafficIncidentReport;
 
+//Incident Notification/Alert Subscription
+var TrafficAlertSubscriptionSchema = new Schema({
+	regId: String,
+	latitude: {type: Number},
+	longitude: {type: Number},
+	joined: { type: Date, default: Date.now }
+});
+var TrafficAlertSubscription = mongoose.model('TrafficAlertSubscription',TrafficAlertSubscriptionSchema);
+exports.TrafficAlertSubscription = TrafficAlertSubscription;
+
 
 var TrafficLightSpotterSchema = new Schema({
 	gcmRegistrationId: String,

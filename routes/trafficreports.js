@@ -89,8 +89,8 @@ function saveIncidentData (trafficReportData, res){
 			//Also send the traffic Alert to those who subscribed to be notified
 			//Get list of users who are close-by (20KM radius)
 			var incidentLocationObject = {"latitude": newTrafficReport.latitude, "longitude": newTrafficReport.longitude};
-			TrafficAlertService.getClosestSubscribers( incidentLocationObject, function (errorRetrieving, gcmRegistrationIDs){			
-				var IshmaelGCMReg = "APA91bFtBmVPTAjwvfm7RodgLOZuAEtmNmOy3-U97S560RVOIKlSZZ8UBeny09MJmnglbe9tat_WDuu8zsSrhpkkwGBGK6qvkUGZpfknOoA-e56HQpAM3Pw6H0NedkSgQmiay-_AhEbYnOzSK4P3m5ZgvsBTJ33YJA";
+			TrafficAlertService.getClosestSubscribers( incidentLocationObject, function (errorRetrieving, gcmRegistrationIDs){	
+				
 				if(gcmRegistrationIDs && gcmRegistrationIDs.length > 0){				
 					TrafficAlertService.sendTrafficAlert(newTrafficReport, gcmRegistrationIDs, function (err, result){
 						console.log("GCM Send Results:: ", result);
